@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel Auto Cleaner</title>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <style>
+        body { font-family: sans-serif; padding: 20px; text-align: center; background-color: #f4f4f9; }
+        .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); max-width: 500px; margin: auto; }
+        h1 { color: #333; }
+        input[type="file"] { margin: 20px 0; }
+        button { background-color: #28a745; color: white; border: none; padding: 10px 20px; font-size: 16px; cursor: pointer; border-radius: 5px; }
+        button:hover { background-color: #218838; }
+        #status { margin-top: 20px; font-weight: bold; color: #555; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Excel Data Cleaner</h1>
+    <p>Upload file to remove duplicates & empty rows.</p>
+    
+    <input type="file" id="upload" accept=".xlsx, .xls" />
+    <br>
+    <button onclick="processFile()">Clean & Download</button>
+    
+    <p id="status"></p>
+</div>
+
+<script>
+    function processFile() {
+        const fileInput = document.getElementById('upload');
+        const status = document.getElementById('status');
+
+        if (fileInput.files.length === 0) {
+            alert("Please select an Excel file first!");
+            return;
+        }
+
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+
+        status.innerText = "Processing...";
+
+        reader.onload = function(e) {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, {type: 'array'});
+            
+            // Pehli sheet ko select karein
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+
+            // Excel ko JSON format me convert karein taaki hum edit kar sakein
+            let jsonData = XLSX.utils.sheet_to_json(worksheet, {defval: ""});
+
+            // --- DATA CLEANING LOGIC START ---
+            
+            // 1. Remove completely empty rows (handled largely by sheet_to_json, but lets filter explicitly)
+            let cleanedData = jsonData.filter(row => {
+                return Object.values(row).some(x => x !== null && x !== "");
+            });
+
+            // 2. Trim Spaces (Har cell ke text se aage piche ki space hatana)
+            cleanedData = cleanedData.map(row => {
+                let newRow = {};
+                for (let key in row) {
+                    if (typeof row[key] === 'string') {
+                        newRow[key] = row[key].trim();
+                    } else {
+                        newRow[key] = row[key];
+                    }
+                }
+                return newRow;
+            });
+
+            // 3. Remove Duplicates (Puri row agar same hai to delete)
+            const uniqueData = [];
+            const seen = new Set();
+
+            cleanedData.forEach(row => {
+                const serialized = JSON.stringify(row);
+                if (!seen.has(serialized)) {
+                    seen.add(serialized);
+                    uniqueData.push(row);
+                }
+            });
+
+            // --- DATA CLEANING LOGIC END ---
+
+            // Wapis Excel banayein
+            const newWorksheet = XLSX.utils.json_to_sheet(uniqueData);
+            const newWorkbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, "CleanedData");
+
+            // File Download karein
+            XLSX.writeFile(newWorkbook, "Cleaned_File.xlsx");
+            status.innerText = "Done! File downloaded.";
+        };
+
+        reader.readAsArrayBuffer(file);
+    }
+</script>
+
+</body>
+</html>
