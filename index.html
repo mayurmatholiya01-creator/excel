@@ -28,21 +28,55 @@
 
     <style>
         body { background: #000; color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; }
-        .glass-card { background: rgba(20, 20, 23, 0.7); backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 0 0 1px rgba(0,0,0,0.2), 0 20px 40px -10px rgba(0,0,0,0.5); }
+
+        /* Glass Card Effect */
+        .glass-card {
+            background: rgba(20, 20, 23, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.2), 0 20px 40px -10px rgba(0,0,0,0.5);
+        }
+
+        /* Floating Orbs */
         .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4; pointer-events: none; }
         .orb-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: #4f46e5; }
         .orb-2 { bottom: -20%; right: -10%; width: 40vw; height: 40vw; background: #ec4899; }
-        .stagger-1 { animation-delay: 0.1s; opacity: 0; } .stagger-2 { animation-delay: 0.2s; opacity: 0; } .stagger-3 { animation-delay: 0.3s; opacity: 0; } .stagger-4 { animation-delay: 0.4s; opacity: 0; }
-        .upload-zone { background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.15); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .upload-zone:hover, .upload-zone.dragover { background: rgba(79, 70, 229, 0.1); border-color: #6366f1; transform: scale(1.01); }
-        .switch { position: relative; display: inline-block; width: 48px; height: 26px; } .switch input { opacity: 0; width: 0; height: 0; }
+
+        /* Stagger Animations */
+        .stagger-1 { animation-delay: 0.1s; opacity: 0; }
+        .stagger-2 { animation-delay: 0.2s; opacity: 0; }
+        .stagger-3 { animation-delay: 0.3s; opacity: 0; }
+        .stagger-4 { animation-delay: 0.4s; opacity: 0; }
+
+        /* Upload Zone */
+        .upload-zone {
+            background: rgba(255,255,255,0.03);
+            border: 1px dashed rgba(255,255,255,0.15);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .upload-zone:hover, .upload-zone.dragover {
+            background: rgba(79, 70, 229, 0.1); border-color: #6366f1; transform: scale(1.01);
+        }
+
+        /* Toggle Switch */
+        .switch { position: relative; display: inline-block; width: 48px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #3f3f46; transition: .4s; border-radius: 34px; }
         .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        input:checked + .slider { background-color: #6366f1; } input:checked + .slider:before { transform: translateX(22px); }
-        .btn-excel { background: linear-gradient(90deg, #10b981, #059669); } .btn-pdf { background: linear-gradient(90deg, #f43f5e, #e11d48); }
+        input:checked + .slider { background-color: #6366f1; }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        /* Buttons */
+        .btn-excel { background: linear-gradient(90deg, #10b981, #059669); }
+        .btn-pdf { background: linear-gradient(90deg, #f43f5e, #e11d48); }
+        
+        /* Loader */
         .loader { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        #pdfPreviewFrame { width: 100%; height: 500px; border: none; border-radius: 12px; background: #fff; }
+
+        /* PDF Frame */
+        #pdfPreviewFrame { width: 100%; height: 600px; border: none; border-radius: 12px; background: #fff; }
     </style>
 </head>
 <body class="flex flex-col items-center min-h-screen p-6 pb-20">
@@ -62,7 +96,7 @@
                 </div>
                 <div><h1 class="text-lg font-bold tracking-tight text-white">StockPro<span class="text-indigo-500">.ai</span></h1></div>
             </div>
-            <div class="px-2 py-1 rounded-full bg-white/5 border border-white/5 text-[10px] text-zinc-500 font-mono">v10.0 Mirror</div>
+            <div class="px-2 py-1 rounded-full bg-white/5 border border-white/5 text-[10px] text-zinc-500 font-mono">v10.0</div>
         </div>
 
         <div class="animate-slide-up stagger-2">
@@ -131,6 +165,7 @@
     </div>
 
     <script>
+        // --- UI LOGIC ---
         const clientInput = document.getElementById('clientName');
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
@@ -142,15 +177,44 @@
         const pdfFrame = document.getElementById('pdfPreviewFrame');
 
         clientInput.addEventListener('input', function() { this.value = this.value.toUpperCase(); });
-        dropZone.addEventListener('click', (e) => { if(e.target !== removeFileBtn) fileInput.click(); });
+
+        dropZone.addEventListener('click', (e) => {
+            if(e.target !== removeFileBtn) fileInput.click();
+        });
+
         fileInput.addEventListener('change', handleFileSelect);
+
         dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
         dropZone.addEventListener('dragleave', (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); });
-        dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); if (e.dataTransfer.files.length) { fileInput.files = e.dataTransfer.files; handleFileSelect(); } });
-        function handleFileSelect() { if (fileInput.files.length > 0) { uploadContent.classList.add('hidden'); fileSuccess.classList.remove('hidden'); fileSuccess.classList.add('flex'); fileNameTxt.innerText = fileInput.files[0].name; } }
-        removeFileBtn.addEventListener('click', (e) => { e.stopPropagation(); fileInput.value = ""; uploadContent.classList.remove('hidden'); fileSuccess.classList.add('hidden'); fileSuccess.classList.remove('flex'); closePreview(); });
+        dropZone.addEventListener('drop', (e) => { 
+            e.preventDefault(); dropZone.classList.remove('dragover'); 
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                handleFileSelect();
+            }
+        });
+
+        function handleFileSelect() {
+            if (fileInput.files.length > 0) {
+                uploadContent.classList.add('hidden');
+                fileSuccess.classList.remove('hidden'); 
+                fileSuccess.classList.add('flex');
+                fileNameTxt.innerText = fileInput.files[0].name;
+            }
+        }
+
+        removeFileBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            fileInput.value = ""; 
+            uploadContent.classList.remove('hidden'); 
+            fileSuccess.classList.add('hidden'); 
+            fileSuccess.classList.remove('flex');
+            closePreview();
+        });
+
         function closePreview() { previewContainer.classList.add('hidden'); }
 
+        // --- MAIN DATA PROCESSING ---
         function processData(mode) {
             const file = fileInput.files[0];
             const status = document.getElementById('statusMessage');
@@ -164,6 +228,7 @@
                 document.querySelector('.glass-card').animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-5px)' }, { transform: 'translateX(5px)' }, { transform: 'translateX(0)' }], { duration: 300 });
                 return;
             }
+
             spinner.classList.remove('hidden'); status.innerText = "PROCESSING..."; closePreview();
 
             const reader = new FileReader();
@@ -174,15 +239,21 @@
                         const workbook = XLSX.read(data, {type: 'array'});
                         const rawData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: 1, defval: ""});
 
+                        // Header Search
                         let headerIdx = -1, col = { design: -1, cat: -1, size: -1, body: -1, qty: -1 };
                         for (let i = 0; i < Math.min(rawData.length, 25); i++) {
                             const r = rawData[i].map(x => String(x).toLowerCase().trim());
                             if (r.includes('designname') || r.includes('size mm')) {
-                                headerIdx = i; col.design = r.indexOf('designname'); col.cat = r.indexOf('category'); col.size = r.indexOf('size mm'); col.body = r.indexOf('bodytype'); col.qty = r.findIndex(c => c === 'pre' || c === 'total' || c === 'qty'); break;
+                                headerIdx = i; 
+                                col.design = r.indexOf('designname'); col.cat = r.indexOf('category'); 
+                                col.size = r.indexOf('size mm'); col.body = r.indexOf('bodytype'); 
+                                col.qty = r.findIndex(c => c === 'pre' || c === 'total' || c === 'qty'); 
+                                break;
                             }
                         }
                         if (headerIdx === -1) throw new Error("Headers not found.");
 
+                        // Extraction
                         const map = new Map();
                         for (let i = headerIdx + 1; i < rawData.length; i++) {
                             const r = rawData[i]; if (!r || r.length === 0) continue;
@@ -197,6 +268,7 @@
                             if (map.has(key)) map.get(key).qty += qty; else map.set(key, { size, cat, body, design, qty });
                         }
 
+                        // Sorting (3-Level)
                         let list = Array.from(map.values());
                         function getDims(s) { const m = s.match(/(\d+)/g); return m ? { w: parseInt(m[0]||0), h: parseInt(m[1]||0) } : {w:0,h:0}; }
                         list.sort((a, b) => {
@@ -209,7 +281,9 @@
 
                         if (mode === 'excel') generateExcel(list, clientName);
                         if (mode === 'pdf') generatePDF(list, clientName);
+
                         status.innerText = "SUCCESS"; status.className = "text-center text-[10px] mt-1 h-4 text-green-400 font-bold tracking-wide";
+
                     } catch (err) { console.error(err); status.innerText = "ERROR: " + err.message; status.className = "text-center text-[10px] mt-1 h-4 text-red-400 font-medium"; } 
                     finally { spinner.classList.add('hidden'); }
                 }, 800);
@@ -217,6 +291,7 @@
             reader.readAsArrayBuffer(file);
         }
 
+        // --- EXCEL LOGIC ---
         function generateExcel(list, clientName) {
             let maxW = { size: 10, cat: 10, body: 10, design: 15 };
             list.forEach(item => {
@@ -225,8 +300,14 @@
                 if(item.body.length > maxW.body) maxW.body = item.body.length;
                 if(item.design.length > maxW.design) maxW.design = item.design.length;
             });
+
             const output = [];
-            const borderStyle = { top: { style: "thin", color: { rgb: "E5E7EB" } }, bottom: { style: "thin", color: { rgb: "E5E7EB" } }, left: { style: "thin", color: { rgb: "D1D5DB" } }, right: { style: "thin", color: { rgb: "D1D5DB" } } };
+            // Excel Borders (Matching PDF)
+            const borderStyle = { 
+                top: { style: "thin", color: { rgb: "E5E7EB" } }, bottom: { style: "thin", color: { rgb: "E5E7EB" } },
+                left: { style: "thin", color: { rgb: "D1D5DB" } }, right: { style: "thin", color: { rgb: "D1D5DB" } }
+            };
+
             const sTitle = { font: { name: "Segoe UI", sz: 26, bold: true, color: { rgb: "111827" } }, fill: { fgColor: { rgb: "F9FAFB" } }, alignment: { horizontal: "center", vertical: "center" }, border: { top: { style: "thin", color: { rgb: "FFFFFF" } }, left: { style: "thin", color: { rgb: "FFFFFF" } }, bottom: { style: "medium", color: { rgb: "9CA3AF" } }, right: { style: "medium", color: { rgb: "9CA3AF" } } } };
             const sHead = { font: { name: "Segoe UI", sz: 10, bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1E293B" } }, alignment: { horizontal: "center", vertical: "center", wrapText: true }, border: { bottom: { style: "medium", color: { rgb: "000000" } } } };
             const sData = { font: { name: "Segoe UI", sz: 10, color: { rgb: "333333" } }, alignment: { horizontal: "center", vertical: "center", wrapText: true }, border: borderStyle };
@@ -250,11 +331,12 @@
             newWs['!merges'].push({ s: { r: 0, c: 0 }, e: { r: 2, c: 5 } });
             newWs['A1'] = { v: clientName || "STOCK REPORT", s: sTitle };
             newWs['!cols'] = [ {wch: 6}, {wch: Math.max(12, maxW.size + 2)}, {wch: Math.max(8, maxW.cat + 1)}, {wch: Math.max(8, maxW.body + 1)}, {wch: Math.min(50, Math.max(20, maxW.design + 2))}, {wch: 10} ];
+
             const newWb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(newWb, newWs, "Stock");
             XLSX.writeFile(newWb, `Stock_${(clientName||"List").replace(/\s+/g,'_')}.xlsx`);
         }
 
-        // --- PDF GENERATOR (Exact Match) ---
+        // --- PDF LOGIC (Mirrored to Excel) ---
         function generatePDF(list, clientName) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
@@ -269,32 +351,54 @@
             tableData.push(['', '', '', '', 'GRAND TOTAL', grandTotal]);
 
             doc.autoTable({
-                // FIXED: Header Names matched to Excel
+                // Synced Headers with Excel
                 head: [['SR NO', 'Size & thikness', 'surface', 'BodyType', 'DesignName', 'Total QTY']],
                 body: tableData,
                 startY: 30,
-                theme: 'grid', // FIXED: Grid theme to match Excel borders
+                theme: 'grid', // Grid theme matches Excel borders
                 margin: { top: 10, left: 5, right: 5, bottom: 10 },
-                // FIXED: Fonts & Opacity matched to Excel
-                styles: { fontSize: 9, cellPadding: 1, valign: 'middle', halign: 'center', lineWidth: 0.1, lineColor: [220, 220, 220] }, 
-                headStyles: { fillColor: [30, 41, 59], textColor: 255, fontStyle: 'bold' },
+                
+                // Styling Match
+                styles: { 
+                    fontSize: 9, // Matched Excel pt
+                    cellPadding: 1, 
+                    valign: 'middle', 
+                    halign: 'center', 
+                    lineWidth: 0.1, 
+                    lineColor: [209, 213, 219] // Matches D1D5DB (Light Grey)
+                },
+                headStyles: { 
+                    fillColor: [30, 41, 59], // Midnight Blue
+                    textColor: 255, 
+                    fontStyle: 'bold' 
+                },
                 columnStyles: {
                     0: { cellWidth: 10 }, 
                     1: { cellWidth: 35 }, 
                     2: { cellWidth: 20 }, 
                     3: { cellWidth: 20 }, 
                     4: { cellWidth: 'auto' }, 
-                    5: { cellWidth: 18 } // FIXED: Removed Bold from Qty
+                    5: { cellWidth: 18 } // No Bold here, just like Excel
                 },
                 didParseCell: function(data) {
-                    if (data.row.raw[0] === '' && data.row.raw[4] !== 'GRAND TOTAL') { data.cell.styles.fillColor = [255, 255, 255]; data.cell.styles.lineWidth = 0; data.cell.styles.minCellHeight = 2; }
-                    if (data.row.raw[4] === 'GRAND TOTAL') { data.cell.styles.fontStyle = 'bold'; data.cell.styles.fillColor = [240, 240, 240]; }
+                    // Spacer Logic
+                    if (data.row.raw[0] === '' && data.row.raw[4] !== 'GRAND TOTAL') { 
+                        data.cell.styles.fillColor = [255, 255, 255]; 
+                        data.cell.styles.lineWidth = 0; 
+                        data.cell.styles.minCellHeight = 2; 
+                    }
+                    // Grand Total Logic
+                    if (data.row.raw[4] === 'GRAND TOTAL') { 
+                        data.cell.styles.fontStyle = 'bold'; 
+                        data.cell.styles.fillColor = [240, 240, 240]; 
+                    }
                 },
                 didDrawPage: function(data) {
+                    // Header Logic (Only Page 1)
                     if (data.pageNumber === 1) {
                         doc.setFontSize(22); doc.setTextColor(20, 20, 20); doc.setFont("helvetica", "bold");
                         doc.text(clientName || "STOCK REPORT", 105, 18, { align: "center" });
-                        // FIXED: Removed Date
+                        // Date removed as requested
                     }
                 }
             });
