@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - Ultimate Edition</title>
+    <title>StockPro X - Minimal Excel Edition</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -68,33 +68,13 @@
             background: rgba(79, 70, 229, 0.1); border-color: #6366f1; transform: scale(1.01);
         }
 
-        /* --- FIXED TOGGLE SWITCH CSS --- */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 48px;
-            height: 26px;
-        }
+        /* Fixed Toggle Switch */
+        .switch { position: relative; display: inline-block; width: 48px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider {
-            position: absolute; cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #3f3f46;
-            transition: .4s;
-            border-radius: 34px;
-        }
-        .slider:before {
-            position: absolute; content: "";
-            height: 20px; width: 20px;
-            left: 3px; bottom: 3px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #3f3f46; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
         input:checked + .slider { background-color: #6366f1; }
         input:checked + .slider:before { transform: translateX(22px); }
-        /* --------------------------- */
 
         /* Gradient Button */
         .btn-gradient {
@@ -125,7 +105,7 @@
                     <h1 class="text-lg font-bold tracking-tight text-white">StockPro<span class="text-indigo-500">.ai</span></h1>
                 </div>
             </div>
-            <div class="px-2 py-1 rounded-full bg-white/5 border border-white/5 text-[10px] text-zinc-500 font-mono">v4.0</div>
+            <div class="px-2 py-1 rounded-full bg-white/5 border border-white/5 text-[10px] text-zinc-500 font-mono">v5.0</div>
         </div>
 
         <div class="animate-slide-up stagger-2">
@@ -140,14 +120,12 @@
 
         <div class="animate-slide-up stagger-3">
             <div class="upload-zone w-full h-32 rounded-2xl flex flex-col items-center justify-center cursor-pointer relative group" id="dropZone">
-                
                 <div id="uploadContent" class="text-center z-10 transition-all duration-300">
                     <div class="w-10 h-10 mx-auto mb-2 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center group-hover:scale-110 group-hover:border-indigo-500/50 transition-all">
                         <svg class="w-4 h-4 text-zinc-400 group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
                     </div>
                     <p class="text-xs font-medium text-zinc-300">Drop Excel File Here</p>
                 </div>
-
                 <div id="fileSuccess" class="hidden flex-col items-center z-10 animate-slide-up">
                     <div class="w-10 h-10 mb-2 rounded-full bg-green-500/20 border border-green-500/30 flex items-center justify-center">
                         <svg class="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
@@ -169,7 +147,6 @@
                     <span class="text-[10px] text-zinc-500">Combine -A, -B faces</span>
                 </div>
             </div>
-            
             <label class="switch shrink-0">
                 <input type="checkbox" id="mergeFaces">
                 <span class="slider"></span>
@@ -184,7 +161,6 @@
             </button>
             <p id="statusMessage" class="text-center text-[10px] mt-3 h-4 text-zinc-500 font-medium"></p>
         </div>
-
     </div>
 
     <script>
@@ -196,10 +172,8 @@
         const fileNameTxt = document.getElementById('fileName');
 
         clientInput.addEventListener('input', function() { this.value = this.value.toUpperCase(); });
-
         dropZone.addEventListener('click', () => fileInput.click());
         fileInput.addEventListener('change', handleFileSelect);
-
         dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
         dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
         dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); fileInput.files = e.dataTransfer.files; handleFileSelect(); });
@@ -272,20 +246,52 @@
                         });
 
                         const output = [];
-                        const sHead = { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "4338CA" } }, alignment: { horizontal: "center", vertical: "center" }, border: { top:{style:"thin"}, bottom:{style:"thin"}, left:{style:"thin"}, right:{style:"thin"} } };
-                        const sCell = { alignment: { horizontal: "center", vertical: "center" }, border: { top:{style:"thin"}, bottom:{style:"thin"}, left:{style:"thin"}, right:{style:"thin"} } };
-                        const sGrey = { fill: { fgColor: { rgb: "F3F4F6" } }, alignment: { horizontal: "center", vertical: "center" }, border: { top:{style:"thin"}, bottom:{style:"thin"}, left:{style:"thin"}, right:{style:"thin"} } };
-                        const sTotal = { font: { bold: true }, fill: { fgColor: { rgb: "E5E7EB" } }, alignment: { horizontal: "center" }, border: { top:{style:"double"} } };
-                        const sTitle = { font: { bold: true, sz: 16 }, alignment: { horizontal: "center", vertical: "center" } };
+                        
+                        // --- PRO MINIMAL STYLES ---
+                        const borderStyle = { color: { rgb: "D1D5DB" }, style: "thin" }; // Soft Silver Border
+                        
+                        // 1. Client Title (Bold, Big, Clean)
+                        const sTitle = { 
+                            font: { name: "Calibri", sz: 24, bold: true, color: { rgb: "111827" } }, 
+                            alignment: { horizontal: "center", vertical: "center" } 
+                        };
+
+                        // 2. Header Row (Dark Charcoal, Minimal)
+                        const sHead = { 
+                            font: { name: "Calibri", sz: 11, bold: true, color: { rgb: "FFFFFF" } }, 
+                            fill: { fgColor: { rgb: "262626" } }, // Matte Black/Grey
+                            alignment: { horizontal: "center", vertical: "center" }, 
+                            border: { top:borderStyle, bottom:borderStyle, left:borderStyle, right:borderStyle } 
+                        };
+
+                        // 3. Data Rows (Subtle Zebra)
+                        const sWhite = { 
+                            font: { name: "Calibri", sz: 11, color: { rgb: "374151" } }, 
+                            alignment: { horizontal: "center", vertical: "center" }, 
+                            border: { top:borderStyle, bottom:borderStyle, left:borderStyle, right:borderStyle } 
+                        };
+                        const sGrey = { 
+                            font: { name: "Calibri", sz: 11, color: { rgb: "374151" } }, 
+                            fill: { fgColor: { rgb: "F9FAFB" } }, // Very subtle grey
+                            alignment: { horizontal: "center", vertical: "center" }, 
+                            border: { top:borderStyle, bottom:borderStyle, left:borderStyle, right:borderStyle } 
+                        };
+
+                        const sTotal = { 
+                            font: { name: "Calibri", sz: 11, bold: true }, 
+                            fill: { fgColor: { rgb: "E5E7EB" } }, 
+                            alignment: { horizontal: "center", vertical: "center" },
+                            border: { top: {style:"double", color:{rgb:"000000"}}, bottom:borderStyle } 
+                        };
 
                         output.push(["", "", "", "", "", ""]); output.push(["", "", "", "", "", ""]); output.push(["", "", "", "", "", ""]);
                         output.push(["SR NO", "Size & thikness", "surface", "BodyType", "DesignName", "Total QTY"].map(h => ({v:h, s:sHead})));
 
                         let sr = 1, grandTotal = 0, lastSize = null;
                         list.forEach(item => {
-                            if (lastSize && lastSize !== item.size) output.push(new Array(6).fill({v:"",s:sCell}));
+                            if (lastSize && lastSize !== item.size) output.push(new Array(6).fill({v:"",s:sWhite}));
                             lastSize = item.size; grandTotal += item.qty;
-                            const style = (sr % 2 === 0) ? sGrey : sCell;
+                            const style = (sr % 2 === 0) ? sGrey : sWhite;
                             output.push([{v:sr++, s:style}, {v:item.size, s:style}, {v:item.cat, s:style}, {v:item.body, s:style}, {v:item.design, s:style}, {v:item.qty, s:style}]);
                         });
                         output.push([{v:"",s:sTotal},{v:"",s:sTotal},{v:"",s:sTotal},{v:"",s:sTotal},{v:"GRAND TOTAL",s:sTotal},{v:grandTotal,s:sTotal}]);
