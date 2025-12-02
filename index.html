@@ -3,104 +3,285 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Excel Auto Cleaner</title>
-    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
-    <style>
-        body { font-family: sans-serif; padding: 20px; text-align: center; background-color: #f4f4f9; }
-        .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); max-width: 500px; margin: auto; }
-        h1 { color: #333; }
-        input[type="file"] { margin: 20px 0; }
-        button { background-color: #28a745; color: white; border: none; padding: 10px 20px; font-size: 16px; cursor: pointer; border-radius: 5px; }
-        button:hover { background-color: #218838; }
-        #status { margin-top: 20px; font-weight: bold; color: #555; }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h1>Excel Data Cleaner</h1>
-    <p>Upload file to remove duplicates & empty rows.</p>
+    <title>Pro Stock Cleaner v2</title>
     
-    <input type="file" id="upload" accept=".xlsx, .xls" />
-    <br>
-    <button onclick="processFile()">Clean & Download</button>
+    <script src="https://cdn.tailwindcss.com"></script>
     
-    <p id="status"></p>
-</div>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 
-<script>
-    function processFile() {
-        const fileInput = document.getElementById('upload');
-        const status = document.getElementById('status');
-
-        if (fileInput.files.length === 0) {
-            alert("Please select an Excel file first!");
-            return;
-        }
-
-        const file = fileInput.files[0];
-        const reader = new FileReader();
-
-        status.innerText = "Processing...";
-
-        reader.onload = function(e) {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, {type: 'array'});
-            
-            // Pehli sheet ko select karein
-            const firstSheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[firstSheetName];
-
-            // Excel ko JSON format me convert karein taaki hum edit kar sakein
-            let jsonData = XLSX.utils.sheet_to_json(worksheet, {defval: ""});
-
-            // --- DATA CLEANING LOGIC START ---
-            
-            // 1. Remove completely empty rows (handled largely by sheet_to_json, but lets filter explicitly)
-            let cleanedData = jsonData.filter(row => {
-                return Object.values(row).some(x => x !== null && x !== "");
-            });
-
-            // 2. Trim Spaces (Har cell ke text se aage piche ki space hatana)
-            cleanedData = cleanedData.map(row => {
-                let newRow = {};
-                for (let key in row) {
-                    if (typeof row[key] === 'string') {
-                        newRow[key] = row[key].trim();
-                    } else {
-                        newRow[key] = row[key];
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: '#6366f1',
+                        dark: '#050505',
+                        panel: '#0f0f11',
+                        border: '#27272a',
+                        surface: '#18181b'
                     }
                 }
-                return newRow;
-            });
+            }
+        }
+    </script>
 
-            // 3. Remove Duplicates (Puri row agar same hai to delete)
-            const uniqueData = [];
-            const seen = new Set();
+    <style>
+        body { background-color: #050505; color: #e4e4e7; }
+        .glass-panel {
+            background: rgba(15, 15, 17, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid #27272a;
+        }
+        .upload-zone {
+            background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%233F3F46FF' stroke-width='2' stroke-dasharray='8%2c 14' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+            transition: all 0.3s ease;
+        }
+        .upload-zone:hover {
+            background-color: #18181b;
+            border-color: #6366f1;
+            background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%236366F1FF' stroke-width='2' stroke-dasharray='8%2c 14' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+        }
+        /* Toggle Switch */
+        .toggle-checkbox:checked { right: 0; border-color: #6366f1; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #6366f1; }
+        .loader {
+            border: 3px solid rgba(255,255,255,0.1);
+            border-left-color: #6366f1;
+            border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
 
-            cleanedData.forEach(row => {
-                const serialized = JSON.stringify(row);
-                if (!seen.has(serialized)) {
-                    seen.add(serialized);
-                    uniqueData.push(row);
+    <div class="glass-panel w-full max-w-lg rounded-2xl p-8 shadow-2xl relative overflow-hidden">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-brand/10 blur-[80px] rounded-full pointer-events-none"></div>
+
+        <div class="text-center mb-8 relative z-10">
+            <h1 class="text-2xl font-bold text-white tracking-tight">Stock Data Cleaner v2</h1>
+            <p class="text-zinc-500 text-sm mt-1">Smart Auto-Detect Columns</p>
+        </div>
+
+        <div class="space-y-5 relative z-10">
+            
+            <div>
+                <label class="block text-xs font-medium text-zinc-400 mb-1.5 uppercase">Client Name</label>
+                <input type="text" id="clientName" placeholder="e.g. Ramesh Traders" 
+                    class="w-full bg-surface border border-border text-white text-sm rounded-lg focus:ring-2 focus:ring-brand block p-3 outline-none">
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-zinc-400 mb-1.5 uppercase">Upload Excel</label>
+                <div class="upload-zone flex flex-col items-center justify-center w-full h-32 rounded-xl cursor-pointer" id="dropZone">
+                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                        <svg class="w-8 h-8 mb-3 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                        <p class="mb-1 text-sm text-zinc-400"><span class="font-semibold text-brand">Click to upload</span></p>
+                        <p class="text-xs text-zinc-600" id="fileNameDisplay">XLSX Files</p>
+                    </div>
+                    <input id="fileInput" type="file" class="hidden" accept=".xlsx, .xls" />
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between bg-surface p-3 rounded-lg border border-border">
+                <span class="text-sm font-medium text-zinc-300">Merge Faces (-A, -B)</span>
+                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                    <input type="checkbox" name="toggle" id="mergeFaces" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 left-0"/>
+                    <label for="mergeFaces" class="toggle-label block overflow-hidden h-5 rounded-full bg-zinc-700 cursor-pointer"></label>
+                </div>
+            </div>
+
+            <button onclick="processExcel()" class="w-full text-white bg-brand hover:bg-indigo-500 font-medium rounded-xl text-sm px-5 py-3.5 flex justify-center items-center gap-2 transition-all shadow-[0_0_20px_-5px_#6366f1]">
+                <span id="btnText">Process & Download</span>
+                <div id="loadingSpinner" class="loader hidden"></div>
+            </button>
+            
+            <div id="statusMessage" class="text-center text-xs text-red-400 min-h-[20px]"></div>
+        </div>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', () => {
+            if(fileInput.files.length > 0) {
+                fileNameDisplay.innerText = fileInput.files[0].name;
+                fileNameDisplay.classList.add('text-brand');
+            }
+        });
+
+        // --- SMART PROCESSING LOGIC ---
+        function processExcel() {
+            const file = fileInput.files[0];
+            const status = document.getElementById('statusMessage');
+            const btnText = document.getElementById('btnText');
+            const spinner = document.getElementById('loadingSpinner');
+            const clientName = document.getElementById('clientName').value.trim();
+            const shouldMergeFaces = document.getElementById('mergeFaces').checked;
+
+            if (!file) {
+                status.innerText = "⚠️ Please select a file first.";
+                return;
+            }
+
+            status.innerText = "";
+            btnText.innerText = "Working...";
+            spinner.classList.remove('hidden');
+
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const rawData = XLSX.utils.sheet_to_json(firstSheet, {header: 1, defval: ""});
+
+                    // --- STEP 1: Find Header Row ---
+                    let headerRowIndex = -1;
+                    let colMap = { design: -1, category: -1, size: -1, body: -1, qty: -1 };
+
+                    for (let i = 0; i < Math.min(rawData.length, 20); i++) {
+                        const row = rawData[i].map(c => String(c).trim().toLowerCase()); // Normalize text
+                        
+                        // Check if this row has key columns
+                        if (row.includes('designname') || row.includes('size mm')) {
+                            headerRowIndex = i;
+                            // Detect Columns Dynamically
+                            colMap.design = row.indexOf('designname');
+                            colMap.category = row.indexOf('category');
+                            colMap.size = row.indexOf('size mm');
+                            colMap.body = row.indexOf('bodytype');
+                            colMap.qty = row.findIndex(c => c === 'pre' || c === 'total' || c === 'qty');
+                            break;
+                        }
+                    }
+
+                    if (headerRowIndex === -1 || colMap.design === -1 || colMap.size === -1) {
+                        throw new Error("Columns ('DesignName' or 'Size MM') not found. Please check Excel headers.");
+                    }
+
+                    // --- STEP 2: Process Data ---
+                    const processedMap = new Map();
+
+                    for (let i = headerRowIndex + 1; i < rawData.length; i++) {
+                        const row = rawData[i];
+                        if (!row || row.length === 0) continue;
+
+                        let design = (row[colMap.design] || "").toString().trim();
+                        let category = colMap.category > -1 ? (row[colMap.category] || "").toString().trim() : "";
+                        let size = (row[colMap.size] || "").toString().trim();
+                        let body = colMap.body > -1 ? (row[colMap.body] || "").toString().trim() : "";
+                        let qty = colMap.qty > -1 ? parseFloat(row[colMap.qty]) : 0;
+
+                        if (!qty) qty = 0;
+                        if (!design && !size) continue; 
+
+                        // Clean Face Logic
+                        if (shouldMergeFaces) {
+                            design = design.replace(/-[a-zA-Z]$/, "").trim();
+                        }
+
+                        // Grouping Key
+                        const key = `${size}|${category}|${body}|${design}`;
+
+                        if (processedMap.has(key)) {
+                            processedMap.get(key).qty += qty;
+                        } else {
+                            processedMap.set(key, { size, category, body, design, qty });
+                        }
+                    }
+
+                    let finalArray = Array.from(processedMap.values());
+
+                    // --- STEP 3: Sorting ---
+                    function parseSize(s) { const m = s.match(/(\d+)/); return m ? parseInt(m[0]) : 99999; }
+
+                    finalArray.sort((a, b) => {
+                        const sA = parseSize(a.size), sB = parseSize(b.size);
+                        if (sA !== sB) return sA - sB; // Size Asc
+                        if (a.category < b.category) return -1;
+                        if (a.category > b.category) return 1;
+                        return a.design.localeCompare(b.design);
+                    });
+
+                    // --- STEP 4: Styling & Export ---
+                    const outputData = [];
+                    let srNo = 1, lastSize = null, grandTotal = 0;
+
+                    // Styles
+                    const sHeader = { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "4338CA" } }, alignment: { horizontal: "center" }, border: { top:{style:"thin"}, bottom:{style:"thin"}, left:{style:"thin"}, right:{style:"thin"} } };
+                    const sCell = { alignment: { horizontal: "center" }, border: { top:{style:"thin"}, bottom:{style:"thin"}, left:{style:"thin"}, right:{style:"thin"} } };
+                    const sGrey = { fill: { fgColor: { rgb: "F3F4F6" } }, alignment: { horizontal: "center" }, border: { top:{style:"thin"}, bottom:{style:"thin"}, left:{style:"thin"}, right:{style:"thin"} } };
+                    const sTotal = { font: { bold: true }, fill: { fgColor: { rgb: "E5E7EB" } }, alignment: { horizontal: "center" }, border: { top:{style:"double"} } };
+                    const sClient = { font: { bold: true, sz: 16 }, alignment: { horizontal: "center", vertical: "center" } };
+
+                    // Title Rows
+                    outputData.push(["", "", "", "", "", ""]);
+                    outputData.push(["", "", "", "", "", ""]);
+                    outputData.push(["", "", "", "", "", ""]);
+
+                    outputData.push([
+                        {v:"SR.NO", s:sHeader}, {v:"SIZE MM", s:sHeader}, {v:"CATEGORY", s:sHeader}, 
+                        {v:"BODY TYPE", s:sHeader}, {v:"DESIGN NAME", s:sHeader}, {v:"TOTAL QTY", s:sHeader}
+                    ]);
+
+                    finalArray.forEach((item) => {
+                        if (lastSize && lastSize !== item.size) {
+                            outputData.push([ {v:"",s:sCell}, {v:"",s:sCell}, {v:"",s:sCell}, {v:"",s:sCell}, {v:"",s:sCell}, {v:"",s:sCell} ]); // Spacer
+                        }
+                        lastSize = item.size;
+                        grandTotal += item.qty;
+                        const style = (srNo % 2 === 0) ? sGrey : sCell;
+
+                        outputData.push([
+                            { v: srNo++, s: style }, { v: item.size, s: style }, { v: item.category, s: style },
+                            { v: item.body, s: style }, { v: item.design, s: style }, { v: item.qty, s: style }
+                        ]);
+                    });
+
+                    outputData.push([
+                        {v:"", s:sTotal}, {v:"", s:sTotal}, {v:"", s:sTotal}, {v:"", s:sTotal}, 
+                        {v:"GRAND TOTAL", s:sTotal}, {v:grandTotal, s:sTotal}
+                    ]);
+
+                    // Generate Sheet
+                    const newWs = XLSX.utils.aoa_to_sheet(outputData);
+                    
+                    // Merge Title
+                    if(!newWs['!merges']) newWs['!merges'] = [];
+                    newWs['!merges'].push({ s: { r: 0, c: 0 }, e: { r: 2, c: 5 } });
+                    newWs['A1'] = { v: clientName || "STOCK LIST", s: sClient };
+
+                    // Column Widths
+                    newWs['!cols'] = [{wch:6}, {wch:20}, {wch:15}, {wch:15}, {wch:35}, {wch:12}];
+
+                    const newWb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(newWb, newWs, "Cleaned Data");
+
+                    // Download
+                    const fileName = `Stock_${(clientName || "Data").replace(/\s+/g,'_')}.xlsx`;
+                    XLSX.writeFile(newWb, fileName);
+
+                    status.innerText = "✅ Download Successful!";
+                    status.classList.replace('text-red-400', 'text-green-400');
+
+                } catch (error) {
+                    console.error(error);
+                    alert("Error: " + error.message);
+                    status.innerText = "❌ Failed: " + error.message;
+                } finally {
+                    btnText.innerText = "Process & Download";
+                    spinner.classList.add('hidden');
                 }
-            });
-
-            // --- DATA CLEANING LOGIC END ---
-
-            // Wapis Excel banayein
-            const newWorksheet = XLSX.utils.json_to_sheet(uniqueData);
-            const newWorkbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, "CleanedData");
-
-            // File Download karein
-            XLSX.writeFile(newWorkbook, "Cleaned_File.xlsx");
-            status.innerText = "Done! File downloaded.";
-        };
-
-        reader.readAsArrayBuffer(file);
-    }
-</script>
-
+            };
+            reader.readAsArrayBuffer(file);
+        }
+    </script>
 </body>
 </html>
