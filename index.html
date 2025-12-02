@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - Print Edition</title>
+    <title>StockPro X - Print Edition (Fixed)</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -17,12 +17,10 @@
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
                     animation: {
-                        'float': 'float 6s ease-in-out infinite',
                         'slide-up': 'slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
                         'gradient-x': 'gradient-x 3s ease infinite',
                     },
                     keyframes: {
-                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
                         slideUp: { '0%': { opacity: 0, transform: 'translateY(20px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } },
                         'gradient-x': {
                             '0%, 100%': { 'background-size':'200% 200%', 'background-position': 'left center' },
@@ -35,10 +33,9 @@
     </script>
 
     <style>
-        /* Base Setup */
         body { background: #000; color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; }
 
-        /* Glassmorphism Card */
+        /* Glass Card */
         .glass-card {
             background: rgba(20, 20, 23, 0.7);
             backdrop-filter: blur(24px);
@@ -48,11 +45,11 @@
         }
 
         /* Orbs */
-        .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4; animation: float 10s ease-in-out infinite; }
+        .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4; }
         .orb-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: #4f46e5; }
-        .orb-2 { bottom: -20%; right: -10%; width: 40vw; height: 40vw; background: #ec4899; animation-delay: -5s; }
+        .orb-2 { bottom: -20%; right: -10%; width: 40vw; height: 40vw; background: #ec4899; }
 
-        /* Stagger Animations */
+        /* Animation Delays */
         .stagger-1 { animation-delay: 0.1s; opacity: 0; }
         .stagger-2 { animation-delay: 0.2s; opacity: 0; }
         .stagger-3 { animation-delay: 0.3s; opacity: 0; }
@@ -64,11 +61,11 @@
             border: 1px dashed rgba(255,255,255,0.15);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .upload-zone:hover {
+        .upload-zone:hover, .upload-zone.dragover {
             background: rgba(79, 70, 229, 0.1); border-color: #6366f1; transform: scale(1.01);
         }
 
-        /* Fixed Toggle Switch */
+        /* Toggle Switch */
         .switch { position: relative; display: inline-block; width: 48px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #3f3f46; transition: .4s; border-radius: 34px; }
@@ -103,7 +100,7 @@
                 </div>
                 <div><h1 class="text-lg font-bold tracking-tight text-white">StockPro<span class="text-indigo-500">.ai</span></h1></div>
             </div>
-            <div class="px-2 py-1 rounded-full bg-white/5 border border-white/5 text-[10px] text-zinc-500 font-mono">v6.0</div>
+            <div class="px-2 py-1 rounded-full bg-white/5 border border-white/5 text-[10px] text-zinc-500 font-mono">v6.1</div>
         </div>
 
         <div class="animate-slide-up stagger-2">
@@ -129,7 +126,7 @@
                         <svg class="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                     </div>
                     <p id="fileName" class="text-xs font-bold text-white max-w-[200px] truncate">file.xlsx</p>
-                    <p class="text-[10px] text-zinc-500 cursor-pointer hover:text-red-400 mt-1" onclick="resetFile(event)">Remove</p>
+                    <p class="text-[10px] text-zinc-500 cursor-pointer hover:text-red-400 mt-1" id="removeFileBtn">Remove</p>
                 </div>
                 <input id="fileInput" type="file" class="hidden" accept=".xlsx, .xls" />
             </div>
@@ -159,29 +156,65 @@
     </div>
 
     <script>
+        // --- UI LOGIC ---
         const clientInput = document.getElementById('clientName');
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
         const uploadContent = document.getElementById('uploadContent');
         const fileSuccess = document.getElementById('fileSuccess');
         const fileNameTxt = document.getElementById('fileName');
+        const removeFileBtn = document.getElementById('removeFileBtn');
 
+        // Auto Uppercase
         clientInput.addEventListener('input', function() { this.value = this.value.toUpperCase(); });
-        dropZone.addEventListener('click', () => fileInput.click());
+
+        // File Interaction (Fixed)
+        dropZone.addEventListener('click', (e) => {
+            // Prevent triggering input if clicking remove button
+            if(e.target === removeFileBtn) return;
+            fileInput.click();
+        });
+
         fileInput.addEventListener('change', handleFileSelect);
-        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
-        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'); );
-        dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); fileInput.files = e.dataTransfer.files; handleFileSelect(); });
+
+        // Drag & Drop
+        dropZone.addEventListener('dragover', (e) => { 
+            e.preventDefault(); 
+            dropZone.classList.add('dragover'); 
+        });
+
+        dropZone.addEventListener('dragleave', (e) => { 
+            e.preventDefault(); 
+            dropZone.classList.remove('dragover'); 
+        });
+
+        dropZone.addEventListener('drop', (e) => { 
+            e.preventDefault(); 
+            dropZone.classList.remove('dragover'); 
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                handleFileSelect();
+            }
+        });
 
         function handleFileSelect() {
             if (fileInput.files.length > 0) {
                 uploadContent.classList.add('hidden');
-                fileSuccess.classList.remove('hidden'); fileSuccess.classList.add('flex');
+                fileSuccess.classList.remove('hidden'); 
+                fileSuccess.classList.add('flex');
                 fileNameTxt.innerText = fileInput.files[0].name;
             }
         }
-        function resetFile(e) { e.stopPropagation(); fileInput.value = ""; uploadContent.classList.remove('hidden'); fileSuccess.classList.add('hidden'); fileSuccess.classList.remove('flex'); }
 
+        removeFileBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Stop bubble to dropZone
+            fileInput.value = ""; 
+            uploadContent.classList.remove('hidden'); 
+            fileSuccess.classList.add('hidden'); 
+            fileSuccess.classList.remove('flex');
+        });
+
+        // --- EXCEL LOGIC ---
         function processExcel() {
             const file = fileInput.files[0];
             const status = document.getElementById('statusMessage');
@@ -194,83 +227,115 @@
             if (!file) {
                 status.innerText = "Please select a file first";
                 status.className = "text-center text-[10px] mt-3 h-4 text-red-400 font-medium";
-                document.querySelector('.glass-card').animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-5px)' }, { transform: 'translateX(5px)' }, { transform: 'translateX(0)' }], { duration: 300 });
+                // Shake Effect
+                document.querySelector('.glass-card').animate([
+                    { transform: 'translateX(0)' }, 
+                    { transform: 'translateX(-5px)' }, 
+                    { transform: 'translateX(5px)' }, 
+                    { transform: 'translateX(0)' }
+                ], { duration: 300 });
                 return;
             }
 
-            btnText.innerText = "PROCESSING..."; btnIcon.classList.add('hidden'); spinner.classList.remove('hidden'); status.innerText = "";
+            btnText.innerText = "PROCESSING..."; 
+            btnIcon.classList.add('hidden'); 
+            spinner.classList.remove('hidden'); 
+            status.innerText = "";
 
             const reader = new FileReader();
+            
             reader.onload = function(e) {
+                // Timeout to allow UI to update before heavy processing
                 setTimeout(() => {
                     try {
                         const data = new Uint8Array(e.target.result);
                         const workbook = XLSX.read(data, {type: 'array'});
                         const rawData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: 1, defval: ""});
 
+                        // 1. Header Search
                         let headerIdx = -1, col = { design: -1, cat: -1, size: -1, body: -1, qty: -1 };
                         for (let i = 0; i < Math.min(rawData.length, 25); i++) {
                             const r = rawData[i].map(x => String(x).toLowerCase().trim());
                             if (r.includes('designname') || r.includes('size mm')) {
-                                headerIdx = i; col.design = r.indexOf('designname'); col.cat = r.indexOf('category'); col.size = r.indexOf('size mm'); col.body = r.indexOf('bodytype'); col.qty = r.findIndex(c => c === 'pre' || c === 'total' || c === 'qty'); break;
+                                headerIdx = i; 
+                                col.design = r.indexOf('designname'); 
+                                col.cat = r.indexOf('category'); 
+                                col.size = r.indexOf('size mm'); 
+                                col.body = r.indexOf('bodytype'); 
+                                col.qty = r.findIndex(c => c === 'pre' || c === 'total' || c === 'qty'); 
+                                break;
                             }
                         }
-                        if (headerIdx === -1) throw new Error("Headers not found");
+                        if (headerIdx === -1) throw new Error("Headers (DesignName, Size MM) not found.");
 
+                        // 2. Data Parse
                         const map = new Map();
                         for (let i = headerIdx + 1; i < rawData.length; i++) {
-                            const r = rawData[i]; if (!r || r.length === 0) continue;
+                            const r = rawData[i]; 
+                            if (!r || r.length === 0) continue;
+                            
                             let design = (r[col.design] || "").toString().trim();
                             let size = (r[col.size] || "").toString().trim();
                             let cat = col.cat > -1 ? (r[col.cat] || "").toString().trim() : "";
                             let body = col.body > -1 ? (r[col.body] || "").toString().trim() : "";
                             let qty = col.qty > -1 ? parseFloat(r[col.qty]) : 0;
+
                             if (!design && !size) continue;
                             if (shouldMergeFaces) design = design.replace(/-[a-zA-Z]$/, "").trim();
+
                             const key = `${size}_${cat}_${body}_${design}`;
-                            if (map.has(key)) map.get(key).qty += qty; else map.set(key, { size, cat, body, design, qty });
+                            if (map.has(key)) map.get(key).qty += qty; 
+                            else map.set(key, { size, cat, body, design, qty });
                         }
 
                         let list = Array.from(map.values());
-                        function getDims(s) { const m = s.match(/(\d+)/g); return m ? { w: parseInt(m[0]||0), h: parseInt(m[1]||0) } : {w:0,h:0}; }
+                        
+                        // 3. Sort
+                        function getDims(s) { 
+                            const m = s.match(/(\d+)/g); 
+                            return m ? { w: parseInt(m[0]||0), h: parseInt(m[1]||0) } : {w:0,h:0}; 
+                        }
                         list.sort((a, b) => {
                             const dA = getDims(a.size), dB = getDims(b.size);
-                            if (dA.w !== dB.w) return dA.w - dB.w; if (dA.h !== dB.h) return dA.h - dB.h;
-                            if (a.cat < b.cat) return -1; if (a.cat > b.cat) return 1;
+                            if (dA.w !== dB.w) return dA.w - dB.w; 
+                            if (dA.h !== dB.h) return dA.h - dB.h;
+                            if (a.cat < b.cat) return -1; 
+                            if (a.cat > b.cat) return 1;
                             return a.design.localeCompare(b.design);
                         });
 
+                        // 4. Excel Generation (A4 Optimized)
                         const output = [];
                         
-                        // --- PRO 3D & A4 STYLES ---
-                        const borderThin = { style: "thin", color: { rgb: "A1A1AA" } }; // Soft Grey
-                        const borderThick = { style: "medium", color: { rgb: "000000" } }; 
+                        // Styles
+                        const borderThin = { style: "thin", color: { rgb: "A1A1AA" } };
+                        const borderThick = { style: "medium", color: { rgb: "000000" } };
                         
-                        // 1. 3D Title Block (Card Effect)
+                        // Title
                         const sTitle = { 
                             font: { name: "Calibri", sz: 24, bold: true, color: { rgb: "111827" } }, 
-                            fill: { fgColor: { rgb: "F3F4F6" } }, // Light Grey BG
+                            fill: { fgColor: { rgb: "F3F4F6" } }, 
                             alignment: { horizontal: "center", vertical: "center" }, 
                             border: { top:borderThick, bottom:borderThick, left:borderThick, right:borderThick } 
                         };
 
-                        // 2. 3D Header (Midnight Blue with Elevation)
+                        // Header
                         const sHead = { 
                             font: { name: "Calibri", sz: 11, bold: true, color: { rgb: "FFFFFF" } }, 
-                            fill: { fgColor: { rgb: "1E293B" } }, // Dark Slate/Midnight
+                            fill: { fgColor: { rgb: "1E293B" } }, 
                             alignment: { horizontal: "center", vertical: "center", wrapText: true }, 
                             border: { top:borderThin, bottom: { style: "thick", color: { rgb: "000000" } }, left:borderThin, right:borderThin } 
                         };
 
-                        // 3. Data Rows (A4 Optimized)
+                        // Data
                         const sData = { 
                             font: { name: "Calibri", sz: 10 }, 
-                            alignment: { horizontal: "center", vertical: "center", wrapText: true }, // WRAP TEXT IS KEY FOR A4
+                            alignment: { horizontal: "center", vertical: "center", wrapText: true }, 
                             border: { top:borderThin, bottom:borderThin, left:borderThin, right:borderThin } 
                         };
-                        
                         const sGrey = { ...sData, fill: { fgColor: { rgb: "F9FAFB" } } };
 
+                        // Grand Total
                         const sTotal = { 
                             font: { name: "Calibri", sz: 11, bold: true }, 
                             fill: { fgColor: { rgb: "E5E7EB" } }, 
@@ -278,42 +343,75 @@
                             border: { top: {style:"double"}, bottom:borderThin } 
                         };
 
-                        output.push(["", "", "", "", "", ""]); output.push(["", "", "", "", "", ""]); output.push(["", "", "", "", "", ""]);
-                        output.push(["SR NO", "Size & thikness", "surface", "BodyType", "DesignName", "Total QTY"].map(h => ({v:h, s:sHead})));
+                        output.push(["", "", "", "", "", ""]); 
+                        output.push(["", "", "", "", "", ""]); 
+                        output.push(["", "", "", "", "", ""]);
+                        
+                        const headers = ["SR NO", "Size & thikness", "surface", "BodyType", "DesignName", "Total QTY"];
+                        output.push(headers.map(h => ({v:h, s:sHead})));
 
                         let sr = 1, grandTotal = 0, lastSize = null;
+                        
                         list.forEach(item => {
-                            if (lastSize && lastSize !== item.size) output.push(new Array(6).fill({v:"",s:sData}));
-                            lastSize = item.size; grandTotal += item.qty;
+                            if (lastSize && lastSize !== item.size) {
+                                // Spacer row
+                                output.push(new Array(6).fill({v:"",s:sData}));
+                            }
+                            lastSize = item.size; 
+                            grandTotal += item.qty;
+                            
                             const style = (sr % 2 === 0) ? sGrey : sData;
-                            output.push([{v:sr++, s:style}, {v:item.size, s:style}, {v:item.cat, s:style}, {v:item.body, s:style}, {v:item.design, s:style}, {v:item.qty, s:style}]);
+                            output.push([
+                                {v:sr++, s:style}, 
+                                {v:item.size, s:style}, 
+                                {v:item.cat, s:style}, 
+                                {v:item.body, s:style}, 
+                                {v:item.design, s:style}, 
+                                {v:item.qty, s:style}
+                            ]);
                         });
-                        output.push([{v:"",s:sTotal},{v:"",s:sTotal},{v:"",s:sTotal},{v:"",s:sTotal},{v:"GRAND TOTAL",s:sTotal},{v:grandTotal,s:sTotal}]);
+
+                        output.push([
+                            {v:"",s:sTotal}, {v:"",s:sTotal}, {v:"",s:sTotal}, 
+                            {v:"",s:sTotal}, {v:"GRAND TOTAL",s:sTotal}, {v:grandTotal,s:sTotal}
+                        ]);
 
                         const newWs = XLSX.utils.aoa_to_sheet(output);
+                        
+                        // Merging
                         if(!newWs['!merges']) newWs['!merges'] = [];
                         newWs['!merges'].push({ s: { r: 0, c: 0 }, e: { r: 2, c: 5 } });
                         newWs['A1'] = { v: clientName || "STOCK REPORT", s: sTitle };
-                        
-                        // --- A4 SIZE FIT LOGIC (Tighter Columns) ---
-                        // Total Width roughly 80-90 chars for A4 Portrait
+
+                        // Widths (A4 Portrait Optimization)
                         newWs['!cols'] = [
-                            {wch: 5},  // SR (Tight)
-                            {wch: 18}, // Size (Fits 1200x2400)
-                            {wch: 10}, // Cat (Fits Smart/Eleg)
-                            {wch: 10}, // Body
-                            {wch: 32}, // Design (Wide + Wrap Text)
+                            {wch: 6},  // SR
+                            {wch: 18}, // Size
+                            {wch: 11}, // Cat
+                            {wch: 11}, // Body
+                            {wch: 35}, // Design
                             {wch: 10}  // Qty
                         ];
 
-                        const newWb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(newWb, newWs, "Stock");
+                        const newWb = XLSX.utils.book_new(); 
+                        XLSX.utils.book_append_sheet(newWb, newWs, "Stock");
                         XLSX.writeFile(newWb, `Stock_${(clientName||"List").replace(/\s+/g,'_')}.xlsx`);
 
-                        status.innerText = "DOWNLOAD COMPLETE"; status.className = "text-center text-[10px] mt-3 h-4 text-green-400 font-bold tracking-wide";
+                        status.innerText = "DOWNLOAD COMPLETE"; 
+                        status.className = "text-center text-[10px] mt-3 h-4 text-green-400 font-bold tracking-wide";
 
-                    } catch (err) { status.innerText = "ERROR: " + err.message; status.className = "text-center text-[10px] mt-3 h-4 text-red-400 font-medium"; } finally { btnText.innerText = "GENERATE REPORT"; spinner.classList.add('hidden'); btnIcon.classList.remove('hidden'); }
-                }, 1000);
+                    } catch (err) { 
+                        console.error(err);
+                        status.innerText = "ERROR: " + err.message; 
+                        status.className = "text-center text-[10px] mt-3 h-4 text-red-400 font-medium"; 
+                    } finally { 
+                        btnText.innerText = "GENERATE REPORT"; 
+                        spinner.classList.add('hidden'); 
+                        btnIcon.classList.remove('hidden'); 
+                    }
+                }, 1000); // 1s Delay for UI feel
             };
+            
             reader.readAsArrayBuffer(file);
         }
     </script>
