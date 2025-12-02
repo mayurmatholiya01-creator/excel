@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - Minimal Excel Edition</title>
+    <title>StockPro X - Print Edition</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -101,11 +101,9 @@
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center border border-indigo-500/20">
                     <svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                 </div>
-                <div>
-                    <h1 class="text-lg font-bold tracking-tight text-white">StockPro<span class="text-indigo-500">.ai</span></h1>
-                </div>
+                <div><h1 class="text-lg font-bold tracking-tight text-white">StockPro<span class="text-indigo-500">.ai</span></h1></div>
             </div>
-            <div class="px-2 py-1 rounded-full bg-white/5 border border-white/5 text-[10px] text-zinc-500 font-mono">v5.0</div>
+            <div class="px-2 py-1 rounded-full bg-white/5 border border-white/5 text-[10px] text-zinc-500 font-mono">v6.0</div>
         </div>
 
         <div class="animate-slide-up stagger-2">
@@ -147,10 +145,7 @@
                     <span class="text-[10px] text-zinc-500">Combine -A, -B faces</span>
                 </div>
             </div>
-            <label class="switch shrink-0">
-                <input type="checkbox" id="mergeFaces">
-                <span class="slider"></span>
-            </label>
+            <label class="switch shrink-0"><input type="checkbox" id="mergeFaces"><span class="slider"></span></label>
         </div>
 
         <div class="animate-slide-up stagger-4 pt-2">
@@ -175,7 +170,7 @@
         dropZone.addEventListener('click', () => fileInput.click());
         fileInput.addEventListener('change', handleFileSelect);
         dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
-        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'); );
         dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); fileInput.files = e.dataTransfer.files; handleFileSelect(); });
 
         function handleFileSelect() {
@@ -247,41 +242,40 @@
 
                         const output = [];
                         
-                        // --- PRO MINIMAL STYLES ---
-                        const borderStyle = { color: { rgb: "D1D5DB" }, style: "thin" }; // Soft Silver Border
+                        // --- PRO 3D & A4 STYLES ---
+                        const borderThin = { style: "thin", color: { rgb: "A1A1AA" } }; // Soft Grey
+                        const borderThick = { style: "medium", color: { rgb: "000000" } }; 
                         
-                        // 1. Client Title (Bold, Big, Clean)
+                        // 1. 3D Title Block (Card Effect)
                         const sTitle = { 
                             font: { name: "Calibri", sz: 24, bold: true, color: { rgb: "111827" } }, 
-                            alignment: { horizontal: "center", vertical: "center" } 
+                            fill: { fgColor: { rgb: "F3F4F6" } }, // Light Grey BG
+                            alignment: { horizontal: "center", vertical: "center" }, 
+                            border: { top:borderThick, bottom:borderThick, left:borderThick, right:borderThick } 
                         };
 
-                        // 2. Header Row (Dark Charcoal, Minimal)
+                        // 2. 3D Header (Midnight Blue with Elevation)
                         const sHead = { 
                             font: { name: "Calibri", sz: 11, bold: true, color: { rgb: "FFFFFF" } }, 
-                            fill: { fgColor: { rgb: "262626" } }, // Matte Black/Grey
-                            alignment: { horizontal: "center", vertical: "center" }, 
-                            border: { top:borderStyle, bottom:borderStyle, left:borderStyle, right:borderStyle } 
+                            fill: { fgColor: { rgb: "1E293B" } }, // Dark Slate/Midnight
+                            alignment: { horizontal: "center", vertical: "center", wrapText: true }, 
+                            border: { top:borderThin, bottom: { style: "thick", color: { rgb: "000000" } }, left:borderThin, right:borderThin } 
                         };
 
-                        // 3. Data Rows (Subtle Zebra)
-                        const sWhite = { 
-                            font: { name: "Calibri", sz: 11, color: { rgb: "374151" } }, 
-                            alignment: { horizontal: "center", vertical: "center" }, 
-                            border: { top:borderStyle, bottom:borderStyle, left:borderStyle, right:borderStyle } 
+                        // 3. Data Rows (A4 Optimized)
+                        const sData = { 
+                            font: { name: "Calibri", sz: 10 }, 
+                            alignment: { horizontal: "center", vertical: "center", wrapText: true }, // WRAP TEXT IS KEY FOR A4
+                            border: { top:borderThin, bottom:borderThin, left:borderThin, right:borderThin } 
                         };
-                        const sGrey = { 
-                            font: { name: "Calibri", sz: 11, color: { rgb: "374151" } }, 
-                            fill: { fgColor: { rgb: "F9FAFB" } }, // Very subtle grey
-                            alignment: { horizontal: "center", vertical: "center" }, 
-                            border: { top:borderStyle, bottom:borderStyle, left:borderStyle, right:borderStyle } 
-                        };
+                        
+                        const sGrey = { ...sData, fill: { fgColor: { rgb: "F9FAFB" } } };
 
                         const sTotal = { 
                             font: { name: "Calibri", sz: 11, bold: true }, 
                             fill: { fgColor: { rgb: "E5E7EB" } }, 
                             alignment: { horizontal: "center", vertical: "center" },
-                            border: { top: {style:"double", color:{rgb:"000000"}}, bottom:borderStyle } 
+                            border: { top: {style:"double"}, bottom:borderThin } 
                         };
 
                         output.push(["", "", "", "", "", ""]); output.push(["", "", "", "", "", ""]); output.push(["", "", "", "", "", ""]);
@@ -289,9 +283,9 @@
 
                         let sr = 1, grandTotal = 0, lastSize = null;
                         list.forEach(item => {
-                            if (lastSize && lastSize !== item.size) output.push(new Array(6).fill({v:"",s:sWhite}));
+                            if (lastSize && lastSize !== item.size) output.push(new Array(6).fill({v:"",s:sData}));
                             lastSize = item.size; grandTotal += item.qty;
-                            const style = (sr % 2 === 0) ? sGrey : sWhite;
+                            const style = (sr % 2 === 0) ? sGrey : sData;
                             output.push([{v:sr++, s:style}, {v:item.size, s:style}, {v:item.cat, s:style}, {v:item.body, s:style}, {v:item.design, s:style}, {v:item.qty, s:style}]);
                         });
                         output.push([{v:"",s:sTotal},{v:"",s:sTotal},{v:"",s:sTotal},{v:"",s:sTotal},{v:"GRAND TOTAL",s:sTotal},{v:grandTotal,s:sTotal}]);
@@ -300,7 +294,17 @@
                         if(!newWs['!merges']) newWs['!merges'] = [];
                         newWs['!merges'].push({ s: { r: 0, c: 0 }, e: { r: 2, c: 5 } });
                         newWs['A1'] = { v: clientName || "STOCK REPORT", s: sTitle };
-                        newWs['!cols'] = [{wch:8}, {wch:22}, {wch:15}, {wch:15}, {wch:35}, {wch:12}];
+                        
+                        // --- A4 SIZE FIT LOGIC (Tighter Columns) ---
+                        // Total Width roughly 80-90 chars for A4 Portrait
+                        newWs['!cols'] = [
+                            {wch: 5},  // SR (Tight)
+                            {wch: 18}, // Size (Fits 1200x2400)
+                            {wch: 10}, // Cat (Fits Smart/Eleg)
+                            {wch: 10}, // Body
+                            {wch: 32}, // Design (Wide + Wrap Text)
+                            {wch: 10}  // Qty
+                        ];
 
                         const newWb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(newWb, newWs, "Stock");
                         XLSX.writeFile(newWb, `Stock_${(clientName||"List").replace(/\s+/g,'_')}.xlsx`);
