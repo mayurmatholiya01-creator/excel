@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - Print Edition (Fixed)</title>
+    <title>StockPro X - v7.0 (Smart Fit)</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -100,7 +100,7 @@
                 </div>
                 <div><h1 class="text-lg font-bold tracking-tight text-white">StockPro<span class="text-indigo-500">.ai</span></h1></div>
             </div>
-            <div class="px-2 py-1 rounded-full bg-white/5 border border-white/5 text-[10px] text-zinc-500 font-mono">v6.1</div>
+            <div class="px-2 py-1 rounded-full bg-white/5 border border-white/5 text-[10px] text-zinc-500 font-mono">v7.0</div>
         </div>
 
         <div class="animate-slide-up stagger-2">
@@ -165,29 +165,17 @@
         const fileNameTxt = document.getElementById('fileName');
         const removeFileBtn = document.getElementById('removeFileBtn');
 
-        // Auto Uppercase
         clientInput.addEventListener('input', function() { this.value = this.value.toUpperCase(); });
 
-        // File Interaction (Fixed)
         dropZone.addEventListener('click', (e) => {
-            // Prevent triggering input if clicking remove button
             if(e.target === removeFileBtn) return;
             fileInput.click();
         });
 
         fileInput.addEventListener('change', handleFileSelect);
 
-        // Drag & Drop
-        dropZone.addEventListener('dragover', (e) => { 
-            e.preventDefault(); 
-            dropZone.classList.add('dragover'); 
-        });
-
-        dropZone.addEventListener('dragleave', (e) => { 
-            e.preventDefault(); 
-            dropZone.classList.remove('dragover'); 
-        });
-
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        dropZone.addEventListener('dragleave', (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); });
         dropZone.addEventListener('drop', (e) => { 
             e.preventDefault(); 
             dropZone.classList.remove('dragover'); 
@@ -207,7 +195,7 @@
         }
 
         removeFileBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Stop bubble to dropZone
+            e.stopPropagation();
             fileInput.value = ""; 
             uploadContent.classList.remove('hidden'); 
             fileSuccess.classList.add('hidden'); 
@@ -227,25 +215,17 @@
             if (!file) {
                 status.innerText = "Please select a file first";
                 status.className = "text-center text-[10px] mt-3 h-4 text-red-400 font-medium";
-                // Shake Effect
                 document.querySelector('.glass-card').animate([
-                    { transform: 'translateX(0)' }, 
-                    { transform: 'translateX(-5px)' }, 
-                    { transform: 'translateX(5px)' }, 
-                    { transform: 'translateX(0)' }
+                    { transform: 'translateX(0)' }, { transform: 'translateX(-5px)' }, { transform: 'translateX(5px)' }, { transform: 'translateX(0)' }
                 ], { duration: 300 });
                 return;
             }
 
-            btnText.innerText = "PROCESSING..."; 
-            btnIcon.classList.add('hidden'); 
-            spinner.classList.remove('hidden'); 
-            status.innerText = "";
+            btnText.innerText = "PROCESSING..."; btnIcon.classList.add('hidden'); spinner.classList.remove('hidden'); status.innerText = "";
 
             const reader = new FileReader();
             
             reader.onload = function(e) {
-                // Timeout to allow UI to update before heavy processing
                 setTimeout(() => {
                     try {
                         const data = new Uint8Array(e.target.result);
@@ -290,24 +270,33 @@
 
                         let list = Array.from(map.values());
                         
-                        // 3. Sort
-                        function getDims(s) { 
-                            const m = s.match(/(\d+)/g); 
-                            return m ? { w: parseInt(m[0]||0), h: parseInt(m[1]||0) } : {w:0,h:0}; 
-                        }
+                        // 3. UPDATED SORTING (Size -> Surface -> Body -> Design)
+                        function getDims(s) { const m = s.match(/(\d+)/g); return m ? { w: parseInt(m[0]||0), h: parseInt(m[1]||0) } : {w:0,h:0}; }
+                        
                         list.sort((a, b) => {
                             const dA = getDims(a.size), dB = getDims(b.size);
+                            // 1. Size
                             if (dA.w !== dB.w) return dA.w - dB.w; 
                             if (dA.h !== dB.h) return dA.h - dB.h;
-                            if (a.cat < b.cat) return -1; 
-                            if (a.cat > b.cat) return 1;
+                            // 2. Surface (Category)
+                            if (a.cat < b.cat) return -1; if (a.cat > b.cat) return 1;
+                            // 3. Body Type (NEW PRIORITY)
+                            if (a.body < b.body) return -1; if (a.body > b.body) return 1;
+                            // 4. Design Name
                             return a.design.localeCompare(b.design);
                         });
 
-                        // 4. Excel Generation (A4 Optimized)
+                        // 4. SMART COL WIDTH CALCULATION
+                        let maxW = { size: 10, cat: 10, body: 10, design: 15 };
+                        list.forEach(item => {
+                            if(item.size.length > maxW.size) maxW.size = item.size.length;
+                            if(item.cat.length > maxW.cat) maxW.cat = item.cat.length;
+                            if(item.body.length > maxW.body) maxW.body = item.body.length;
+                            if(item.design.length > maxW.design) maxW.design = item.design.length;
+                        });
+
+                        // 5. Excel Generation
                         const output = [];
-                        
-                        // Styles
                         const borderThin = { style: "thin", color: { rgb: "A1A1AA" } };
                         const borderThick = { style: "medium", color: { rgb: "000000" } };
                         
@@ -335,7 +324,6 @@
                         };
                         const sGrey = { ...sData, fill: { fgColor: { rgb: "F9FAFB" } } };
 
-                        // Grand Total
                         const sTotal = { 
                             font: { name: "Calibri", sz: 11, bold: true }, 
                             fill: { fgColor: { rgb: "E5E7EB" } }, 
@@ -343,75 +331,44 @@
                             border: { top: {style:"double"}, bottom:borderThin } 
                         };
 
-                        output.push(["", "", "", "", "", ""]); 
-                        output.push(["", "", "", "", "", ""]); 
-                        output.push(["", "", "", "", "", ""]);
-                        
+                        output.push(["", "", "", "", "", ""]); output.push(["", "", "", "", "", ""]); output.push(["", "", "", "", "", ""]);
                         const headers = ["SR NO", "Size & thikness", "surface", "BodyType", "DesignName", "Total QTY"];
                         output.push(headers.map(h => ({v:h, s:sHead})));
 
                         let sr = 1, grandTotal = 0, lastSize = null;
-                        
                         list.forEach(item => {
-                            if (lastSize && lastSize !== item.size) {
-                                // Spacer row
-                                output.push(new Array(6).fill({v:"",s:sData}));
-                            }
-                            lastSize = item.size; 
-                            grandTotal += item.qty;
-                            
+                            if (lastSize && lastSize !== item.size) output.push(new Array(6).fill({v:"",s:sData}));
+                            lastSize = item.size; grandTotal += item.qty;
                             const style = (sr % 2 === 0) ? sGrey : sData;
-                            output.push([
-                                {v:sr++, s:style}, 
-                                {v:item.size, s:style}, 
-                                {v:item.cat, s:style}, 
-                                {v:item.body, s:style}, 
-                                {v:item.design, s:style}, 
-                                {v:item.qty, s:style}
-                            ]);
+                            output.push([{v:sr++, s:style}, {v:item.size, s:style}, {v:item.cat, s:style}, {v:item.body, s:style}, {v:item.design, s:style}, {v:item.qty, s:style}]);
                         });
-
-                        output.push([
-                            {v:"",s:sTotal}, {v:"",s:sTotal}, {v:"",s:sTotal}, 
-                            {v:"",s:sTotal}, {v:"GRAND TOTAL",s:sTotal}, {v:grandTotal,s:sTotal}
-                        ]);
+                        output.push([{v:"",s:sTotal}, {v:"",s:sTotal}, {v:"",s:sTotal}, {v:"",s:sTotal}, {v:"GRAND TOTAL",s:sTotal}, {v:grandTotal,s:sTotal}]);
 
                         const newWs = XLSX.utils.aoa_to_sheet(output);
-                        
-                        // Merging
                         if(!newWs['!merges']) newWs['!merges'] = [];
                         newWs['!merges'].push({ s: { r: 0, c: 0 }, e: { r: 2, c: 5 } });
                         newWs['A1'] = { v: clientName || "STOCK REPORT", s: sTitle };
 
-                        // Widths (A4 Portrait Optimization)
+                        // --- SMART FIT COLUMNS (Content Length + Padding) ---
+                        // Minimum widths kept to avoid too shrink, Max cap on Design to stay within A4 roughly
                         newWs['!cols'] = [
-                            {wch: 6},  // SR
-                            {wch: 18}, // Size
-                            {wch: 11}, // Cat
-                            {wch: 11}, // Body
-                            {wch: 35}, // Design
-                            {wch: 10}  // Qty
+                            {wch: 6},                     // SR
+                            {wch: Math.max(15, maxW.size + 4)}, // Size (Auto + padding)
+                            {wch: Math.max(10, maxW.cat + 3)},  // Surface
+                            {wch: Math.max(10, maxW.body + 3)}, // Body
+                            {wch: Math.min(50, Math.max(25, maxW.design + 3))}, // Design (Auto but Max 50)
+                            {wch: 10}                     // Qty
                         ];
 
                         const newWb = XLSX.utils.book_new(); 
                         XLSX.utils.book_append_sheet(newWb, newWs, "Stock");
                         XLSX.writeFile(newWb, `Stock_${(clientName||"List").replace(/\s+/g,'_')}.xlsx`);
 
-                        status.innerText = "DOWNLOAD COMPLETE"; 
-                        status.className = "text-center text-[10px] mt-3 h-4 text-green-400 font-bold tracking-wide";
+                        status.innerText = "DOWNLOAD COMPLETE"; status.className = "text-center text-[10px] mt-3 h-4 text-green-400 font-bold tracking-wide";
 
-                    } catch (err) { 
-                        console.error(err);
-                        status.innerText = "ERROR: " + err.message; 
-                        status.className = "text-center text-[10px] mt-3 h-4 text-red-400 font-medium"; 
-                    } finally { 
-                        btnText.innerText = "GENERATE REPORT"; 
-                        spinner.classList.add('hidden'); 
-                        btnIcon.classList.remove('hidden'); 
-                    }
-                }, 1000); // 1s Delay for UI feel
+                    } catch (err) { console.error(err); status.innerText = "ERROR: " + err.message; status.className = "text-center text-[10px] mt-3 h-4 text-red-400 font-medium"; } finally { btnText.innerText = "GENERATE REPORT"; spinner.classList.add('hidden'); btnIcon.classList.remove('hidden'); }
+                }, 1000);
             };
-            
             reader.readAsArrayBuffer(file);
         }
     </script>
