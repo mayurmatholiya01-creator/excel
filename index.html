@@ -349,16 +349,15 @@
                         newWs['!merges'].push({ s: { r: 0, c: 0 }, e: { r: 2, c: 5 } });
                         newWs['A1'] = { v: clientName || "STOCK REPORT", s: sTitle };
 
-                        // --- SMART FIT COLUMNS (Content Length + Padding) ---
-                        // Minimum widths kept to avoid too shrink, Max cap on Design to stay within A4 roughly
-                        newWs['!cols'] = [
-                            {wch: 6},                     // SR
-                            {wch: Math.max(15, maxW.size + 4)}, // Size (Auto + padding)
-                            {wch: Math.max(10, maxW.cat + 3)},  // Surface
-                            {wch: Math.max(10, maxW.body + 3)}, // Body
-                            {wch: Math.min(50, Math.max(25, maxW.design + 3))}, // Design (Auto but Max 50)
-                            {wch: 10}                     // Qty
-                        ];
+                        // --- SMART FIT COLUMNS (Updated for Tight Fit) ---
+                       newWs['!cols'] = [
+                           {wch: 6},                     
+                           {wch: Math.max(12, maxW.size + 2)}, // +4 ko hatakar +2 kiya, aur 15 ko 12 kiya
+                           {wch: Math.max(8, maxW.cat + 1)},   // +3 ko hatakar +1 kiya
+                           {wch: Math.max(8, maxW.body + 1)},  // +3 ko hatakar +1 kiya
+                           {wch: Math.min(50, Math.max(20, maxW.design + 2))}, // +2 kiya
+                           {wch: 10}                     
+];
 
                         const newWb = XLSX.utils.book_new(); 
                         XLSX.utils.book_append_sheet(newWb, newWs, "Stock");
