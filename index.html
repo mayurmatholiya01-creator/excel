@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - Premium Master</title>
+    <title>StockPro X - Ultimate Compact</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -17,124 +17,124 @@
             theme: {
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    animation: { 'slide-up': 'slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards', 'fade-in': 'fadeIn 0.5s ease-out forwards' },
-                    keyframes: { slideUp: { '0%': { opacity: 0, transform: 'translateY(10px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } }, fadeIn: { '0%': { opacity: 0 }, '100%': { opacity: 1 } } }
+                    animation: { 'fade-in': 'fadeIn 0.4s ease-out forwards' },
+                    keyframes: { fadeIn: { '0%': { opacity: 0 }, '100%': { opacity: 1 } } }
                 }
             }
         }
     </script>
 
     <style>
-        /* THEME: STOCKPRO X (DARK/CYBERPUNK) */
-        body { background: #050505; color: #fff; font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
+        /* BASE THEME */
+        body { background: #050505; color: #e4e4e7; font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; font-size: 11px; }
 
-        /* Background Effects */
-        .orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.25; pointer-events: none; z-index: 0; }
-        .orb-1 { top: -20%; left: -10%; width: 50vw; height: 50vw; background: #4f46e5; animation: float 10s infinite ease-in-out; }
-        .orb-2 { bottom: -20%; right: -10%; width: 40vw; height: 40vw; background: #db2777; animation: float 12s infinite ease-in-out reverse; }
-        @keyframes float { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(20px, 30px); } }
+        /* Subtle Background */
+        .orb { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.15; pointer-events: none; z-index: 0; }
+        .orb-1 { top: -20%; left: -10%; width: 60vw; height: 60vw; background: #4f46e5; }
+        .orb-2 { bottom: -20%; right: -10%; width: 50vw; height: 50vw; background: #db2777; }
 
-        /* Layout Structure - Similar to StockPro Studio */
-        .layout-grid { display: grid; grid-template-columns: 300px 1fr; height: 100vh; position: relative; z-index: 10; }
+        /* COMPACT GRID LAYOUT */
+        .layout-grid { 
+            display: grid; 
+            grid-template-columns: 240px 1fr; /* Reduced width */
+            height: 100vh; position: relative; z-index: 10; 
+        }
 
-        /* Sidebar - Glassmorphism */
+        /* SIDEBAR - ULTRA COMPACT */
         .sidebar {
-            background: rgba(10, 10, 12, 0.7); backdrop-filter: blur(25px);
+            background: rgba(8, 8, 10, 0.6); backdrop-filter: blur(20px);
             border-right: 1px solid rgba(255, 255, 255, 0.06);
-            display: flex; flex-direction: column; padding: 20px; gap: 15px; z-index: 20;
-            box-shadow: 5px 0 30px rgba(0,0,0,0.3);
+            display: flex; flex-direction: column; padding: 16px; gap: 12px; z-index: 20;
         }
 
-        /* Main Area */
-        .main-area { position: relative; display: flex; flex-direction: column; overflow: hidden; height: 100vh; }
+        /* RIGHT PANEL */
+        .main-area { position: relative; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
-        /* Tab Bar */
+        /* SLIM TAB BAR */
         .tab-bar {
-            display: flex; gap: 8px; padding: 12px 20px;
-            background: rgba(10, 10, 12, 0.4); border-bottom: 1px solid rgba(255,255,255,0.06);
+            display: flex; align-items: center; justify-content: space-between;
+            height: 42px; padding: 0 16px;
+            background: rgba(8, 8, 10, 0.4); border-bottom: 1px solid rgba(255,255,255,0.06);
         }
+        .tab-group { display: flex; background: rgba(255,255,255,0.05); padding: 2px; border-radius: 6px; }
         .tab-btn {
-            padding: 6px 14px; border-radius: 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
-            color: #71717a; transition: all 0.2s; cursor: pointer; border: 1px solid transparent; display: flex; align-items: center; gap: 6px;
+            padding: 4px 12px; border-radius: 4px; font-size: 10px; font-weight: 600; 
+            color: #71717a; cursor: pointer; transition: all 0.2s;
         }
-        .tab-btn:hover { color: #fff; background: rgba(255,255,255,0.05); }
-        .tab-btn.active { background: rgba(99, 102, 241, 0.1); color: #818cf8; border-color: rgba(99, 102, 241, 0.2); }
+        .tab-btn:hover { color: #fff; }
+        .tab-btn.active { background: #27272a; color: #fff; shadow: 0 1px 2px rgba(0,0,0,0.2); }
 
-        /* View Containers */
-        .content-container { flex: 1; position: relative; overflow: hidden; padding: 20px; }
-        .view-wrapper { position: absolute; inset: 20px; display: none; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
+        /* VIEW PORT */
+        .content-container { flex: 1; position: relative; overflow: hidden; background: #000; }
+        .view-wrapper { position: absolute; inset: 0; display: none; } /* Full fill, no margins */
         .view-wrapper.active { display: block; }
 
-        /* PDF Frame */
+        /* PREVIEW ELEMENTS */
         #pdfPreviewFrame { width: 100%; height: 100%; border: none; background: #1a1a1a; }
+        .grid-scroll-area { width: 100%; height: 100%; overflow: auto; background: #09090b; }
 
-        /* Grid Scroll */
-        .grid-scroll-area { width: 100%; height: 100%; overflow: auto; background: rgba(15, 15, 18, 0.8); backdrop-filter: blur(10px); }
-
-        /* Modern Table */
-        .modern-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; min-width: 600px; }
+        /* COMPACT TABLE */
+        .modern-table { width: 100%; border-collapse: collapse; font-size: 10px; }
         .modern-table th { 
-            background: #18181b; color: #a1a1aa; font-weight: 600; text-align: left; padding: 10px 12px; 
+            background: #18181b; color: #a1a1aa; font-weight: 600; text-align: left; padding: 6px 10px; 
             position: sticky; top: 0; border-bottom: 1px solid #27272a; z-index: 10;
         }
         .modern-table td { 
-            background: rgba(30, 30, 35, 0.4); border-bottom: 1px solid #27272a; padding: 0; 
-            color: #d4d4d8; transition: 0.1s;
+            border-bottom: 1px solid #27272a; padding: 0; 
+            color: #d4d4d8; height: 28px; /* Fixed concise height */
         }
-        .modern-table tr:hover td { background: rgba(99, 102, 241, 0.05); }
+        .modern-table tr:hover td { background: rgba(255,255,255,0.03); }
         .cell-input { 
-            width: 100%; height: 100%; background: transparent; border: none; padding: 8px 12px; 
-            color: inherit; outline: none; font-family: 'Inter', sans-serif; font-size: 11px;
+            width: 100%; height: 100%; background: transparent; border: none; padding: 0 10px; 
+            color: inherit; outline: none; font-family: inherit; font-size: 10px;
         }
-        .cell-input:focus { box-shadow: inset 0 0 0 1px #6366f1; background: rgba(99, 102, 241, 0.05); }
+        .cell-input:focus { background: rgba(99, 102, 241, 0.1); box-shadow: inset 0 0 0 1px #6366f1; }
 
-        /* Components - Compact & Premium */
+        /* UI COMPONENTS - MICRO STYLE */
         .glass-panel {
-            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 8px; transition: 0.2s;
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 6px; transition: 0.2s;
         }
         
         .upload-zone {
-            padding: 15px; cursor: pointer; position: relative; overflow: hidden;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
+            height: 60px; /* Shortened */
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: all 0.2s; border: 1px dashed rgba(255,255,255,0.1);
         }
         .upload-zone:hover { border-color: #6366f1; background: rgba(99, 102, 241, 0.05); }
         
-        .toggle-row {
-            display: flex; justify-content: space-between; align-items: center; padding: 10px 12px;
-            font-size: 11px; color: #a1a1aa; font-weight: 500;
-        }
-        
-        /* Switch */
-        .switch { position: relative; display: inline-block; width: 32px; height: 18px; }
+        /* Compact Switch */
+        .switch { position: relative; display: inline-block; width: 26px; height: 14px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #3f3f46; transition: .3s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 2px; bottom: 2px; background-color: white; transition: .3s; border-radius: 50%; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #3f3f46; transition: .3s; border-radius: 20px; }
+        .slider:before { position: absolute; content: ""; height: 10px; width: 10px; left: 2px; bottom: 2px; background-color: white; transition: .3s; border-radius: 50%; }
         input:checked + .slider { background-color: #6366f1; }
-        input:checked + .slider:before { transform: translateX(14px); }
+        input:checked + .slider:before { transform: translateX(12px); }
 
-        /* Inputs & Buttons */
+        /* Compact Inputs */
+        .micro-label { font-size: 9px; font-weight: 700; color: #52525b; margin-bottom: 4px; display: block; letter-spacing: 0.5px; }
         .clean-input {
             width: 100%; background: #0f0f12; border: 1px solid #27272a; color: #fff;
-            padding: 10px; border-radius: 6px; font-size: 11px; outline: none; transition: 0.2s;
-            font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+            padding: 6px 8px; border-radius: 4px; font-size: 10px; outline: none; transition: 0.2s;
+            font-weight: 500; text-transform: uppercase;
         }
         .clean-input:focus { border-color: #6366f1; }
-        .clean-input::placeholder { color: #52525b; font-weight: 400; text-transform: none;}
 
+        /* Compact Buttons */
         .action-btn {
-            width: 100%; padding: 10px; border-radius: 6px; font-size: 11px; font-weight: 700;
+            width: 100%; padding: 8px; border-radius: 4px; font-size: 10px; font-weight: 700;
             color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
-            transition: transform 0.1s, opacity 0.2s;
         }
-        .action-btn:hover { opacity: 0.9; }
-        .action-btn:active { transform: scale(0.98); }
-        
-        .btn-excel { background: linear-gradient(135deg, #0891b2, #2563eb); }
-        .btn-pdf { background: linear-gradient(135deg, #7c3aed, #db2777); }
+        .btn-excel { background: #0e7490; }
+        .btn-excel:hover { background: #0891b2; }
+        .btn-pdf { background: #7c3aed; }
+        .btn-pdf:hover { background: #8b5cf6; }
 
-        .live-dot { width: 6px; height: 6px; background-color: #4ade80; border-radius: 50%; display: inline-block; margin-right: 6px; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #09090b; }
+        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
     </style>
 </head>
 <body>
@@ -142,116 +142,88 @@
     <div class="fixed inset-0 pointer-events-none">
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
-        <div class="absolute inset-0 bg-black/40 backdrop-blur-[1px]"></div>
+        <div class="absolute inset-0 bg-black/20 backdrop-blur-[1px]"></div>
     </div>
 
     <div class="layout-grid">
         
-        <div class="sidebar animate-slide-up">
-            
-            <div class="flex items-center gap-3 pb-2 border-b border-white/5">
-                <div class="w-8 h-8 rounded-md bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center border border-indigo-500/20">
-                    <span class="font-bold text-indigo-400 text-sm">X</span>
+        <div class="sidebar animate-fade-in">
+            <div class="flex items-center gap-2 pb-3 border-b border-white/5">
+                <div class="w-6 h-6 rounded bg-indigo-500/20 flex items-center justify-center border border-indigo-500/20">
+                    <span class="font-bold text-indigo-400 text-xs">X</span>
                 </div>
-                <div>
-                    <h1 class="text-sm font-bold tracking-tight text-white">StockPro<span class="text-indigo-500">.ai</span></h1>
-                    <p class="text-[10px] text-zinc-500 font-medium tracking-wide">HYBRID MASTER</p>
-                </div>
+                <h1 class="text-xs font-bold text-white tracking-tight">StockPro<span class="text-zinc-600">.ai</span></h1>
             </div>
 
-            <div class="flex flex-col gap-3 mt-2">
+            <div class="flex flex-col gap-3">
                 
                 <div>
+                    <span class="micro-label">DATA SOURCE</span>
                     <div class="glass-panel upload-zone group" id="dropZone">
-                        <div id="uploadContent" class="flex items-center gap-3">
-                            <svg class="w-4 h-4 text-zinc-500 group-hover:text-indigo-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                            <span class="text-[11px] font-medium text-zinc-400 group-hover:text-zinc-200">Import Excel File</span>
+                        <div id="uploadContent" class="flex items-center gap-2">
+                            <span class="text-[10px] font-medium text-zinc-500 group-hover:text-indigo-400">📄 Import Excel</span>
                         </div>
-                        
-                        <div id="fileSuccess" class="hidden w-full flex items-center justify-between">
-                            <div class="flex items-center gap-2 overflow-hidden">
-                                <svg class="w-3 h-3 text-green-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                <span id="fileName" class="text-[10px] font-bold text-green-100 truncate">data.xlsx</span>
-                            </div>
-                            <div class="cursor-pointer hover:text-red-400 text-zinc-500 p-1" id="removeFileBtn">✕</div>
+                        <div id="fileSuccess" class="hidden w-full px-2 flex items-center justify-between">
+                            <span id="fileName" class="text-[9px] font-bold text-green-400 truncate max-w-[120px]">file.xlsx</span>
+                            <span class="cursor-pointer hover:text-white text-zinc-600 font-bold" id="removeFileBtn">✕</span>
                         </div>
-                        
                         <input id="fileInput" type="file" class="hidden" accept=".xlsx, .xls" />
                     </div>
                 </div>
 
-                <div class="glass-panel toggle-row">
-                    <div class="flex flex-col">
-                        <span class="text-zinc-300">Smart Merge</span>
-                        <span class="text-[9px] text-zinc-600">Combine -A/-B faces</span>
-                    </div>
+                <div class="glass-panel flex justify-between items-center p-2">
+                    <span class="text-[10px] text-zinc-400 font-medium">Auto-Merge Faces</span>
                     <label class="switch"><input type="checkbox" id="mergeFaces"><span class="slider"></span></label>
                 </div>
-
             </div>
 
-            <div class="mt-auto"></div>
-
-            <div class="flex flex-col gap-3 animate-slide-up" style="animation-delay: 0.1s;">
-                
+            <div class="mt-auto flex flex-col gap-2">
                 <div>
-                    <label class="text-[9px] font-bold text-zinc-600 mb-1 block pl-1">CATALOG FILENAME</label>
-                    <input type="text" id="clientName" placeholder="ENTER CLIENT NAME" class="clean-input">
+                    <label class="micro-label">PROJECT NAME</label>
+                    <input type="text" id="clientName" placeholder="Untitled Project" class="clean-input">
                 </div>
 
-                <div class="grid grid-cols-2 gap-2">
-                    <button onclick="downloadOutput('excel')" class="action-btn btn-excel">
-                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                        XLSX
-                    </button>
-                    <button onclick="downloadOutput('pdf')" class="action-btn btn-pdf">
-                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                        PDF
-                    </button>
+                <div class="grid grid-cols-2 gap-2 mt-1">
+                    <button onclick="downloadOutput('excel')" class="action-btn btn-excel">XLSX</button>
+                    <button onclick="downloadOutput('pdf')" class="action-btn btn-pdf">PDF</button>
                 </div>
-
-                <div class="h-4 flex items-center justify-center gap-1 mt-1 border-t border-white/5 pt-2">
-                    <span id="loadingDot" class="live-dot hidden"></span>
-                    <p id="statusMessage" class="text-center text-[9px] text-zinc-500 font-medium">WAITING FOR INPUT</p>
-                </div>
+                
+                <p id="statusMessage" class="text-center text-[9px] text-zinc-600 font-medium mt-1">READY</p>
             </div>
         </div>
 
         <div class="main-area">
             
             <div class="tab-bar">
-                <div class="tab-btn active" onclick="switchTab('pdf', this)">
-                    <span>📄</span> PDF PREVIEW
+                <div class="text-[10px] font-bold text-zinc-500 tracking-wider">PREVIEW MODE</div>
+                <div class="tab-group">
+                    <div class="tab-btn active" onclick="switchTab('pdf', this)">PDF VIEW</div>
+                    <div class="tab-btn" onclick="switchTab('excel', this)">GRID EDIT</div>
                 </div>
-                <div class="tab-btn" onclick="switchTab('excel', this)">
-                    <span>✏️</span> DATA EDITOR
-                </div>
-            </div>
-
-            <div id="emptyState" class="absolute inset-0 top-14 flex flex-col items-center justify-center text-zinc-600 animate-fade-in z-0">
-                <div class="w-16 h-16 rounded-2xl bg-zinc-900/50 border border-zinc-800 flex items-center justify-center mb-4 shadow-2xl">
-                    <svg class="w-6 h-6 opacity-40 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                </div>
-                <p class="text-[10px] font-bold tracking-widest opacity-60">NO DATA LOADED</p>
             </div>
 
             <div class="content-container">
                 
-                <div id="pdfContainer" class="view-wrapper active z-10 bg-[#1a1a1a] shadow-2xl animate-fade-in">
+                <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-zinc-700 z-0">
+                    <svg class="w-8 h-8 mb-3 opacity-20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+                    <p class="text-[10px] font-medium tracking-widest opacity-50">DROP FILE TO LOAD</p>
+                </div>
+
+                <div id="pdfContainer" class="view-wrapper active z-10 animate-fade-in">
                     <iframe id="pdfPreviewFrame"></iframe>
                 </div>
 
-                <div id="gridContainer" class="view-wrapper z-10 animate-fade-in shadow-2xl">
+                <div id="gridContainer" class="view-wrapper z-10 animate-fade-in">
                     <div class="grid-scroll-area custom-scroll">
                         <table class="modern-table">
                             <thead>
                                 <tr>
-                                    <th width="40" class="text-center">#</th>
-                                    <th width="100">SIZE</th>
-                                    <th width="100">SURFACE</th>
-                                    <th width="100">BODY</th>
-                                    <th>DESIGN NAME</th>
-                                    <th width="80" class="text-center">QTY</th>
+                                    <th width="30" class="text-center">#</th>
+                                    <th width="80">SIZE</th>
+                                    <th width="80">SURFACE</th>
+                                    <th width="80">BODY</th>
+                                    <th>DESIGN</th>
+                                    <th width="60" class="text-center">QTY</th>
                                 </tr>
                             </thead>
                             <tbody id="gridBody"></tbody>
@@ -263,19 +235,15 @@
     </div>
 
     <script>
-        // --- STATE ---
         let cachedRawData = null;
         let globalProcessedList = []; 
         let activeTab = 'pdf';
         let debounceTimer;
 
-        // --- DOM REFS ---
         const clientInput = document.getElementById('clientName');
         const mergeToggle = document.getElementById('mergeFaces');
         const status = document.getElementById('statusMessage');
-        const loadingDot = document.getElementById('loadingDot');
 
-        // --- TABS ---
         function switchTab(tab, btn) {
             activeTab = tab;
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -284,8 +252,7 @@
             const pdfView = document.getElementById('pdfContainer');
             const gridView = document.getElementById('gridContainer');
             
-            pdfView.classList.remove('active');
-            gridView.classList.remove('active');
+            pdfView.classList.remove('active'); gridView.classList.remove('active');
             
             if(tab === 'pdf') {
                 pdfView.classList.add('active');
@@ -295,7 +262,6 @@
             }
         }
 
-        // --- LISTENERS ---
         clientInput.addEventListener('input', function() { 
             this.value = this.value.toUpperCase(); 
             if(globalProcessedList.length > 0 && activeTab === 'pdf') {
@@ -314,14 +280,12 @@
             if(e.target.files.length) handleNewFile(e.target.files[0]); 
         });
 
-        // --- FILE HANDLING ---
         function handleNewFile(file) {
             document.getElementById('uploadContent').classList.add('hidden');
             document.getElementById('fileSuccess').classList.remove('hidden');
             document.getElementById('fileSuccess').classList.add('flex');
             document.getElementById('fileName').innerText = file.name;
-            status.innerText = "PARSING DATA..."; 
-            loadingDot.classList.remove('hidden');
+            status.innerText = "PARSING..."; 
 
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -339,25 +303,17 @@
             const shouldMergeFaces = mergeToggle.checked;
 
             let headerIdx = -1, col = { design: -1, cat: -1, size: -1, body: -1, qty: -1 };
-            // Smart Header Search
             for (let i = 0; i < Math.min(rawData.length, 25); i++) {
                 const r = rawData[i].map(x => String(x).toLowerCase().trim());
                 if (r.includes('designname') || r.includes('size mm')) {
                     headerIdx = i; 
-                    col.design = r.indexOf('designname'); 
-                    col.cat = r.indexOf('category'); 
-                    col.size = r.indexOf('size mm'); 
-                    col.body = r.indexOf('bodytype'); 
-                    col.qty = r.findIndex(c => c === 'pre' || c === 'total' || c === 'qty'); 
+                    col.design = r.indexOf('designname'); col.cat = r.indexOf('category'); col.size = r.indexOf('size mm'); 
+                    col.body = r.indexOf('bodytype'); col.qty = r.findIndex(c => c === 'pre' || c === 'total' || c === 'qty'); 
                     break;
                 }
             }
 
-            if (headerIdx === -1) { 
-                status.innerText = "ERROR: INVALID FORMAT"; 
-                alert("Header not found! Ensure 'DesignName' and 'Size MM' exist."); 
-                return; 
-            }
+            if (headerIdx === -1) { alert("Header Error"); return; }
 
             const map = new Map();
             for (let i = headerIdx + 1; i < rawData.length; i++) {
@@ -375,25 +331,22 @@
                 if (map.has(key)) map.get(key).qty += qty; else map.set(key, { size, cat, body, design, qty });
             }
 
-            // Sorting
             let list = Array.from(map.values());
             function getDims(s) { const m = s.match(/(\d+)/g); return m ? { w: parseInt(m[0]||0), h: parseInt(m[1]||0) } : {w:0,h:0}; }
             list.sort((a, b) => {
                 const dA = getDims(a.size), dB = getDims(b.size);
                 if (dA.w !== dB.w) return dA.w - dB.w; if (dA.h !== dB.h) return dA.h - dB.h;
-                if (a.cat < b.cat) return -1; if (a.cat > b.cat) return 1;
                 return a.design.localeCompare(b.design);
             });
 
             globalProcessedList = list;
-            
             document.getElementById('emptyState').classList.add('hidden');
             renderGrid(globalProcessedList);
             
             if(activeTab === 'pdf') generatePDF(globalProcessedList, clientInput.value, true);
             else document.getElementById('gridContainer').classList.add('active');
 
-            status.innerText = "SYSTEM READY"; loadingDot.classList.add('hidden');
+            status.innerText = "READY";
         }
 
         function renderGrid(list) {
@@ -402,12 +355,12 @@
             list.forEach((item, index) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td class="text-center text-zinc-500">${index + 1}</td>
+                    <td class="text-center text-zinc-500 border-r border-zinc-800">${index + 1}</td>
                     <td><input class="cell-input" value="${item.size}" onchange="updateItem(${index}, 'size', this.value)"></td>
                     <td><input class="cell-input" value="${item.cat}" onchange="updateItem(${index}, 'cat', this.value)"></td>
                     <td><input class="cell-input" value="${item.body}" onchange="updateItem(${index}, 'body', this.value)"></td>
-                    <td><input class="cell-input font-semibold text-white" value="${item.design}" onchange="updateItem(${index}, 'design', this.value)"></td>
-                    <td><input class="cell-input text-center text-green-400 font-bold" type="number" value="${item.qty}" onchange="updateItem(${index}, 'qty', this.value)"></td>
+                    <td><input class="cell-input text-white" value="${item.design}" onchange="updateItem(${index}, 'design', this.value)"></td>
+                    <td class="border-l border-zinc-800"><input class="cell-input text-center text-green-400 font-bold" type="number" value="${item.qty}" onchange="updateItem(${index}, 'qty', this.value)"></td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -416,17 +369,16 @@
         window.updateItem = function(index, field, value) {
             if(field === 'qty') value = parseFloat(value) || 0;
             globalProcessedList[index][field] = value;
-            status.innerText = "SAVING..."; setTimeout(() => status.innerText = "SYSTEM READY", 800);
+            status.innerText = "SAVING..."; setTimeout(() => status.innerText = "READY", 500);
         };
 
         function downloadOutput(type) {
-            if(globalProcessedList.length === 0) { alert("Please load a file first!"); return; }
+            if(globalProcessedList.length === 0) { alert("No Data"); return; }
             const name = clientInput.value || "REPORT";
             if(type === 'excel') generateExcel(globalProcessedList, name);
             if(type === 'pdf') generatePDF(globalProcessedList, name, false);
         }
 
-        // --- EXPORT ENGINES ---
         function generateExcel(list, clientName) {
             const output = [["", "", "", "", "", ""], ["", "", "", "", "", ""], ["", "", "", "", "", ""]];
             const sHead = { font: { sz: 10, bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1E293B" } }, alignment: { horizontal: "center", vertical: "center" } };
@@ -470,11 +422,8 @@
                 didParseCell: (d) => { if(d.row.raw[4]==='GRAND TOTAL') { d.cell.styles.fontStyle='bold'; d.cell.styles.fillColor=[240,240,240]; } }
             });
 
-            if (isPreview) {
-                document.getElementById('pdfPreviewFrame').src = doc.output('bloburl');
-            } else {
-                doc.save(`Stock_${clientName}.pdf`);
-            }
+            if (isPreview) document.getElementById('pdfPreviewFrame').src = doc.output('bloburl');
+            else doc.save(`Stock_${clientName}.pdf`);
         }
         
         document.getElementById('removeFileBtn').addEventListener('click', (e) => { 
@@ -483,7 +432,7 @@
             document.getElementById('fileSuccess').classList.add('hidden'); document.getElementById('fileSuccess').classList.remove('flex'); 
             document.getElementById('emptyState').classList.remove('hidden');
             document.querySelector('.view-wrapper.active').classList.remove('active');
-            status.innerText = "WAITING FOR INPUT"; loadingDot.classList.add('hidden');
+            status.innerText = "READY";
         });
     </script>
 </body>
