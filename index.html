@@ -7,6 +7,7 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
@@ -26,14 +27,14 @@
     <style>
         body { background: #000; color: #fff; font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
 
-        /* Orbs */
+        /* Background Orbs */
         .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.3; pointer-events: none; z-index: 0; }
         .orb-1 { top: -10%; left: -10%; width: 40vw; height: 40vw; background: #4f46e5; }
         .orb-2 { bottom: -20%; right: -10%; width: 30vw; height: 30vw; background: #ec4899; }
 
         .layout-grid { display: grid; grid-template-columns: 320px 1fr; height: 100vh; position: relative; z-index: 10; }
 
-        /* Sidebar */
+        /* Sidebar Glass */
         .sidebar {
             background: rgba(20, 20, 23, 0.6); backdrop-filter: blur(20px);
             border-right: 1px solid rgba(255, 255, 255, 0.08);
@@ -42,14 +43,13 @@
 
         .main-area { position: relative; display: flex; flex-direction: column; padding: 24px; overflow: hidden; }
 
-        /* Upload */
+        /* Components */
         .upload-zone {
             background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.15);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .upload-zone:hover, .upload-zone.dragover { background: rgba(79, 70, 229, 0.1); border-color: #6366f1; }
 
-        /* Switch */
         .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #3f3f46; transition: .4s; border-radius: 34px; }
@@ -150,9 +150,9 @@
     </div>
 
     <script>
-        // --- GLOBAL VARIABLES FOR LIVE EDITING ---
-        let cachedRawData = null; // Store Excel Data Here
+        let cachedRawData = null; 
         let isProcessing = false;
+        let debounceTimer;
 
         const clientInput = document.getElementById('clientName');
         const mergeToggle = document.getElementById('mergeFaces');
@@ -161,45 +161,30 @@
         const status = document.getElementById('statusMessage');
         const loadingDot = document.getElementById('loadingDot');
         
-        // --- EVENT LISTENERS ---
-        
-        // 1. Live Client Name Update (with Debounce to prevent lag)
-        let debounceTimer;
+        // --- LIVE EDITING LISTENERS ---
         clientInput.addEventListener('input', function() { 
             this.value = this.value.toUpperCase(); 
             if(cachedRawData) {
                 status.innerText = "UPDATING...";
                 loadingDot.classList.remove('hidden');
                 clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(() => { updateEngine('preview'); }, 600); // 600ms Delay
+                debounceTimer = setTimeout(() => { updateEngine('preview'); }, 600); 
             }
         });
 
-        // 2. Live Merge Toggle
-        mergeToggle.addEventListener('change', () => {
-            if(cachedRawData) updateEngine('preview');
-        });
+        mergeToggle.addEventListener('change', () => { if(cachedRawData) updateEngine('preview'); });
 
-        // 3. File Handling
         dropZone.addEventListener('click', (e) => { if(e.target.id !== 'removeFileBtn') fileInput.click(); });
         dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
         dropZone.addEventListener('dragleave', (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); });
-        
         dropZone.addEventListener('drop', (e) => { 
             e.preventDefault(); dropZone.classList.remove('dragover'); 
             if (e.dataTransfer.files.length) handleNewFile(e.dataTransfer.files[0]);
         });
-        
-        fileInput.addEventListener('change', () => { 
-            if (fileInput.files.length) handleNewFile(fileInput.files[0]); 
-        });
-
-        // --- CORE LOGIC ---
+        fileInput.addEventListener('change', () => { if (fileInput.files.length) handleNewFile(fileInput.files[0]); });
 
         function handleNewFile(file) {
             if(!file) return;
-            
-            // UI Updates
             document.getElementById('uploadContent').classList.add('hidden');
             document.getElementById('fileSuccess').classList.remove('hidden');
             document.getElementById('fileSuccess').classList.add('flex');
@@ -212,31 +197,25 @@
                 try {
                     const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, {type: 'array'});
-                    // STORE DATA GLOBALLY
                     cachedRawData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: 1, defval: ""});
-                    
-                    updateEngine('preview'); // Trigger first preview
-
+                    updateEngine('preview'); 
                 } catch (err) {
                     console.error(err);
                     status.innerText = "FILE ERROR";
-                    status.className = "text-center text-[9px] mt-1 h-3 text-red-400";
                 }
             };
             reader.readAsArrayBuffer(file);
         }
 
-        // --- THE ENGINE (Runs on File Load OR Updates) ---
         function updateEngine(mode) {
             if (!cachedRawData) return;
             isProcessing = true;
             loadingDot.classList.remove('hidden');
             if(mode === 'preview') status.innerText = "REFRESHING...";
 
-            // Small timeout to let UI show "Refreshing"
             setTimeout(() => {
                 try {
-                    const rawData = cachedRawData; // Use Cached Data
+                    const rawData = cachedRawData;
                     const clientName = clientInput.value.trim();
                     const shouldMergeFaces = mergeToggle.checked;
 
@@ -261,7 +240,6 @@
                         let qty = col.qty > -1 ? parseFloat(r[col.qty]) : 0;
                         if (!design && !size) continue;
                         
-                        // LIVE MERGE LOGIC
                         if (shouldMergeFaces) design = design.replace(/-[a-zA-Z]$/, "").trim();
                         
                         const key = `${size}_${cat}_${body}_${design}`;
@@ -279,7 +257,7 @@
                         return a.design.localeCompare(b.design);
                     });
 
-                    // Render Output
+                    // Output
                     if (mode === 'preview') generatePDF(list, clientName, true);
                     else if (mode === 'excel') generateExcel(list, clientName);
                     else if (mode === 'pdf') generatePDF(list, clientName, false);
@@ -289,48 +267,62 @@
                     status.className = "text-center text-[9px] text-green-400 font-bold tracking-wide";
 
                 } catch (e) {
-                    console.error(e);
-                    status.innerText = "ERROR PROCESSING";
-                    status.className = "text-center text-[9px] text-red-400";
-                    loadingDot.classList.add('hidden');
+                    console.error(e); status.innerText = "ERROR"; loadingDot.classList.add('hidden');
                 }
                 isProcessing = false;
             }, 50);
         }
 
-        // --- OUTPUT FUNCTIONS ---
-        function downloadOutput(type) {
-            if(!cachedRawData) { alert("Please upload a file first."); return; }
-            updateEngine(type);
-        }
-
+        // --- EXCEL GENERATION ---
         function generateExcel(list, clientName) {
-            const output = [["", "", "", "", "", ""], ["", "", "", "", "", ""], ["", "", "", "", "", ""]];
-            const sHead = { font: { sz: 10, bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1E293B" } }, alignment: { horizontal: "center", vertical: "center" } };
-            output.push(["SR NO", "Size", "Surface", "Body", "Design", "QTY"].map(h => ({v:h, s:sHead})));
-            let sr = 1; list.forEach(item => { output.push([sr++, item.size, item.cat, item.body, item.design, item.qty]); });
+            let maxW = { size: 10, cat: 10, body: 10, design: 15 };
+            list.forEach(item => { if(item.size.length > maxW.size) maxW.size = item.size.length; if(item.cat.length > maxW.cat) maxW.cat = item.cat.length; if(item.body.length > maxW.body) maxW.body = item.body.length; if(item.design.length > maxW.design) maxW.design = item.design.length; });
+            const output = [];
+            const borderStyle = { top: { style: "thin", color: { rgb: "E5E7EB" } }, bottom: { style: "thin", color: { rgb: "E5E7EB" } }, left: { style: "thin", color: { rgb: "D1D5DB" } }, right: { style: "thin", color: { rgb: "D1D5DB" } } };
+            const sTitle = { font: { name: "Segoe UI", sz: 26, bold: true, color: { rgb: "111827" } }, fill: { fgColor: { rgb: "F9FAFB" } }, alignment: { horizontal: "center", vertical: "center" }, border: { top: { style: "thin", color: { rgb: "FFFFFF" } }, left: { style: "thin", color: { rgb: "FFFFFF" } }, bottom: { style: "medium", color: { rgb: "9CA3AF" } }, right: { style: "medium", color: { rgb: "9CA3AF" } } } };
+            const sHead = { font: { name: "Segoe UI", sz: 10, bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1E293B" } }, alignment: { horizontal: "center", vertical: "center", wrapText: true }, border: { bottom: { style: "medium", color: { rgb: "000000" } } } };
+            const sData = { font: { name: "Segoe UI", sz: 10, color: { rgb: "333333" } }, alignment: { horizontal: "center", vertical: "center", wrapText: true }, border: borderStyle };
+            const sGrey = { ...sData, fill: { fgColor: { rgb: "F9FAFB" } } };
+            const sTotal = { font: { name: "Segoe UI", sz: 11, bold: true }, fill: { fgColor: { rgb: "E5E7EB" } }, alignment: { horizontal: "center", vertical: "center" }, border: { top: {style:"double"}, bottom: {style:"thin"} } };
+
+            output.push(["", "", "", "", "", ""]); output.push(["", "", "", "", "", ""]); output.push(["", "", "", "", "", ""]);
+            output.push(["SR NO", "Size & thikness", "surface", "BodyType", "DesignName", "Total QTY"].map(h => ({v:h, s:sHead})));
+
+            let sr = 1, grandTotal = 0, lastSize = null;
+            list.forEach(item => { if (lastSize && lastSize !== item.size) output.push(new Array(6).fill({v:"",s:sData})); lastSize = item.size; grandTotal += item.qty; const style = (sr % 2 === 0) ? sGrey : sData; output.push([{v:sr++, s:style}, {v:item.size, s:style}, {v:item.cat, s:style}, {v:item.body, s:style}, {v:item.design, s:style}, {v:item.qty, s:style}]); });
+            output.push([{v:"",s:sTotal}, {v:"",s:sTotal}, {v:"",s:sTotal}, {v:"",s:sTotal}, {v:"GRAND TOTAL",s:sTotal}, {v:grandTotal,s:sTotal}]);
+
             const newWs = XLSX.utils.aoa_to_sheet(output);
+            if(!newWs['!merges']) newWs['!merges'] = []; newWs['!merges'].push({ s: { r: 0, c: 0 }, e: { r: 2, c: 5 } }); newWs['A1'] = { v: clientName || "STOCK REPORT", s: sTitle };
+            newWs['!cols'] = [ {wch: 6}, {wch: Math.max(12, maxW.size + 2)}, {wch: Math.max(8, maxW.cat + 1)}, {wch: Math.max(8, maxW.body + 1)}, {wch: Math.min(50, Math.max(20, maxW.design + 2))}, {wch: 10} ];
             const newWb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(newWb, newWs, "Stock");
-            XLSX.writeFile(newWb, `Stock_${clientName || "Report"}.xlsx`);
+            XLSX.writeFile(newWb, `Stock_${(clientName||"List").replace(/\s+/g,'_')}.xlsx`);
         }
 
+        // --- ORIGINAL PDF LOGIC (RESTORED) ---
         function generatePDF(list, clientName, isPreview) {
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+            const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
             const tableData = [];
             let sr = 1, grandTotal = 0, lastSize = null;
-            
-            list.forEach(item => { 
-                if(lastSize && lastSize !== item.size) tableData.push(['', '', '', '', '', '']); // Gap
-                lastSize = item.size; grandTotal += item.qty; 
-                tableData.push([sr++, item.size, item.cat, item.body, item.design, item.qty]); 
-            });
-            tableData.push(['', '', '', '', 'TOTAL', grandTotal]);
+            list.forEach(item => { if(lastSize && lastSize !== item.size) { tableData.push(['', '', '', '', '', '']); } lastSize = item.size; grandTotal += item.qty; tableData.push([sr++, item.size, item.cat, item.body, item.design, item.qty]); });
+            tableData.push(['', '', '', '', 'GRAND TOTAL', grandTotal]);
 
             doc.autoTable({
-                head: [['SR', 'SIZE', 'SURFACE', 'BODY', 'DESIGN', 'QTY']], body: tableData, startY: 25, theme: 'grid',
-                headStyles: { fillColor: [30, 41, 59] }, styles: { fontSize: 8, halign: 'center' },
-                didDrawPage: (d) => { if(d.pageNumber === 1) { doc.setFontSize(18); doc.text(clientName || "STOCK REPORT", 105, 15, { align: "center" }); } }
+                head: [['SR NO', 'Size & thikness', 'surface', 'BodyType', 'DesignName', 'Total QTY']], body: tableData, startY: 30, theme: 'grid', margin: { top: 10, left: 5, right: 5, bottom: 10 },
+                styles: { fontSize: 9, cellPadding: 1, valign: 'middle', halign: 'center', lineWidth: 0.1, lineColor: [209, 213, 219] },
+                headStyles: { fillColor: [30, 41, 59], textColor: 255, fontStyle: 'bold' },
+                columnStyles: { 0: { cellWidth: 10 }, 1: { cellWidth: 35 }, 2: { cellWidth: 20 }, 3: { cellWidth: 20 }, 4: { cellWidth: 'auto' }, 5: { cellWidth: 18 } },
+                didParseCell: function(data) {
+                    if (data.row.raw[0] === '' && data.row.raw[4] !== 'GRAND TOTAL') { data.cell.styles.fillColor = [255, 255, 255]; data.cell.styles.lineWidth = 0; data.cell.styles.minCellHeight = 2; }
+                    if (data.row.raw[4] === 'GRAND TOTAL') { data.cell.styles.fontStyle = 'bold'; data.cell.styles.fillColor = [240, 240, 240]; }
+                },
+                didDrawPage: function(data) {
+                    if (data.pageNumber === 1) {
+                        doc.setFontSize(22); doc.setTextColor(20, 20, 20); doc.setFont("helvetica", "bold");
+                        doc.text(clientName || "STOCK REPORT", 105, 18, { align: "center" });
+                    }
+                }
             });
 
             if (isPreview) {
@@ -338,11 +330,15 @@
                 document.getElementById('emptyState').classList.add('hidden');
                 document.getElementById('pdfPreviewFrame').src = doc.output('bloburl');
             } else {
-                doc.save(`Stock_${clientName || "Report"}.pdf`);
+                doc.save(`Stock_${(clientName||"Report")}.pdf`);
             }
         }
 
-        // Reset
+        function downloadOutput(type) {
+            if(!cachedRawData) { alert("Please upload a file first."); return; }
+            updateEngine(type);
+        }
+
         document.getElementById('removeFileBtn').addEventListener('click', (e) => { 
             e.stopPropagation(); fileInput.value = ""; cachedRawData = null;
             document.getElementById('uploadContent').classList.remove('hidden'); 
@@ -351,7 +347,6 @@
             document.getElementById('emptyState').classList.remove('hidden');
             status.innerText = ""; loadingDot.classList.add('hidden');
         });
-
     </script>
 </body>
 </html>
