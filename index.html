@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - Smart Fit</title>
+    <title>StockPro X - MNC Edition</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -25,459 +25,374 @@
     </script>
 
     <style>
-        /* BASE THEME */
-        body { background: #050505; color: #e4e4e7; font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; font-size: 11px; }
+        /* --- GLOBAL THEME --- */
+        body { background: #0f0f12; color: #e4e4e7; font-family: 'Inter', sans-serif; font-size: 12px; overflow: hidden; }
 
-        /* Subtle Background */
-        .orb { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.15; pointer-events: none; z-index: 0; }
-        .orb-1 { top: -20%; left: -10%; width: 60vw; height: 60vw; background: #4f46e5; }
-        .orb-2 { bottom: -20%; right: -10%; width: 50vw; height: 50vw; background: #db2777; }
-
-        /* COMPACT GRID LAYOUT */
-        .layout-grid { 
-            display: grid; 
-            grid-template-columns: 240px 1fr; /* Ultra Compact Sidebar */
-            height: 100vh; position: relative; z-index: 10; 
-        }
-
-        /* SIDEBAR - ULTRA COMPACT */
-        .sidebar {
-            background: rgba(8, 8, 10, 0.6); backdrop-filter: blur(20px);
-            border-right: 1px solid rgba(255, 255, 255, 0.06);
-            display: flex; flex-direction: column; padding: 16px; gap: 12px; z-index: 20;
-        }
-
-        /* RIGHT PANEL */
-        .main-area { position: relative; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-
-        /* SLIM TAB BAR */
-        .tab-bar {
-            display: flex; align-items: center; justify-content: space-between;
-            height: 42px; padding: 0 16px;
-            background: rgba(8, 8, 10, 0.4); border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
-        .tab-group { display: flex; background: rgba(255,255,255,0.05); padding: 2px; border-radius: 6px; }
-        .tab-btn {
-            padding: 4px 12px; border-radius: 4px; font-size: 10px; font-weight: 600; 
-            color: #71717a; cursor: pointer; transition: all 0.2s;
-        }
-        .tab-btn:hover { color: #fff; }
-        .tab-btn.active { background: #27272a; color: #fff; shadow: 0 1px 2px rgba(0,0,0,0.2); }
-
-        /* VIEW PORT */
-        .content-container { flex: 1; position: relative; overflow: hidden; background: #000; }
-        .view-wrapper { position: absolute; inset: 0; display: none; }
-        .view-wrapper.active { display: block; }
-
-        /* PREVIEW ELEMENTS */
-        #pdfPreviewFrame { width: 100%; height: 100%; border: none; background: #1a1a1a; }
-        .grid-scroll-area { width: 100%; height: 100%; overflow: auto; background: #09090b; }
-
-        /* SMART AUTO-FIT TABLE */
-        .modern-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 10px; }
-        .modern-table th { 
-            background: #18181b; color: #a1a1aa; font-weight: 600; text-align: left; padding: 8px 12px; 
-            position: sticky; top: 0; border-bottom: 1px solid #27272a; z-index: 10;
-            white-space: nowrap; /* Prevent Header Wrap */
-        }
-        .modern-table td { 
-            border-bottom: 1px solid #27272a; padding: 0; 
-            color: #d4d4d8; height: 32px; 
-            position: relative;
-        }
-        .modern-table tr:hover td { background: rgba(255,255,255,0.03); }
+        /* --- LAYOUT --- */
+        .layout-grid { display: grid; grid-template-columns: 260px 1fr; height: 100vh; }
         
-        /* Cell Input - Auto Fit Logic */
-        .cell-input { 
-            width: 100%; height: 100%; background: transparent; border: none; padding: 0 12px; 
-            color: inherit; outline: none; font-family: inherit; font-size: 11px;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; /* Smart Truncate */
-        }
-        .cell-input:focus { 
-            background: rgba(99, 102, 241, 0.1); box-shadow: inset 0 0 0 1px #6366f1; 
-            position: absolute; z-index: 20; width: auto; min-width: 100%; /* Expand on Focus */
+        /* Sidebar */
+        .sidebar { background: #18181b; border-right: 1px solid #27272a; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+
+        /* Main Area */
+        .main-area { display: flex; flex-direction: column; height: 100vh; background: #09090b; }
+
+        /* Header / Tab Bar */
+        .top-bar { 
+            height: 50px; border-bottom: 1px solid #27272a; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; 
+            background: #09090b;
         }
 
-        /* UI COMPONENTS - MICRO STYLE */
-        .glass-panel {
-            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 6px; transition: 0.2s;
+        /* --- SMART GRID (WEB VIEW) --- */
+        .grid-container { flex: 1; overflow: auto; position: relative; }
+        
+        .mnc-table { 
+            width: 100%; border-collapse: collapse; white-space: nowrap; /* CRITICAL: PREVENTS WRAP */
+            font-size: 11px; 
         }
         
-        .upload-zone {
-            height: 60px; /* Shortened */
-            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-            transition: all 0.2s; border: 1px dashed rgba(255,255,255,0.1);
+        .mnc-table th { 
+            background: #18181b; color: #a1a1aa; font-weight: 600; text-align: left; padding: 12px 16px; 
+            border-bottom: 1px solid #27272a; position: sticky; top: 0; z-index: 10;
         }
-        .upload-zone:hover { border-color: #6366f1; background: rgba(99, 102, 241, 0.05); }
+
+        .mnc-table td { 
+            border-bottom: 1px solid #27272a; padding: 8px 16px; color: #d4d4d8; height: 40px; 
+        }
+
+        .mnc-table tr:hover td { background: #27272a; }
+
+        /* Inputs in Grid */
+        .grid-input { 
+            background: transparent; border: none; color: inherit; width: 100%; outline: none; font-family: inherit;
+            overflow: hidden; text-overflow: ellipsis; 
+        }
+        .grid-input:focus { color: #fff; font-weight: 500; }
+
+        /* --- UI ELEMENTS --- */
+        .upload-box {
+            border: 1px dashed #3f3f46; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: 0.2s;
+            background: rgba(255,255,255,0.01);
+        }
+        .upload-box:hover { border-color: #6366f1; background: rgba(99, 102, 241, 0.05); }
+
+        .btn-primary {
+            background: #fff; color: #000; font-weight: 600; border-radius: 6px; padding: 10px; width: 100%;
+            transition: 0.2s; border: none; cursor: pointer; display: flex; justify-content: center; gap: 8px;
+        }
+        .btn-primary:hover { background: #e4e4e7; }
         
-        /* Compact Switch */
-        .switch { position: relative; display: inline-block; width: 26px; height: 14px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #3f3f46; transition: .3s; border-radius: 20px; }
-        .slider:before { position: absolute; content: ""; height: 10px; width: 10px; left: 2px; bottom: 2px; background-color: white; transition: .3s; border-radius: 50%; }
-        input:checked + .slider { background-color: #6366f1; }
-        input:checked + .slider:before { transform: translateX(12px); }
-
-        /* Compact Inputs */
-        .micro-label { font-size: 9px; font-weight: 700; color: #52525b; margin-bottom: 4px; display: block; letter-spacing: 0.5px; }
-        .clean-input {
-            width: 100%; background: #0f0f12; border: 1px solid #27272a; color: #fff;
-            padding: 6px 8px; border-radius: 4px; font-size: 10px; outline: none; transition: 0.2s;
-            font-weight: 500; text-transform: uppercase;
+        .tab-btn { 
+            padding: 6px 12px; font-size: 11px; font-weight: 600; color: #71717a; cursor: pointer; border-radius: 4px; 
         }
-        .clean-input:focus { border-color: #6366f1; }
+        .tab-btn.active { background: #27272a; color: #fff; }
 
-        /* Compact Buttons */
-        .action-btn {
-            width: 100%; padding: 8px; border-radius: 4px; font-size: 10px; font-weight: 700;
-            color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
-        }
-        .btn-excel { background: #0e7490; }
-        .btn-excel:hover { background: #0891b2; }
-        .btn-pdf { background: #7c3aed; }
-        .btn-pdf:hover { background: #8b5cf6; }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #09090b; }
-        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+        /* PDF Frame */
+        iframe { width: 100%; height: 100%; border: none; background: #525252; }
     </style>
 </head>
 <body>
 
-    <div class="fixed inset-0 pointer-events-none">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="absolute inset-0 bg-black/20 backdrop-blur-[1px]"></div>
-    </div>
-
     <div class="layout-grid">
         
-        <div class="sidebar animate-fade-in">
-            <div class="flex items-center gap-2 pb-3 border-b border-white/5">
-                <div class="w-6 h-6 rounded bg-indigo-500/20 flex items-center justify-center border border-indigo-500/20">
-                    <span class="font-bold text-indigo-400 text-xs">X</span>
-                </div>
-                <h1 class="text-xs font-bold text-white tracking-tight">StockPro<span class="text-zinc-600">.ai</span></h1>
+        <div class="sidebar">
+            <div class="flex items-center gap-2 mb-2">
+                <div class="w-6 h-6 bg-indigo-500 rounded flex items-center justify-center font-bold text-white text-xs">S</div>
+                <span class="font-bold text-sm tracking-tight">StockPro Studio</span>
             </div>
 
-            <div class="flex flex-col gap-3">
-                
-                <div>
-                    <span class="micro-label">DATA SOURCE</span>
-                    <div class="glass-panel upload-zone group" id="dropZone">
-                        <div id="uploadContent" class="flex items-center gap-2">
-                            <span class="text-[10px] font-medium text-zinc-500 group-hover:text-indigo-400">📄 Import Excel</span>
-                        </div>
-                        <div id="fileSuccess" class="hidden w-full px-2 flex items-center justify-between">
-                            <span id="fileName" class="text-[9px] font-bold text-green-400 truncate max-w-[120px]">file.xlsx</span>
-                            <span class="cursor-pointer hover:text-white text-zinc-600 font-bold" id="removeFileBtn">✕</span>
-                        </div>
-                        <input id="fileInput" type="file" class="hidden" accept=".xlsx, .xls" />
-                    </div>
+            <div class="upload-box" id="dropZone">
+                <div id="uploadUi">
+                    <p class="text-xs font-medium text-gray-400">Click to Upload Excel</p>
                 </div>
-
-                <div class="glass-panel flex justify-between items-center p-2">
-                    <span class="text-[10px] text-zinc-400 font-medium">Auto-Merge Faces</span>
-                    <label class="switch"><input type="checkbox" id="mergeFaces"><span class="slider"></span></label>
+                <div id="fileUi" class="hidden flex items-center gap-2 justify-center">
+                    <span class="text-green-400 font-bold text-xs">Loaded</span>
+                    <button id="clearFile" class="text-xs text-red-400 hover:text-red-300">✕</button>
                 </div>
+                <input type="file" id="fileInput" class="hidden" accept=".xlsx,.xls">
             </div>
 
-            <div class="mt-auto flex flex-col gap-2">
-                <div>
-                    <label class="micro-label">PROJECT NAME</label>
-                    <input type="text" id="clientName" placeholder="Untitled Project" class="clean-input">
-                </div>
+            <div class="flex items-center justify-between text-xs text-gray-400 px-1">
+                <span>Auto-Merge Faces</span>
+                <input type="checkbox" id="mergeToggle" checked class="accent-indigo-500">
+            </div>
 
-                <div class="grid grid-cols-2 gap-2 mt-1">
-                    <button onclick="downloadOutput('excel')" class="action-btn btn-excel">XLSX</button>
-                    <button onclick="downloadOutput('pdf')" class="action-btn btn-pdf">PDF</button>
+            <div class="mt-auto space-y-3">
+                <div>
+                    <label class="text-[10px] font-bold text-gray-500 uppercase">Client Name</label>
+                    <input type="text" id="clientName" placeholder="ENTER NAME" class="w-full bg-black/20 border border-zinc-700 rounded p-2 text-xs text-white focus:border-indigo-500 outline-none uppercase font-semibold">
                 </div>
-                
-                <p id="statusMessage" class="text-center text-[9px] text-zinc-600 font-medium mt-1">READY</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="exportData('excel')" class="btn-primary bg-blue-600 text-white hover:bg-blue-500">XLSX</button>
+                    <button onclick="exportData('pdf')" class="btn-primary bg-indigo-600 text-white hover:bg-indigo-500">PDF</button>
+                </div>
+                <p id="status" class="text-center text-[10px] text-gray-600">READY TO PROCESS</p>
             </div>
         </div>
 
         <div class="main-area">
-            
-            <div class="tab-bar">
-                <div class="text-[10px] font-bold text-zinc-500 tracking-wider">PREVIEW MODE</div>
-                <div class="tab-group">
-                    <div class="tab-btn active" onclick="switchTab('pdf', this)">PDF VIEW</div>
-                    <div class="tab-btn" onclick="switchTab('excel', this)">EXCEL VIEW</div>
+            <div class="top-bar">
+                <div class="flex bg-zinc-800/50 p-1 rounded">
+                    <div class="tab-btn active" onclick="setTab('pdf', this)">PDF PREVIEW</div>
+                    <div class="tab-btn" onclick="setTab('excel', this)">EXCEL EDIT</div>
                 </div>
             </div>
 
-            <div class="content-container">
-                
-                <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-zinc-700 z-0">
-                    <svg class="w-8 h-8 mb-3 opacity-20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
-                    <p class="text-[10px] font-medium tracking-widest opacity-50">DROP FILE TO LOAD</p>
+            <div class="grid-container bg-[#1a1a1a]">
+                <div id="empty" class="absolute inset-0 flex items-center justify-center text-zinc-700 font-bold tracking-widest text-xs">
+                    NO DATA AVAILABLE
                 </div>
 
-                <div id="pdfContainer" class="view-wrapper active z-10 animate-fade-in">
-                    <iframe id="pdfPreviewFrame"></iframe>
+                <div id="pdfView" class="absolute inset-0 z-20">
+                    <iframe id="pdfFrame"></iframe>
                 </div>
 
-                <div id="gridContainer" class="view-wrapper z-10 animate-fade-in">
-                    <div class="grid-scroll-area custom-scroll">
-                        <table class="modern-table">
-                            <thead>
-                                <tr>
-                                    <th class="w-[40px] text-center">#</th>
-                                    <th class="min-w-[80px]">SIZE</th>
-                                    <th class="min-w-[80px]">SURFACE</th>
-                                    <th class="min-w-[80px]">BODY</th>
-                                    <th class="w-full">DESIGN NAME</th> <th class="w-[60px] text-center">QTY</th>
-                                </tr>
-                            </thead>
-                            <tbody id="gridBody"></tbody>
-                        </table>
-                    </div>
+                <div id="excelView" class="absolute inset-0 bg-[#09090b] hidden z-10 overflow-auto">
+                    <table class="mnc-table">
+                        <thead>
+                            <tr>
+                                <th width="40">#</th>
+                                <th>SIZE</th> <th>SURFACE</th>
+                                <th>BODY</th>
+                                <th width="40%">DESIGN NAME</th> <th class="text-right">QTY</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gridBody"></tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        let cachedRawData = null;
-        let globalProcessedList = []; 
+        // --- LOGIC CORE ---
+        let rawData = null;
+        let processedData = [];
         let activeTab = 'pdf';
-        let debounceTimer;
 
-        const clientInput = document.getElementById('clientName');
-        const mergeToggle = document.getElementById('mergeFaces');
-        const status = document.getElementById('statusMessage');
+        const els = {
+            fileInput: document.getElementById('fileInput'),
+            dropZone: document.getElementById('dropZone'),
+            uploadUi: document.getElementById('uploadUi'),
+            fileUi: document.getElementById('fileUi'),
+            clientName: document.getElementById('clientName'),
+            status: document.getElementById('status'),
+            gridBody: document.getElementById('gridBody'),
+            pdfFrame: document.getElementById('pdfFrame')
+        };
 
-        function switchTab(tab, btn) {
+        // --- EVENTS ---
+        els.dropZone.onclick = (e) => { if(e.target.id !== 'clearFile') els.fileInput.click(); };
+        els.fileInput.onchange = (e) => loadFile(e.target.files[0]);
+        document.getElementById('clearFile').onclick = reset;
+        document.getElementById('mergeToggle').onchange = process;
+        els.clientName.oninput = () => { if(processedData.length) generatePDF(true); };
+
+        function setTab(tab, btn) {
             activeTab = tab;
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
-            const pdfView = document.getElementById('pdfContainer');
-            const gridView = document.getElementById('gridContainer');
-            
-            pdfView.classList.remove('active'); gridView.classList.remove('active');
-            
+            document.getElementById('pdfView').classList.add('hidden');
+            document.getElementById('excelView').classList.add('hidden');
+
             if(tab === 'pdf') {
-                pdfView.classList.add('active');
-                if(globalProcessedList.length > 0) generatePDF(globalProcessedList, clientInput.value, true);
+                document.getElementById('pdfView').classList.remove('hidden');
+                if(processedData.length) generatePDF(true);
             } else {
-                gridView.classList.add('active');
+                document.getElementById('excelView').classList.remove('hidden');
             }
         }
 
-        clientInput.addEventListener('input', function() { 
-            this.value = this.value.toUpperCase(); 
-            if(globalProcessedList.length > 0 && activeTab === 'pdf') {
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(() => { generatePDF(globalProcessedList, this.value, true); }, 500);
-            }
-        });
-
-        mergeToggle.addEventListener('change', () => { if(cachedRawData) processRawData(); });
-
-        document.getElementById('dropZone').addEventListener('click', (e) => { 
-            if(e.target.id !== 'removeFileBtn') document.getElementById('fileInput').click(); 
-        });
-        
-        document.getElementById('fileInput').addEventListener('change', (e) => { 
-            if(e.target.files.length) handleNewFile(e.target.files[0]); 
-        });
-
-        function handleNewFile(file) {
-            document.getElementById('uploadContent').classList.add('hidden');
-            document.getElementById('fileSuccess').classList.remove('hidden');
-            document.getElementById('fileSuccess').classList.add('flex');
-            document.getElementById('fileName').innerText = file.name;
-            status.innerText = "PARSING..."; 
-
+        // --- FILE PROCESSING ---
+        function loadFile(file) {
+            if(!file) return;
+            els.uploadUi.classList.add('hidden');
+            els.fileUi.classList.remove('hidden');
+            els.status.innerText = "READING...";
+            
             const reader = new FileReader();
-            reader.onload = function(e) {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, {type: 'array'});
-                cachedRawData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: 1, defval: ""});
-                processRawData();
+            reader.onload = (e) => {
+                const workbook = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
+                rawData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header:1, defval:""});
+                process();
             };
             reader.readAsArrayBuffer(file);
         }
 
-        function processRawData() {
-            if(!cachedRawData) return;
-            const rawData = cachedRawData;
-            const shouldMergeFaces = mergeToggle.checked;
-
-            let headerIdx = -1, col = { design: -1, cat: -1, size: -1, body: -1, qty: -1 };
-            for (let i = 0; i < Math.min(rawData.length, 25); i++) {
-                const r = rawData[i].map(x => String(x).toLowerCase().trim());
-                if (r.includes('designname') || r.includes('size mm')) {
-                    headerIdx = i; 
-                    col.design = r.indexOf('designname'); col.cat = r.indexOf('category'); col.size = r.indexOf('size mm'); 
-                    col.body = r.indexOf('bodytype'); col.qty = r.findIndex(c => c === 'pre' || c === 'total' || c === 'qty'); 
-                    break;
-                }
-            }
-
-            if (headerIdx === -1) { alert("Header Error"); return; }
-
-            const map = new Map();
-            for (let i = headerIdx + 1; i < rawData.length; i++) {
-                const r = rawData[i]; if (!r || r.length === 0) continue;
-                let design = (r[col.design] || "").toString().trim();
-                let size = (r[col.size] || "").toString().trim();
-                let cat = col.cat > -1 ? (r[col.cat] || "").toString().trim() : "";
-                let body = col.body > -1 ? (r[col.body] || "").toString().trim() : "";
-                let qty = col.qty > -1 ? parseFloat(r[col.qty]) : 0;
-
-                if (!design && !size) continue;
-                if (shouldMergeFaces) design = design.replace(/-[a-zA-Z]$/, "").trim();
-
-                const key = `${size}_${cat}_${body}_${design}`;
-                if (map.has(key)) map.get(key).qty += qty; else map.set(key, { size, cat, body, design, qty });
-            }
-
-            let list = Array.from(map.values());
-            function getDims(s) { const m = s.match(/(\d+)/g); return m ? { w: parseInt(m[0]||0), h: parseInt(m[1]||0) } : {w:0,h:0}; }
-            list.sort((a, b) => {
-                const dA = getDims(a.size), dB = getDims(b.size);
-                if (dA.w !== dB.w) return dA.w - dB.w; if (dA.h !== dB.h) return dA.h - dB.h;
-                return a.design.localeCompare(b.design);
-            });
-
-            globalProcessedList = list;
-            document.getElementById('emptyState').classList.add('hidden');
-            renderGrid(globalProcessedList);
+        function process() {
+            if(!rawData) return;
+            const merge = document.getElementById('mergeToggle').checked;
             
-            if(activeTab === 'pdf') generatePDF(globalProcessedList, clientInput.value, true);
-            else document.getElementById('gridContainer').classList.add('active');
+            // 1. Find Header
+            let headerRow = -1;
+            for(let i=0; i<Math.min(rawData.length, 20); i++) {
+                const row = rawData[i].map(x => String(x).toLowerCase());
+                if(row.includes('designname') || row.includes('particular')) { headerRow = i; break; }
+            }
+            if(headerRow === -1) { alert("Invalid Excel Format"); return; }
 
-            status.innerText = "READY";
-        }
+            // 2. Map Columns
+            const headers = rawData[headerRow].map(x => String(x).toLowerCase());
+            const idx = {
+                design: headers.findIndex(x => x.includes('design') || x.includes('particular')),
+                size: headers.findIndex(x => x.includes('size')),
+                cat: headers.findIndex(x => x.includes('surface') || x.includes('finish') || x.includes('category')),
+                body: headers.findIndex(x => x.includes('body')),
+                qty: headers.findIndex(x => x.includes('qty') || x.includes('box') || x.includes('total'))
+            };
 
-        function renderGrid(list) {
-            const tbody = document.getElementById('gridBody');
-            tbody.innerHTML = "";
-            list.forEach((item, index) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="text-center text-zinc-500 border-r border-zinc-800">${index + 1}</td>
-                    <td><input class="cell-input" value="${item.size}" onchange="updateItem(${index}, 'size', this.value)"></td>
-                    <td><input class="cell-input" value="${item.cat}" onchange="updateItem(${index}, 'cat', this.value)"></td>
-                    <td><input class="cell-input" value="${item.body}" onchange="updateItem(${index}, 'body', this.value)"></td>
-                    <td><input class="cell-input text-white font-semibold" value="${item.design}" onchange="updateItem(${index}, 'design', this.value)"></td>
-                    <td class="border-l border-zinc-800"><input class="cell-input text-center text-green-400 font-bold" type="number" value="${item.qty}" onchange="updateItem(${index}, 'qty', this.value)"></td>
-                `;
-                tbody.appendChild(tr);
+            // 3. Aggregate Data
+            const map = new Map();
+            for(let i=headerRow+1; i<rawData.length; i++) {
+                const r = rawData[i];
+                let design = String(r[idx.design] || "").trim();
+                let size = idx.size > -1 ? String(r[idx.size] || "").trim() : "";
+                let cat = idx.cat > -1 ? String(r[idx.cat] || "").trim() : "";
+                let body = idx.body > -1 ? String(r[idx.body] || "").trim() : "";
+                let qty = idx.qty > -1 ? parseFloat(r[idx.qty]) || 0 : 0;
+
+                if(!design) continue;
+                if(merge) design = design.replace(/[-_][ABCDabcd]$/, "").trim(); // Smart Merge Logic
+
+                const key = `${size}|${cat}|${body}|${design}`;
+                if(map.has(key)) map.get(key).qty += qty;
+                else map.set(key, { size, cat, body, design, qty });
+            }
+
+            // 4. Sort (Size -> Category -> Design)
+            processedData = Array.from(map.values()).sort((a,b) => {
+                const sA = (a.size.match(/\d+/g)||[0])[0], sB = (b.size.match(/\d+/g)||[0])[0];
+                return (sA - sB) || a.cat.localeCompare(b.cat) || a.design.localeCompare(b.design);
             });
+
+            document.getElementById('empty').classList.add('hidden');
+            renderGrid();
+            if(activeTab === 'pdf') generatePDF(true);
+            els.status.innerText = `READY (${processedData.length} ITEMS)`;
         }
 
-        window.updateItem = function(index, field, value) {
-            if(field === 'qty') value = parseFloat(value) || 0;
-            globalProcessedList[index][field] = value;
-            status.innerText = "SAVING..."; setTimeout(() => status.innerText = "READY", 500);
+        // --- RENDER GRID ---
+        function renderGrid() {
+            els.gridBody.innerHTML = processedData.map((item, i) => `
+                <tr>
+                    <td class="text-zinc-500">${i+1}</td>
+                    <td><input class="grid-input" value="${item.size}" onchange="update(${i},'size',this.value)"></td>
+                    <td><input class="grid-input" value="${item.cat}" onchange="update(${i},'cat',this.value)"></td>
+                    <td><input class="grid-input" value="${item.body}" onchange="update(${i},'body',this.value)"></td>
+                    <td><input class="grid-input font-bold text-white" value="${item.design}" onchange="update(${i},'design',this.value)"></td>
+                    <td class="text-right"><input class="grid-input text-right text-indigo-400 font-bold" value="${item.qty}" onchange="update(${i},'qty',this.value)"></td>
+                </tr>
+            `).join('');
+        }
+
+        window.update = (i, key, val) => {
+            if(key === 'qty') val = parseFloat(val) || 0;
+            processedData[i][key] = val;
+            if(activeTab === 'pdf') generatePDF(true);
         };
 
-        function downloadOutput(type) {
-            if(globalProcessedList.length === 0) { alert("No Data"); return; }
-            const name = clientInput.value || "REPORT";
-            if(type === 'excel') generateExcel(globalProcessedList, name);
-            if(type === 'pdf') generatePDF(globalProcessedList, name, false);
-        }
-
-        // --- INTELLIGENT EXCEL GENERATOR ---
-        function generateExcel(list, clientName) {
-            const output = [["", "", "", "", "", ""], ["", "", "", "", "", ""], ["", "", "", "", "", ""]];
-            const sHead = { font: { sz: 10, bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1E293B" } }, alignment: { horizontal: "center", vertical: "center" } };
-            const sData = { font: { sz: 10 }, alignment: { horizontal: "center", vertical: "center" }, border: { top:{style:"thin",color:{rgb:"E5E7EB"}}, bottom:{style:"thin",color:{rgb:"E5E7EB"}} } };
-            
-            output.push(["SR NO", "Size & Thickness", "Surface", "BodyType", "DesignName", "Total QTY"].map(h => ({v:h, s:sHead})));
-            
-            let sr = 1, grandTotal = 0, lastSize = null;
-            // Width Calculator
-            let maxW = { sr: 6, size: 15, cat: 10, body: 10, design: 25, qty: 10 };
-
-            list.forEach(item => { 
-                if (lastSize && lastSize !== item.size) output.push(new Array(6).fill({v:"",s:sData})); 
-                lastSize = item.size; grandTotal += item.qty; 
-                output.push([sr++, item.size, item.cat, item.body, item.design, item.qty].map(v => ({v:v, s:sData}))); 
-                
-                // Smart Width Calculation
-                maxW.size = Math.max(maxW.size, (item.size || "").length);
-                maxW.cat = Math.max(maxW.cat, (item.cat || "").length);
-                maxW.body = Math.max(maxW.body, (item.body || "").length);
-                maxW.design = Math.max(maxW.design, (item.design || "").length);
-            });
-            output.push(["", "", "", "", "GRAND TOTAL", grandTotal]);
-
-            const newWs = XLSX.utils.aoa_to_sheet(output);
-            
-            // Apply Smart Widths
-            newWs['!cols'] = [
-                {wch: maxW.sr}, {wch: maxW.size + 2}, {wch: maxW.cat + 2}, 
-                {wch: maxW.body + 2}, {wch: maxW.design + 5}, {wch: maxW.qty}
-            ];
-
-            if(!newWs['!merges']) newWs['!merges'] = []; newWs['!merges'].push({ s: { r: 0, c: 0 }, e: { r: 2, c: 5 } }); 
-            newWs['A1'] = { v: clientName || "STOCK REPORT", s: { font: { sz: 24, bold: true }, alignment: { horizontal: "center" } } };
-            const newWb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(newWb, newWs, "Stock");
-            XLSX.writeFile(newWb, `Stock_${clientName}.xlsx`);
-        }
-
-        // --- INTELLIGENT PDF GENERATOR (A4 Fit) ---
-        function generatePDF(list, clientName, isPreview) {
+        // --- SMART MNC PDF GENERATOR ---
+        function generatePDF(isPreview) {
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF(); // Default A4
-            const tableData = [];
-            let sr = 1, grandTotal = 0, lastSize = null;
-            list.forEach(item => { 
-                if(lastSize && lastSize !== item.size) tableData.push(['', '', '', '', '', '']); 
-                lastSize = item.size; grandTotal += item.qty; 
-                tableData.push([sr++, item.size, item.cat, item.body, item.design, item.qty]); 
+            const doc = new jsPDF();
+            
+            // 1. Calculate Content Widths (The "Smart Logic")
+            // We scan all data to find the max length needed for each column to avoid wrapping
+            let maxLen = { size: 10, cat: 10, body: 10 };
+            let totalQty = 0;
+
+            processedData.forEach(p => {
+                totalQty += p.qty;
+                maxLen.size = Math.max(maxLen.size, (p.size||"").length);
+                maxLen.cat = Math.max(maxLen.cat, (p.cat||"").length);
+                maxLen.body = Math.max(maxLen.body, (p.body||"").length);
             });
-            tableData.push(['', '', '', '', 'GRAND TOTAL', grandTotal]);
+
+            // Convert char length to approx mm (Factor 2.2 is safe for Helvetica)
+            const wSize = Math.min(Math.max(maxLen.size * 2.2, 20), 40); // Min 20mm, Max 40mm
+            const wCat = Math.min(Math.max(maxLen.cat * 2.2, 20), 35);
+            const wBody = Math.min(Math.max(maxLen.body * 2.2, 15), 30);
+            const wQty = 18; // Fixed
+            const wSr = 10; // Fixed
+            
+            // Design column takes whatever space is left from A4 width (210mm - margins)
+            // This ensures perfect full-width alignment without wrap
+            
+            const tableBody = processedData.map((p, i) => [i+1, p.size, p.cat, p.body, p.design, p.qty]);
+            tableBody.push(['', '', '', '', 'GRAND TOTAL', totalQty]);
 
             doc.autoTable({
-                head: [['SR', 'SIZE', 'SURFACE', 'BODY', 'DESIGN NAME', 'QTY']], 
-                body: tableData, 
-                startY: 30, 
-                theme: 'grid',
-                styles: { 
-                    fontSize: 9, 
-                    cellPadding: 2, 
-                    valign: 'middle', 
-                    halign: 'center', 
-                    lineWidth: 0.1, 
-                    lineColor: [200, 200, 200],
-                    overflow: 'linebreak' // Prevents cut-off
+                head: [['SR', 'SIZE', 'SURFACE', 'BODY', 'DESIGN NAME', 'QTY']],
+                body: tableBody,
+                startY: 35,
+                theme: 'plain', // Cleanest base
+                styles: {
+                    fontSize: 9,
+                    font: 'helvetica',
+                    cellPadding: 3, // Comfortable padding
+                    textColor: [40, 40, 40], // Dark Grey text
+                    lineWidth: 0, // No borders by default
+                    valign: 'middle',
+                    overflow: 'hidden' // Force crop if measuring fails (backup)
                 },
-                headStyles: { fillColor: [30, 41, 59], textColor: 255, fontStyle: 'bold' },
-                // EXACT A4 COLUMN FITTING LOGIC
-                columnStyles: { 
-                    0: { cellWidth: 8 },  // SR
-                    1: { cellWidth: 22 }, // Size
-                    2: { cellWidth: 20 }, // Surface
-                    3: { cellWidth: 20 }, // Body
-                    4: { cellWidth: 'auto', halign: 'left' }, // Design (Takes remaining space)
-                    5: { cellWidth: 15, fontStyle: 'bold' }  // Qty
+                headStyles: {
+                    fillColor: [20, 20, 23], // Corporate Dark Header
+                    textColor: 255,
+                    fontStyle: 'bold',
+                    cellPadding: 4
                 },
-                didDrawPage: (d) => { if(d.pageNumber===1) { doc.setFontSize(22); doc.text(clientName||"STOCK REPORT", 105, 18, {align:"center"}); } },
-                didParseCell: (d) => { if(d.row.raw[4]==='GRAND TOTAL') { d.cell.styles.fontStyle='bold'; d.cell.styles.fillColor=[240,240,240]; } }
+                columnStyles: {
+                    0: { cellWidth: wSr, halign: 'center' },
+                    1: { cellWidth: wSize },
+                    2: { cellWidth: wCat },
+                    3: { cellWidth: wBody },
+                    4: { cellWidth: 'auto', fontStyle: 'bold' }, // Auto-Fill Space
+                    5: { cellWidth: wQty, halign: 'right', fontStyle: 'bold' }
+                },
+                didDrawPage: (data) => {
+                    // Header
+                    doc.setFontSize(22);
+                    doc.setFont("helvetica", "bold");
+                    doc.text((els.clientName.value || "STOCK REPORT").toUpperCase(), 105, 20, { align: 'center' });
+                    doc.setLineWidth(0.5);
+                    doc.line(14, 25, 196, 25); // Underline
+                },
+                didParseCell: (data) => {
+                    // Horizontal Lines Only (MNC Style)
+                    if (data.section === 'body') {
+                        data.cell.styles.border = { bottom: { width: 0.1, color: [220, 220, 220] } };
+                    }
+                    // Grand Total Styling
+                    if (data.row.raw[4] === 'GRAND TOTAL') {
+                        data.cell.styles.fillColor = [240, 240, 245];
+                        data.cell.styles.fontStyle = 'bold';
+                    }
+                }
             });
 
-            if (isPreview) document.getElementById('pdfPreviewFrame').src = doc.output('bloburl');
-            else doc.save(`Stock_${clientName}.pdf`);
+            if(isPreview) els.pdfFrame.src = doc.output('bloburl');
+            else doc.save(`Stock_${els.clientName.value||'Report'}.pdf`);
         }
-        
-        document.getElementById('removeFileBtn').addEventListener('click', (e) => { 
-            e.stopPropagation(); document.getElementById('fileInput').value = ""; cachedRawData = null; globalProcessedList = [];
-            document.getElementById('uploadContent').classList.remove('hidden'); 
-            document.getElementById('fileSuccess').classList.add('hidden'); document.getElementById('fileSuccess').classList.remove('flex'); 
-            document.getElementById('emptyState').classList.remove('hidden');
-            document.querySelector('.view-wrapper.active').classList.remove('active');
-            status.innerText = "READY";
-        });
+
+        function exportData(type) {
+            if(!processedData.length) return alert("No Data!");
+            if(type === 'pdf') generatePDF(false);
+            if(type === 'excel') {
+                const ws = XLSX.utils.json_to_sheet(processedData);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Stock");
+                XLSX.writeFile(wb, "Stock_Report.xlsx");
+            }
+        }
+
+        function reset() {
+            rawData = null; processedData = [];
+            els.fileUi.classList.add('hidden'); els.uploadUi.classList.remove('hidden');
+            els.fileInput.value = "";
+            document.getElementById('empty').classList.remove('hidden');
+            renderGrid();
+        }
     </script>
 </body>
 </html>
