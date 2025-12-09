@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - Index 8 Style</title>
+    <title>StockPro X - Qty Fixed</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -25,7 +25,7 @@
     </script>
 
     <style>
-        /* --- GLOBAL THEME (Dark Mode from StockPro X) --- */
+        /* --- GLOBAL THEME (Dark Mode) --- */
         body { background: #0f0f12; color: #e4e4e7; font-family: 'Inter', sans-serif; font-size: 12px; overflow: hidden; }
 
         /* --- LAYOUT --- */
@@ -169,12 +169,22 @@
             let headerRow = -1;
             for(let i=0; i<Math.min(rawData.length, 20); i++) {
                 const row = rawData[i].map(x => String(x).toLowerCase());
-                if(row.includes('designname') || row.includes('particular')) { headerRow = i; break; }
+                // Simple check for Header
+                if(row.includes('designname') || row.includes('particular') || row.includes('design')) { headerRow = i; break; }
             }
-            if(headerRow === -1) { alert("Invalid Format"); return; }
+            if(headerRow === -1) { alert("Header Row (DesignName) Not Found!"); return; }
 
             const headers = rawData[headerRow].map(x => String(x).toLowerCase());
-            const idx = { design: headers.findIndex(x => x.includes('design') || x.includes('particular')), size: headers.findIndex(x => x.includes('size')), cat: headers.findIndex(x => x.includes('surface') || x.includes('finish') || x.includes('category')), body: headers.findIndex(x => x.includes('body')), qty: headers.findIndex(x => x.includes('qty') || x.includes('box')) };
+            
+            // --- FIX: AGGRESSIVE COLUMN SEARCH ---
+            const idx = { 
+                design: headers.findIndex(x => x.includes('design') || x.includes('particular')), 
+                size: headers.findIndex(x => x.includes('size')), 
+                cat: headers.findIndex(x => x.includes('surface') || x.includes('finish') || x.includes('category')), 
+                body: headers.findIndex(x => x.includes('body')), 
+                // Updated Logic: Looks for qty, box, total, pre, pcs, quantity
+                qty: headers.findIndex(x => x.includes('qty') || x.includes('box') || x.includes('total') || x.includes('pre') || x.includes('pcs') || x.includes('quantity')) 
+            };
 
             const map = new Map();
             for(let i=headerRow+1; i<rawData.length; i++) {
@@ -183,7 +193,8 @@
                 let size = idx.size > -1 ? String(r[idx.size] || "").trim() : "";
                 let cat = idx.cat > -1 ? String(r[idx.cat] || "").trim() : "";
                 let body = idx.body > -1 ? String(r[idx.body] || "").trim() : "";
-                let qty = idx.qty > -1 ? parseFloat(r[idx.qty]) || 0 : 0;
+                let qty = idx.qty > -1 ? parseFloat(r[idx.qty]) || 0 : 0; // Ensures number
+
                 if(!design) continue;
                 if(merge) design = design.replace(/[-_][ABCDabcd]$/, "").trim();
 
@@ -216,7 +227,7 @@
 
         window.update = (i, key, val) => { if(key === 'qty') val = parseFloat(val) || 0; processedData[i][key] = val; if(activeTab === 'pdf') generatePDF(true); };
 
-        // --- PDF GENERATOR (MATCHED TO INDEX 8) ---
+        // --- PDF GENERATOR (INDEX 8 STYLE) ---
         function generatePDF(isPreview) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
@@ -230,7 +241,6 @@
                 maxLen.body = Math.max(maxLen.body, (p.body||"").length);
             });
 
-            // Smart Auto-Width Logic
             const wSize = Math.min(Math.max(maxLen.size * 2.2, 25), 40);
             const wCat = Math.min(Math.max(maxLen.cat * 2.2, 20), 30);
             const wBody = Math.min(Math.max(maxLen.body * 2.2, 15), 30);
@@ -242,23 +252,9 @@
                 head: [['SR', 'SIZE', 'SURFACE', 'BODY', 'DESIGN NAME', 'QTY']],
                 body: tableBody,
                 startY: 30,
-                theme: 'grid', // MATCHED: Grid Style
-                styles: {
-                    fontSize: 8, // ULTRA COMPACT FONT
-                    font: 'helvetica',
-                    cellPadding: 0.8, // ULTRA COMPACT PADDING (Allows more entries)
-                    textColor: [40, 40, 40],
-                    lineWidth: 0.1,
-                    lineColor: [200, 200, 200], // Gray Borders
-                    valign: 'middle',
-                    halign: 'center'
-                },
-                headStyles: {
-                    fillColor: [30, 41, 59], // MATCHED: Dark Navy Blue Header
-                    textColor: 255,
-                    fontStyle: 'bold',
-                    lineWidth: 0.1
-                },
+                theme: 'grid',
+                styles: { fontSize: 8, font: 'helvetica', cellPadding: 0.8, textColor: [40, 40, 40], lineWidth: 0.1, lineColor: [200, 200, 200], valign: 'middle', halign: 'center' },
+                headStyles: { fillColor: [30, 41, 59], textColor: 255, fontStyle: 'bold', lineWidth: 0.1 },
                 columnStyles: {
                     0: { cellWidth: 10 },
                     1: { cellWidth: wSize },
@@ -274,7 +270,6 @@
                     }
                 },
                 didParseCell: (data) => {
-                    // Match Index 8 Grand Total Style
                     if (data.row.raw[4] === 'GRAND TOTAL') {
                         data.cell.styles.fillColor = [240, 240, 240];
                         data.cell.styles.fontStyle = 'bold';
@@ -286,22 +281,21 @@
             else doc.save(`Stock_${els.clientName.value||'Report'}.pdf`);
         }
 
-        // --- EXCEL EXPORT (MATCHED TO INDEX 8) ---
+        // --- EXCEL EXPORT (INDEX 8 STYLE) ---
         function exportData(type) {
             if(!processedData.length) return alert("No Data!");
             if(type === 'pdf') generatePDF(false);
             if(type === 'excel') {
                 const output = [];
-                // Styles matched to Index 8
                 const borderStyle = { top: { style: "thin", color: { rgb: "E5E7EB" } }, bottom: { style: "thin", color: { rgb: "E5E7EB" } }, left: { style: "thin", color: { rgb: "D1D5DB" } }, right: { style: "thin", color: { rgb: "D1D5DB" } } };
                 const sHead = { font: { sz: 10, bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1E293B" } }, alignment: { horizontal: "center", vertical: "center" }, border: { bottom: { style: "medium", color: { rgb: "000000" } } } };
-                const sData = { font: { sz: 9 }, alignment: { horizontal: "center", vertical: "center" }, border: borderStyle }; // Smaller font 9
+                const sData = { font: { sz: 9 }, alignment: { horizontal: "center", vertical: "center" }, border: borderStyle };
                 const sGrey = { ...sData, fill: { fgColor: { rgb: "F9FAFB" } } };
                 const sTotal = { font: { sz: 10, bold: true }, fill: { fgColor: { rgb: "E5E7EB" } }, alignment: { horizontal: "center", vertical: "center" }, border: { top: {style:"double"}, bottom: {style:"thin"} } };
 
                 output.push(["SR", "Size", "Surface", "Body", "Design Name", "Qty"].map(h => ({v:h, s:sHead})));
                 
-                let sr=1, grandTotal=0, lastSize=null;
+                let sr=1, grandTotal=0;
                 processedData.forEach((item, i) => {
                     grandTotal += item.qty;
                     const style = (sr % 2 === 0) ? sGrey : sData;
