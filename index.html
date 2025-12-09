@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - Ultimate Compact</title>
+    <title>StockPro X - Smart Fit</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -36,7 +36,7 @@
         /* COMPACT GRID LAYOUT */
         .layout-grid { 
             display: grid; 
-            grid-template-columns: 240px 1fr; /* Reduced width */
+            grid-template-columns: 240px 1fr; /* Ultra Compact Sidebar */
             height: 100vh; position: relative; z-index: 10; 
         }
 
@@ -66,29 +66,37 @@
 
         /* VIEW PORT */
         .content-container { flex: 1; position: relative; overflow: hidden; background: #000; }
-        .view-wrapper { position: absolute; inset: 0; display: none; } /* Full fill, no margins */
+        .view-wrapper { position: absolute; inset: 0; display: none; }
         .view-wrapper.active { display: block; }
 
         /* PREVIEW ELEMENTS */
         #pdfPreviewFrame { width: 100%; height: 100%; border: none; background: #1a1a1a; }
         .grid-scroll-area { width: 100%; height: 100%; overflow: auto; background: #09090b; }
 
-        /* COMPACT TABLE */
-        .modern-table { width: 100%; border-collapse: collapse; font-size: 10px; }
+        /* SMART AUTO-FIT TABLE */
+        .modern-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 10px; }
         .modern-table th { 
-            background: #18181b; color: #a1a1aa; font-weight: 600; text-align: left; padding: 6px 10px; 
+            background: #18181b; color: #a1a1aa; font-weight: 600; text-align: left; padding: 8px 12px; 
             position: sticky; top: 0; border-bottom: 1px solid #27272a; z-index: 10;
+            white-space: nowrap; /* Prevent Header Wrap */
         }
         .modern-table td { 
             border-bottom: 1px solid #27272a; padding: 0; 
-            color: #d4d4d8; height: 28px; /* Fixed concise height */
+            color: #d4d4d8; height: 32px; 
+            position: relative;
         }
         .modern-table tr:hover td { background: rgba(255,255,255,0.03); }
+        
+        /* Cell Input - Auto Fit Logic */
         .cell-input { 
-            width: 100%; height: 100%; background: transparent; border: none; padding: 0 10px; 
-            color: inherit; outline: none; font-family: inherit; font-size: 10px;
+            width: 100%; height: 100%; background: transparent; border: none; padding: 0 12px; 
+            color: inherit; outline: none; font-family: inherit; font-size: 11px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; /* Smart Truncate */
         }
-        .cell-input:focus { background: rgba(99, 102, 241, 0.1); box-shadow: inset 0 0 0 1px #6366f1; }
+        .cell-input:focus { 
+            background: rgba(99, 102, 241, 0.1); box-shadow: inset 0 0 0 1px #6366f1; 
+            position: absolute; z-index: 20; width: auto; min-width: 100%; /* Expand on Focus */
+        }
 
         /* UI COMPONENTS - MICRO STYLE */
         .glass-panel {
@@ -198,7 +206,7 @@
                 <div class="text-[10px] font-bold text-zinc-500 tracking-wider">PREVIEW MODE</div>
                 <div class="tab-group">
                     <div class="tab-btn active" onclick="switchTab('pdf', this)">PDF VIEW</div>
-                    <div class="tab-btn" onclick="switchTab('excel', this)">GRID EDIT</div>
+                    <div class="tab-btn" onclick="switchTab('excel', this)">EXCEL VIEW</div>
                 </div>
             </div>
 
@@ -218,12 +226,11 @@
                         <table class="modern-table">
                             <thead>
                                 <tr>
-                                    <th width="30" class="text-center">#</th>
-                                    <th width="80">SIZE</th>
-                                    <th width="80">SURFACE</th>
-                                    <th width="80">BODY</th>
-                                    <th>DESIGN</th>
-                                    <th width="60" class="text-center">QTY</th>
+                                    <th class="w-[40px] text-center">#</th>
+                                    <th class="min-w-[80px]">SIZE</th>
+                                    <th class="min-w-[80px]">SURFACE</th>
+                                    <th class="min-w-[80px]">BODY</th>
+                                    <th class="w-full">DESIGN NAME</th> <th class="w-[60px] text-center">QTY</th>
                                 </tr>
                             </thead>
                             <tbody id="gridBody"></tbody>
@@ -359,7 +366,7 @@
                     <td><input class="cell-input" value="${item.size}" onchange="updateItem(${index}, 'size', this.value)"></td>
                     <td><input class="cell-input" value="${item.cat}" onchange="updateItem(${index}, 'cat', this.value)"></td>
                     <td><input class="cell-input" value="${item.body}" onchange="updateItem(${index}, 'body', this.value)"></td>
-                    <td><input class="cell-input text-white" value="${item.design}" onchange="updateItem(${index}, 'design', this.value)"></td>
+                    <td><input class="cell-input text-white font-semibold" value="${item.design}" onchange="updateItem(${index}, 'design', this.value)"></td>
                     <td class="border-l border-zinc-800"><input class="cell-input text-center text-green-400 font-bold" type="number" value="${item.qty}" onchange="updateItem(${index}, 'qty', this.value)"></td>
                 `;
                 tbody.appendChild(tr);
@@ -379,31 +386,49 @@
             if(type === 'pdf') generatePDF(globalProcessedList, name, false);
         }
 
+        // --- INTELLIGENT EXCEL GENERATOR ---
         function generateExcel(list, clientName) {
             const output = [["", "", "", "", "", ""], ["", "", "", "", "", ""], ["", "", "", "", "", ""]];
             const sHead = { font: { sz: 10, bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1E293B" } }, alignment: { horizontal: "center", vertical: "center" } };
             const sData = { font: { sz: 10 }, alignment: { horizontal: "center", vertical: "center" }, border: { top:{style:"thin",color:{rgb:"E5E7EB"}}, bottom:{style:"thin",color:{rgb:"E5E7EB"}} } };
             
-            output.push(["SR NO", "Size & thikness", "surface", "BodyType", "DesignName", "Total QTY"].map(h => ({v:h, s:sHead})));
+            output.push(["SR NO", "Size & Thickness", "Surface", "BodyType", "DesignName", "Total QTY"].map(h => ({v:h, s:sHead})));
             
             let sr = 1, grandTotal = 0, lastSize = null;
+            // Width Calculator
+            let maxW = { sr: 6, size: 15, cat: 10, body: 10, design: 25, qty: 10 };
+
             list.forEach(item => { 
                 if (lastSize && lastSize !== item.size) output.push(new Array(6).fill({v:"",s:sData})); 
                 lastSize = item.size; grandTotal += item.qty; 
                 output.push([sr++, item.size, item.cat, item.body, item.design, item.qty].map(v => ({v:v, s:sData}))); 
+                
+                // Smart Width Calculation
+                maxW.size = Math.max(maxW.size, (item.size || "").length);
+                maxW.cat = Math.max(maxW.cat, (item.cat || "").length);
+                maxW.body = Math.max(maxW.body, (item.body || "").length);
+                maxW.design = Math.max(maxW.design, (item.design || "").length);
             });
             output.push(["", "", "", "", "GRAND TOTAL", grandTotal]);
 
             const newWs = XLSX.utils.aoa_to_sheet(output);
+            
+            // Apply Smart Widths
+            newWs['!cols'] = [
+                {wch: maxW.sr}, {wch: maxW.size + 2}, {wch: maxW.cat + 2}, 
+                {wch: maxW.body + 2}, {wch: maxW.design + 5}, {wch: maxW.qty}
+            ];
+
             if(!newWs['!merges']) newWs['!merges'] = []; newWs['!merges'].push({ s: { r: 0, c: 0 }, e: { r: 2, c: 5 } }); 
             newWs['A1'] = { v: clientName || "STOCK REPORT", s: { font: { sz: 24, bold: true }, alignment: { horizontal: "center" } } };
             const newWb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(newWb, newWs, "Stock");
             XLSX.writeFile(newWb, `Stock_${clientName}.xlsx`);
         }
 
+        // --- INTELLIGENT PDF GENERATOR (A4 Fit) ---
         function generatePDF(list, clientName, isPreview) {
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+            const doc = new jsPDF(); // Default A4
             const tableData = [];
             let sr = 1, grandTotal = 0, lastSize = null;
             list.forEach(item => { 
@@ -414,10 +439,29 @@
             tableData.push(['', '', '', '', 'GRAND TOTAL', grandTotal]);
 
             doc.autoTable({
-                head: [['SR NO', 'Size & thikness', 'surface', 'BodyType', 'DesignName', 'Total QTY']], body: tableData, startY: 30, theme: 'grid',
-                styles: { fontSize: 9, cellPadding: 1, valign: 'middle', halign: 'center', lineWidth: 0.1, lineColor: [200, 200, 200] },
-                headStyles: { fillColor: [30, 41, 59], textColor: 255 },
-                columnStyles: { 0: { cellWidth: 10 }, 4: { cellWidth: 'auto' }, 5: { cellWidth: 18 } },
+                head: [['SR', 'SIZE', 'SURFACE', 'BODY', 'DESIGN NAME', 'QTY']], 
+                body: tableData, 
+                startY: 30, 
+                theme: 'grid',
+                styles: { 
+                    fontSize: 9, 
+                    cellPadding: 2, 
+                    valign: 'middle', 
+                    halign: 'center', 
+                    lineWidth: 0.1, 
+                    lineColor: [200, 200, 200],
+                    overflow: 'linebreak' // Prevents cut-off
+                },
+                headStyles: { fillColor: [30, 41, 59], textColor: 255, fontStyle: 'bold' },
+                // EXACT A4 COLUMN FITTING LOGIC
+                columnStyles: { 
+                    0: { cellWidth: 8 },  // SR
+                    1: { cellWidth: 22 }, // Size
+                    2: { cellWidth: 20 }, // Surface
+                    3: { cellWidth: 20 }, // Body
+                    4: { cellWidth: 'auto', halign: 'left' }, // Design (Takes remaining space)
+                    5: { cellWidth: 15, fontStyle: 'bold' }  // Qty
+                },
                 didDrawPage: (d) => { if(d.pageNumber===1) { doc.setFontSize(22); doc.text(clientName||"STOCK REPORT", 105, 18, {align:"center"}); } },
                 didParseCell: (d) => { if(d.row.raw[4]==='GRAND TOTAL') { d.cell.styles.fontStyle='bold'; d.cell.styles.fillColor=[240,240,240]; } }
             });
