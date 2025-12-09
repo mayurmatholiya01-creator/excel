@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - Dashboard Edition</title>
+    <title>StockPro X - Live Dashboard</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -16,7 +16,7 @@
             theme: {
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    animation: { 'slide-up': 'slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards', 'fade-in': 'fadeIn 0.5s ease-out forwards' },
+                    animation: { 'slide-up': 'slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards', 'fade-in': 'fadeIn 0.5s ease-out forwards', 'pulse-slow': 'pulse 3s infinite' },
                     keyframes: { slideUp: { '0%': { opacity: 0, transform: 'translateY(10px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } }, fadeIn: { '0%': { opacity: 0 }, '100%': { opacity: 1 } } }
                 }
             }
@@ -26,51 +26,30 @@
     <style>
         body { background: #000; color: #fff; font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
 
-        /* Background Orbs */
+        /* Orbs */
         .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.3; pointer-events: none; z-index: 0; }
         .orb-1 { top: -10%; left: -10%; width: 40vw; height: 40vw; background: #4f46e5; }
         .orb-2 { bottom: -20%; right: -10%; width: 30vw; height: 30vw; background: #ec4899; }
 
-        /* Layout Grid */
-        .layout-grid {
-            display: grid;
-            grid-template-columns: 320px 1fr;
-            height: 100vh;
-            position: relative;
-            z-index: 10;
-        }
+        .layout-grid { display: grid; grid-template-columns: 320px 1fr; height: 100vh; position: relative; z-index: 10; }
 
-        /* Sidebar Glass */
+        /* Sidebar */
         .sidebar {
-            background: rgba(20, 20, 23, 0.6);
-            backdrop-filter: blur(20px);
+            background: rgba(20, 20, 23, 0.6); backdrop-filter: blur(20px);
             border-right: 1px solid rgba(255, 255, 255, 0.08);
-            display: flex;
-            flex-direction: column;
-            padding: 24px;
-            gap: 20px;
-            z-index: 20;
+            display: flex; flex-direction: column; padding: 24px; gap: 20px; z-index: 20;
         }
 
-        /* Main Area */
-        .main-area {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            padding: 24px;
-            overflow: hidden;
-        }
+        .main-area { position: relative; display: flex; flex-direction: column; padding: 24px; overflow: hidden; }
 
-        /* Components */
+        /* Upload */
         .upload-zone {
-            background: rgba(255,255,255,0.03);
-            border: 1px dashed rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.15);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .upload-zone:hover, .upload-zone.dragover {
-            background: rgba(79, 70, 229, 0.1); border-color: #6366f1;
-        }
+        .upload-zone:hover, .upload-zone.dragover { background: rgba(79, 70, 229, 0.1); border-color: #6366f1; }
 
+        /* Switch */
         .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #3f3f46; transition: .4s; border-radius: 34px; }
@@ -86,6 +65,9 @@
         .stagger-1 { animation-delay: 0.1s; opacity: 0; }
         .stagger-2 { animation-delay: 0.2s; opacity: 0; }
         .stagger-3 { animation-delay: 0.3s; opacity: 0; }
+
+        /* Live Indicator */
+        .live-dot { width: 6px; height: 6px; background-color: #4ade80; border-radius: 50%; display: inline-block; margin-right: 4px; animation: pulse 2s infinite; }
     </style>
 </head>
 <body>
@@ -99,7 +81,6 @@
     <div class="layout-grid">
         
         <div class="sidebar animate-slide-up">
-            
             <div class="flex items-center gap-3 border-b border-white/5 pb-4">
                 <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center border border-indigo-500/20">
                     <svg class="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
@@ -140,15 +121,18 @@
             </div>
 
             <div class="mt-auto flex flex-col gap-2 animate-slide-up stagger-3">
-                <button onclick="processData('excel')" class="btn-excel w-full h-10 rounded-xl text-[10px] font-bold text-white shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2">
+                <button onclick="downloadOutput('excel')" class="btn-excel w-full h-10 rounded-xl text-[10px] font-bold text-white shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2">
                     <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                     <span>EXPORT XLSX</span>
                 </button>
-                <button onclick="processData('pdf_download')" class="btn-pdf w-full h-10 rounded-xl text-[10px] font-bold text-white shadow-lg shadow-pink-500/10 hover:shadow-pink-500/20 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2">
+                <button onclick="downloadOutput('pdf')" class="btn-pdf w-full h-10 rounded-xl text-[10px] font-bold text-white shadow-lg shadow-pink-500/10 hover:shadow-pink-500/20 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2">
                     <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
                     <span>EXPORT PDF</span>
                 </button>
-                <p id="statusMessage" class="text-center text-[9px] h-3 text-zinc-500 font-medium mt-1"></p>
+                <div class="h-4 flex items-center justify-center gap-1 mt-1">
+                    <span id="loadingDot" class="live-dot hidden"></span>
+                    <p id="statusMessage" class="text-center text-[9px] text-zinc-500 font-medium"></p>
+                </div>
             </div>
         </div>
 
@@ -159,139 +143,171 @@
                 </div>
                 <p class="text-xs font-medium tracking-wide">PREVIEW WILL APPEAR HERE</p>
             </div>
-
             <div id="previewContainer" class="hidden w-full h-full bg-white rounded-xl overflow-hidden shadow-2xl shadow-black/50 animate-fade-in relative z-10">
                 <iframe id="pdfPreviewFrame"></iframe>
             </div>
         </div>
-
     </div>
 
     <script>
+        // --- GLOBAL VARIABLES FOR LIVE EDITING ---
+        let cachedRawData = null; // Store Excel Data Here
+        let isProcessing = false;
+
         const clientInput = document.getElementById('clientName');
+        const mergeToggle = document.getElementById('mergeFaces');
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
-        const uploadContent = document.getElementById('uploadContent');
-        const fileSuccess = document.getElementById('fileSuccess');
-        const fileNameTxt = document.getElementById('fileName');
-        const removeFileBtn = document.getElementById('removeFileBtn');
-        const previewContainer = document.getElementById('previewContainer');
-        const emptyState = document.getElementById('emptyState');
-        const pdfFrame = document.getElementById('pdfPreviewFrame');
-
-        clientInput.addEventListener('input', function() { this.value = this.value.toUpperCase(); });
-
-        dropZone.addEventListener('click', (e) => { if(e.target !== removeFileBtn) fileInput.click(); });
+        const status = document.getElementById('statusMessage');
+        const loadingDot = document.getElementById('loadingDot');
         
-        fileInput.addEventListener('change', () => {
-            handleFileSelect();
-            if (fileInput.files.length > 0) processData('preview');
+        // --- EVENT LISTENERS ---
+        
+        // 1. Live Client Name Update (with Debounce to prevent lag)
+        let debounceTimer;
+        clientInput.addEventListener('input', function() { 
+            this.value = this.value.toUpperCase(); 
+            if(cachedRawData) {
+                status.innerText = "UPDATING...";
+                loadingDot.classList.remove('hidden');
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => { updateEngine('preview'); }, 600); // 600ms Delay
+            }
         });
 
+        // 2. Live Merge Toggle
+        mergeToggle.addEventListener('change', () => {
+            if(cachedRawData) updateEngine('preview');
+        });
+
+        // 3. File Handling
+        dropZone.addEventListener('click', (e) => { if(e.target.id !== 'removeFileBtn') fileInput.click(); });
         dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
         dropZone.addEventListener('dragleave', (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); });
+        
         dropZone.addEventListener('drop', (e) => { 
             e.preventDefault(); dropZone.classList.remove('dragover'); 
-            if (e.dataTransfer.files.length) { 
-                fileInput.files = e.dataTransfer.files; 
-                handleFileSelect();
-                processData('preview');
-            } 
+            if (e.dataTransfer.files.length) handleNewFile(e.dataTransfer.files[0]);
         });
-
-        function handleFileSelect() { 
-            if (fileInput.files.length > 0) { 
-                uploadContent.classList.add('hidden'); 
-                fileSuccess.classList.remove('hidden'); fileSuccess.classList.add('flex'); 
-                fileNameTxt.innerText = fileInput.files[0].name; 
-            } 
-        }
         
-        removeFileBtn.addEventListener('click', (e) => { 
-            e.stopPropagation(); fileInput.value = ""; 
-            uploadContent.classList.remove('hidden'); 
-            fileSuccess.classList.add('hidden'); fileSuccess.classList.remove('flex'); 
-            previewContainer.classList.add('hidden'); 
-            emptyState.classList.remove('hidden');
-            document.getElementById('statusMessage').innerText = ""; 
+        fileInput.addEventListener('change', () => { 
+            if (fileInput.files.length) handleNewFile(fileInput.files[0]); 
         });
 
-        // --- PROCESSING ENGINE ---
-        function processData(mode) {
-            const file = fileInput.files[0];
-            const status = document.getElementById('statusMessage');
-            const clientName = clientInput.value.trim();
-            const shouldMergeFaces = document.getElementById('mergeFaces').checked;
+        // --- CORE LOGIC ---
 
-            if (!file) return;
-
-            if(mode === 'preview') status.innerText = "GENERATING PREVIEW...";
-            else status.innerText = "PROCESSING...";
+        function handleNewFile(file) {
+            if(!file) return;
+            
+            // UI Updates
+            document.getElementById('uploadContent').classList.add('hidden');
+            document.getElementById('fileSuccess').classList.remove('hidden');
+            document.getElementById('fileSuccess').classList.add('flex');
+            document.getElementById('fileName').innerText = file.name;
+            status.innerText = "READING FILE...";
+            loadingDot.classList.remove('hidden');
 
             const reader = new FileReader();
             reader.onload = function(e) {
-                setTimeout(() => {
-                    try {
-                        const data = new Uint8Array(e.target.result);
-                        const workbook = XLSX.read(data, {type: 'array'});
-                        const rawData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: 1, defval: ""});
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    // STORE DATA GLOBALLY
+                    cachedRawData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: 1, defval: ""});
+                    
+                    updateEngine('preview'); // Trigger first preview
 
-                        // Header Logic
-                        let headerIdx = -1, col = { design: -1, cat: -1, size: -1, body: -1, qty: -1 };
-                        for (let i = 0; i < Math.min(rawData.length, 25); i++) {
-                            const r = rawData[i].map(x => String(x).toLowerCase().trim());
-                            if (r.includes('designname') || r.includes('size mm')) {
-                                headerIdx = i; col.design = r.indexOf('designname'); col.cat = r.indexOf('category'); col.size = r.indexOf('size mm'); col.body = r.indexOf('bodytype'); col.qty = r.findIndex(c => c === 'pre' || c === 'total' || c === 'qty'); break;
-                            }
-                        }
-                        if (headerIdx === -1) throw new Error("Headers not found.");
-
-                        // Extraction
-                        const map = new Map();
-                        for (let i = headerIdx + 1; i < rawData.length; i++) {
-                            const r = rawData[i]; if (!r || r.length === 0) continue;
-                            let design = (r[col.design] || "").toString().trim();
-                            let size = (r[col.size] || "").toString().trim();
-                            let cat = col.cat > -1 ? (r[col.cat] || "").toString().trim() : "";
-                            let body = col.body > -1 ? (r[col.body] || "").toString().trim() : "";
-                            let qty = col.qty > -1 ? parseFloat(r[col.qty]) : 0;
-                            if (!design && !size) continue;
-                            if (shouldMergeFaces) design = design.replace(/-[a-zA-Z]$/, "").trim();
-                            const key = `${size}_${cat}_${body}_${design}`;
-                            if (map.has(key)) map.get(key).qty += qty; else map.set(key, { size, cat, body, design, qty });
-                        }
-
-                        // Sorting
-                        let list = Array.from(map.values());
-                        function getDims(s) { const m = s.match(/(\d+)/g); return m ? { w: parseInt(m[0]||0), h: parseInt(m[1]||0) } : {w:0,h:0}; }
-                        list.sort((a, b) => {
-                            const dA = getDims(a.size), dB = getDims(b.size);
-                            if (dA.w !== dB.w) return dA.w - dB.w; if (dA.h !== dB.h) return dA.h - dB.h;
-                            if (a.cat < b.cat) return -1; if (a.cat > b.cat) return 1;
-                            if (a.body < b.body) return -1; if (a.body > b.body) return 1;
-                            return a.design.localeCompare(b.design);
-                        });
-
-                        // Output
-                        if (mode === 'excel') generateExcel(list, clientName);
-                        if (mode === 'preview' || mode === 'pdf_download') generatePDF(list, clientName, mode === 'preview');
-
-                        status.innerText = mode === 'preview' ? "PREVIEW READY" : "DONE";
-                        status.className = "text-center text-[9px] mt-1 h-3 text-green-400 font-bold tracking-wide";
-
-                    } catch (err) { console.error(err); status.innerText = "ERROR"; status.className = "text-center text-[9px] mt-1 h-3 text-red-400"; } 
-                }, 100);
+                } catch (err) {
+                    console.error(err);
+                    status.innerText = "FILE ERROR";
+                    status.className = "text-center text-[9px] mt-1 h-3 text-red-400";
+                }
             };
             reader.readAsArrayBuffer(file);
         }
 
+        // --- THE ENGINE (Runs on File Load OR Updates) ---
+        function updateEngine(mode) {
+            if (!cachedRawData) return;
+            isProcessing = true;
+            loadingDot.classList.remove('hidden');
+            if(mode === 'preview') status.innerText = "REFRESHING...";
+
+            // Small timeout to let UI show "Refreshing"
+            setTimeout(() => {
+                try {
+                    const rawData = cachedRawData; // Use Cached Data
+                    const clientName = clientInput.value.trim();
+                    const shouldMergeFaces = mergeToggle.checked;
+
+                    // Header Logic
+                    let headerIdx = -1, col = { design: -1, cat: -1, size: -1, body: -1, qty: -1 };
+                    for (let i = 0; i < Math.min(rawData.length, 25); i++) {
+                        const r = rawData[i].map(x => String(x).toLowerCase().trim());
+                        if (r.includes('designname') || r.includes('size mm')) {
+                            headerIdx = i; col.design = r.indexOf('designname'); col.cat = r.indexOf('category'); col.size = r.indexOf('size mm'); col.body = r.indexOf('bodytype'); col.qty = r.findIndex(c => c === 'pre' || c === 'total' || c === 'qty'); break;
+                        }
+                    }
+                    if (headerIdx === -1) throw new Error("Headers not found.");
+
+                    // Process Data
+                    const map = new Map();
+                    for (let i = headerIdx + 1; i < rawData.length; i++) {
+                        const r = rawData[i]; if (!r || r.length === 0) continue;
+                        let design = (r[col.design] || "").toString().trim();
+                        let size = (r[col.size] || "").toString().trim();
+                        let cat = col.cat > -1 ? (r[col.cat] || "").toString().trim() : "";
+                        let body = col.body > -1 ? (r[col.body] || "").toString().trim() : "";
+                        let qty = col.qty > -1 ? parseFloat(r[col.qty]) : 0;
+                        if (!design && !size) continue;
+                        
+                        // LIVE MERGE LOGIC
+                        if (shouldMergeFaces) design = design.replace(/-[a-zA-Z]$/, "").trim();
+                        
+                        const key = `${size}_${cat}_${body}_${design}`;
+                        if (map.has(key)) map.get(key).qty += qty; else map.set(key, { size, cat, body, design, qty });
+                    }
+
+                    // Sort
+                    let list = Array.from(map.values());
+                    function getDims(s) { const m = s.match(/(\d+)/g); return m ? { w: parseInt(m[0]||0), h: parseInt(m[1]||0) } : {w:0,h:0}; }
+                    list.sort((a, b) => {
+                        const dA = getDims(a.size), dB = getDims(b.size);
+                        if (dA.w !== dB.w) return dA.w - dB.w; if (dA.h !== dB.h) return dA.h - dB.h;
+                        if (a.cat < b.cat) return -1; if (a.cat > b.cat) return 1;
+                        if (a.body < b.body) return -1; if (a.body > b.body) return 1;
+                        return a.design.localeCompare(b.design);
+                    });
+
+                    // Render Output
+                    if (mode === 'preview') generatePDF(list, clientName, true);
+                    else if (mode === 'excel') generateExcel(list, clientName);
+                    else if (mode === 'pdf') generatePDF(list, clientName, false);
+
+                    loadingDot.classList.add('hidden');
+                    status.innerText = mode === 'preview' ? "LIVE PREVIEW ACTIVE" : "EXPORT COMPLETE";
+                    status.className = "text-center text-[9px] text-green-400 font-bold tracking-wide";
+
+                } catch (e) {
+                    console.error(e);
+                    status.innerText = "ERROR PROCESSING";
+                    status.className = "text-center text-[9px] text-red-400";
+                    loadingDot.classList.add('hidden');
+                }
+                isProcessing = false;
+            }, 50);
+        }
+
+        // --- OUTPUT FUNCTIONS ---
+        function downloadOutput(type) {
+            if(!cachedRawData) { alert("Please upload a file first."); return; }
+            updateEngine(type);
+        }
+
         function generateExcel(list, clientName) {
-            let maxW = { size: 10, cat: 10, body: 10, design: 15 };
-            list.forEach(item => { if(item.size.length > maxW.size) maxW.size = item.size.length; if(item.design.length > maxW.design) maxW.design = item.design.length; });
             const output = [["", "", "", "", "", ""], ["", "", "", "", "", ""], ["", "", "", "", "", ""]];
             const sHead = { font: { sz: 10, bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1E293B" } }, alignment: { horizontal: "center", vertical: "center" } };
             output.push(["SR NO", "Size", "Surface", "Body", "Design", "QTY"].map(h => ({v:h, s:sHead})));
-
             let sr = 1; list.forEach(item => { output.push([sr++, item.size, item.cat, item.body, item.design, item.qty]); });
             const newWs = XLSX.utils.aoa_to_sheet(output);
             const newWb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(newWb, newWs, "Stock");
@@ -302,8 +318,13 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             const tableData = [];
-            let sr = 1, grandTotal = 0;
-            list.forEach(item => { grandTotal += item.qty; tableData.push([sr++, item.size, item.cat, item.body, item.design, item.qty]); });
+            let sr = 1, grandTotal = 0, lastSize = null;
+            
+            list.forEach(item => { 
+                if(lastSize && lastSize !== item.size) tableData.push(['', '', '', '', '', '']); // Gap
+                lastSize = item.size; grandTotal += item.qty; 
+                tableData.push([sr++, item.size, item.cat, item.body, item.design, item.qty]); 
+            });
             tableData.push(['', '', '', '', 'TOTAL', grandTotal]);
 
             doc.autoTable({
@@ -313,12 +334,24 @@
             });
 
             if (isPreview) {
-                previewContainer.classList.remove('hidden'); emptyState.classList.add('hidden');
-                pdfFrame.src = doc.output('bloburl');
+                document.getElementById('previewContainer').classList.remove('hidden'); 
+                document.getElementById('emptyState').classList.add('hidden');
+                document.getElementById('pdfPreviewFrame').src = doc.output('bloburl');
             } else {
                 doc.save(`Stock_${clientName || "Report"}.pdf`);
             }
         }
+
+        // Reset
+        document.getElementById('removeFileBtn').addEventListener('click', (e) => { 
+            e.stopPropagation(); fileInput.value = ""; cachedRawData = null;
+            document.getElementById('uploadContent').classList.remove('hidden'); 
+            document.getElementById('fileSuccess').classList.add('hidden'); document.getElementById('fileSuccess').classList.remove('flex'); 
+            document.getElementById('previewContainer').classList.add('hidden'); 
+            document.getElementById('emptyState').classList.remove('hidden');
+            status.innerText = ""; loadingDot.classList.add('hidden');
+        });
+
     </script>
 </body>
 </html>
