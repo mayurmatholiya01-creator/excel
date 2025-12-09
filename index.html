@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - MNC Edition</title>
+    <title>StockPro X - Index 8 Style</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -25,86 +25,53 @@
     </script>
 
     <style>
-        /* --- GLOBAL THEME --- */
+        /* --- GLOBAL THEME (Dark Mode from StockPro X) --- */
         body { background: #0f0f12; color: #e4e4e7; font-family: 'Inter', sans-serif; font-size: 12px; overflow: hidden; }
 
         /* --- LAYOUT --- */
         .layout-grid { display: grid; grid-template-columns: 260px 1fr; height: 100vh; }
-        
-        /* Sidebar */
         .sidebar { background: #18181b; border-right: 1px solid #27272a; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
-
-        /* Main Area */
         .main-area { display: flex; flex-direction: column; height: 100vh; background: #09090b; }
+        .top-bar { height: 50px; border-bottom: 1px solid #27272a; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; background: #09090b; }
 
-        /* Header / Tab Bar */
-        .top-bar { 
-            height: 50px; border-bottom: 1px solid #27272a; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; 
-            background: #09090b;
-        }
-
-        /* --- SMART GRID (WEB VIEW) --- */
+        /* --- SMART GRID (Web View) --- */
         .grid-container { flex: 1; overflow: auto; position: relative; }
         
-        .mnc-table { 
-            width: 100%; border-collapse: collapse; white-space: nowrap; /* CRITICAL: PREVENTS WRAP */
-            font-size: 11px; 
-        }
-        
+        .mnc-table { width: 100%; border-collapse: collapse; white-space: nowrap; font-size: 11px; }
         .mnc-table th { 
-            background: #18181b; color: #a1a1aa; font-weight: 600; text-align: left; padding: 12px 16px; 
+            background: #18181b; color: #a1a1aa; font-weight: 600; text-align: left; padding: 8px 12px; 
             border-bottom: 1px solid #27272a; position: sticky; top: 0; z-index: 10;
         }
-
-        .mnc-table td { 
-            border-bottom: 1px solid #27272a; padding: 8px 16px; color: #d4d4d8; height: 40px; 
-        }
-
+        .mnc-table td { border-bottom: 1px solid #27272a; padding: 4px 12px; color: #d4d4d8; height: 30px; } /* Compact Height */
         .mnc-table tr:hover td { background: #27272a; }
 
-        /* Inputs in Grid */
-        .grid-input { 
-            background: transparent; border: none; color: inherit; width: 100%; outline: none; font-family: inherit;
-            overflow: hidden; text-overflow: ellipsis; 
-        }
+        .grid-input { background: transparent; border: none; color: inherit; width: 100%; outline: none; font-family: inherit; overflow: hidden; text-overflow: ellipsis; }
         .grid-input:focus { color: #fff; font-weight: 500; }
 
         /* --- UI ELEMENTS --- */
-        .upload-box {
-            border: 1px dashed #3f3f46; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: 0.2s;
-            background: rgba(255,255,255,0.01);
-        }
+        .upload-box { border: 1px dashed #3f3f46; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: 0.2s; background: rgba(255,255,255,0.01); }
         .upload-box:hover { border-color: #6366f1; background: rgba(99, 102, 241, 0.05); }
 
-        .btn-primary {
-            background: #fff; color: #000; font-weight: 600; border-radius: 6px; padding: 10px; width: 100%;
-            transition: 0.2s; border: none; cursor: pointer; display: flex; justify-content: center; gap: 8px;
-        }
+        .btn-primary { background: #fff; color: #000; font-weight: 600; border-radius: 6px; padding: 10px; width: 100%; transition: 0.2s; border: none; cursor: pointer; display: flex; justify-content: center; gap: 8px; }
         .btn-primary:hover { background: #e4e4e7; }
         
-        .tab-btn { 
-            padding: 6px 12px; font-size: 11px; font-weight: 600; color: #71717a; cursor: pointer; border-radius: 4px; 
-        }
+        .tab-btn { padding: 6px 12px; font-size: 11px; font-weight: 600; color: #71717a; cursor: pointer; border-radius: 4px; }
         .tab-btn.active { background: #27272a; color: #fff; }
 
-        /* PDF Frame */
         iframe { width: 100%; height: 100%; border: none; background: #525252; }
     </style>
 </head>
 <body>
 
     <div class="layout-grid">
-        
         <div class="sidebar">
             <div class="flex items-center gap-2 mb-2">
-                <div class="w-6 h-6 bg-indigo-500 rounded flex items-center justify-center font-bold text-white text-xs">S</div>
+                <div class="w-6 h-6 bg-indigo-500 rounded flex items-center justify-center font-bold text-white text-xs">X</div>
                 <span class="font-bold text-sm tracking-tight">StockPro Studio</span>
             </div>
 
             <div class="upload-box" id="dropZone">
-                <div id="uploadUi">
-                    <p class="text-xs font-medium text-gray-400">Click to Upload Excel</p>
-                </div>
+                <div id="uploadUi"><p class="text-xs font-medium text-gray-400">Click to Upload Excel</p></div>
                 <div id="fileUi" class="hidden flex items-center gap-2 justify-center">
                     <span class="text-green-400 font-bold text-xs">Loaded</span>
                     <button id="clearFile" class="text-xs text-red-400 hover:text-red-300">✕</button>
@@ -126,7 +93,7 @@
                     <button onclick="exportData('excel')" class="btn-primary bg-blue-600 text-white hover:bg-blue-500">XLSX</button>
                     <button onclick="exportData('pdf')" class="btn-primary bg-indigo-600 text-white hover:bg-indigo-500">PDF</button>
                 </div>
-                <p id="status" class="text-center text-[10px] text-gray-600">READY TO PROCESS</p>
+                <p id="status" class="text-center text-[10px] text-gray-600">READY</p>
             </div>
         </div>
 
@@ -139,22 +106,18 @@
             </div>
 
             <div class="grid-container bg-[#1a1a1a]">
-                <div id="empty" class="absolute inset-0 flex items-center justify-center text-zinc-700 font-bold tracking-widest text-xs">
-                    NO DATA AVAILABLE
-                </div>
-
-                <div id="pdfView" class="absolute inset-0 z-20">
-                    <iframe id="pdfFrame"></iframe>
-                </div>
-
+                <div id="empty" class="absolute inset-0 flex items-center justify-center text-zinc-700 font-bold tracking-widest text-xs">NO DATA AVAILABLE</div>
+                <div id="pdfView" class="absolute inset-0 z-20"><iframe id="pdfFrame"></iframe></div>
                 <div id="excelView" class="absolute inset-0 bg-[#09090b] hidden z-10 overflow-auto">
                     <table class="mnc-table">
                         <thead>
                             <tr>
                                 <th width="40">#</th>
-                                <th>SIZE</th> <th>SURFACE</th>
+                                <th>SIZE</th>
+                                <th>SURFACE</th>
                                 <th>BODY</th>
-                                <th width="40%">DESIGN NAME</th> <th class="text-right">QTY</th>
+                                <th width="40%">DESIGN NAME</th>
+                                <th class="text-right">QTY</th>
                             </tr>
                         </thead>
                         <tbody id="gridBody"></tbody>
@@ -165,23 +128,9 @@
     </div>
 
     <script>
-        // --- LOGIC CORE ---
-        let rawData = null;
-        let processedData = [];
-        let activeTab = 'pdf';
+        let rawData = null, processedData = [], activeTab = 'pdf';
+        const els = { fileInput: document.getElementById('fileInput'), dropZone: document.getElementById('dropZone'), uploadUi: document.getElementById('uploadUi'), fileUi: document.getElementById('fileUi'), clientName: document.getElementById('clientName'), status: document.getElementById('status'), gridBody: document.getElementById('gridBody'), pdfFrame: document.getElementById('pdfFrame') };
 
-        const els = {
-            fileInput: document.getElementById('fileInput'),
-            dropZone: document.getElementById('dropZone'),
-            uploadUi: document.getElementById('uploadUi'),
-            fileUi: document.getElementById('fileUi'),
-            clientName: document.getElementById('clientName'),
-            status: document.getElementById('status'),
-            gridBody: document.getElementById('gridBody'),
-            pdfFrame: document.getElementById('pdfFrame')
-        };
-
-        // --- EVENTS ---
         els.dropZone.onclick = (e) => { if(e.target.id !== 'clearFile') els.fileInput.click(); };
         els.fileInput.onchange = (e) => loadFile(e.target.files[0]);
         document.getElementById('clearFile').onclick = reset;
@@ -192,10 +141,8 @@
             activeTab = tab;
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            
             document.getElementById('pdfView').classList.add('hidden');
             document.getElementById('excelView').classList.add('hidden');
-
             if(tab === 'pdf') {
                 document.getElementById('pdfView').classList.remove('hidden');
                 if(processedData.length) generatePDF(true);
@@ -204,13 +151,9 @@
             }
         }
 
-        // --- FILE PROCESSING ---
         function loadFile(file) {
             if(!file) return;
-            els.uploadUi.classList.add('hidden');
-            els.fileUi.classList.remove('hidden');
-            els.status.innerText = "READING...";
-            
+            els.uploadUi.classList.add('hidden'); els.fileUi.classList.remove('hidden'); els.status.innerText = "READING...";
             const reader = new FileReader();
             reader.onload = (e) => {
                 const workbook = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
@@ -223,26 +166,16 @@
         function process() {
             if(!rawData) return;
             const merge = document.getElementById('mergeToggle').checked;
-            
-            // 1. Find Header
             let headerRow = -1;
             for(let i=0; i<Math.min(rawData.length, 20); i++) {
                 const row = rawData[i].map(x => String(x).toLowerCase());
                 if(row.includes('designname') || row.includes('particular')) { headerRow = i; break; }
             }
-            if(headerRow === -1) { alert("Invalid Excel Format"); return; }
+            if(headerRow === -1) { alert("Invalid Format"); return; }
 
-            // 2. Map Columns
             const headers = rawData[headerRow].map(x => String(x).toLowerCase());
-            const idx = {
-                design: headers.findIndex(x => x.includes('design') || x.includes('particular')),
-                size: headers.findIndex(x => x.includes('size')),
-                cat: headers.findIndex(x => x.includes('surface') || x.includes('finish') || x.includes('category')),
-                body: headers.findIndex(x => x.includes('body')),
-                qty: headers.findIndex(x => x.includes('qty') || x.includes('box') || x.includes('total'))
-            };
+            const idx = { design: headers.findIndex(x => x.includes('design') || x.includes('particular')), size: headers.findIndex(x => x.includes('size')), cat: headers.findIndex(x => x.includes('surface') || x.includes('finish') || x.includes('category')), body: headers.findIndex(x => x.includes('body')), qty: headers.findIndex(x => x.includes('qty') || x.includes('box')) };
 
-            // 3. Aggregate Data
             const map = new Map();
             for(let i=headerRow+1; i<rawData.length; i++) {
                 const r = rawData[i];
@@ -251,16 +184,13 @@
                 let cat = idx.cat > -1 ? String(r[idx.cat] || "").trim() : "";
                 let body = idx.body > -1 ? String(r[idx.body] || "").trim() : "";
                 let qty = idx.qty > -1 ? parseFloat(r[idx.qty]) || 0 : 0;
-
                 if(!design) continue;
-                if(merge) design = design.replace(/[-_][ABCDabcd]$/, "").trim(); // Smart Merge Logic
+                if(merge) design = design.replace(/[-_][ABCDabcd]$/, "").trim();
 
                 const key = `${size}|${cat}|${body}|${design}`;
-                if(map.has(key)) map.get(key).qty += qty;
-                else map.set(key, { size, cat, body, design, qty });
+                if(map.has(key)) map.get(key).qty += qty; else map.set(key, { size, cat, body, design, qty });
             }
 
-            // 4. Sort (Size -> Category -> Design)
             processedData = Array.from(map.values()).sort((a,b) => {
                 const sA = (a.size.match(/\d+/g)||[0])[0], sB = (b.size.match(/\d+/g)||[0])[0];
                 return (sA - sB) || a.cat.localeCompare(b.cat) || a.design.localeCompare(b.design);
@@ -269,10 +199,9 @@
             document.getElementById('empty').classList.add('hidden');
             renderGrid();
             if(activeTab === 'pdf') generatePDF(true);
-            els.status.innerText = `READY (${processedData.length} ITEMS)`;
+            els.status.innerText = `READY (${processedData.length})`;
         }
 
-        // --- RENDER GRID ---
         function renderGrid() {
             els.gridBody.innerHTML = processedData.map((item, i) => `
                 <tr>
@@ -282,25 +211,17 @@
                     <td><input class="grid-input" value="${item.body}" onchange="update(${i},'body',this.value)"></td>
                     <td><input class="grid-input font-bold text-white" value="${item.design}" onchange="update(${i},'design',this.value)"></td>
                     <td class="text-right"><input class="grid-input text-right text-indigo-400 font-bold" value="${item.qty}" onchange="update(${i},'qty',this.value)"></td>
-                </tr>
-            `).join('');
+                </tr>`).join('');
         }
 
-        window.update = (i, key, val) => {
-            if(key === 'qty') val = parseFloat(val) || 0;
-            processedData[i][key] = val;
-            if(activeTab === 'pdf') generatePDF(true);
-        };
+        window.update = (i, key, val) => { if(key === 'qty') val = parseFloat(val) || 0; processedData[i][key] = val; if(activeTab === 'pdf') generatePDF(true); };
 
-        // --- SMART MNC PDF GENERATOR ---
+        // --- PDF GENERATOR (MATCHED TO INDEX 8) ---
         function generatePDF(isPreview) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            
-            // 1. Calculate Content Widths (The "Smart Logic")
-            // We scan all data to find the max length needed for each column to avoid wrapping
-            let maxLen = { size: 10, cat: 10, body: 10 };
             let totalQty = 0;
+            let maxLen = { size: 10, cat: 10, body: 10 };
 
             processedData.forEach(p => {
                 totalQty += p.qty;
@@ -309,63 +230,53 @@
                 maxLen.body = Math.max(maxLen.body, (p.body||"").length);
             });
 
-            // Convert char length to approx mm (Factor 2.2 is safe for Helvetica)
-            const wSize = Math.min(Math.max(maxLen.size * 2.2, 20), 40); // Min 20mm, Max 40mm
-            const wCat = Math.min(Math.max(maxLen.cat * 2.2, 20), 35);
+            // Smart Auto-Width Logic
+            const wSize = Math.min(Math.max(maxLen.size * 2.2, 25), 40);
+            const wCat = Math.min(Math.max(maxLen.cat * 2.2, 20), 30);
             const wBody = Math.min(Math.max(maxLen.body * 2.2, 15), 30);
-            const wQty = 18; // Fixed
-            const wSr = 10; // Fixed
-            
-            // Design column takes whatever space is left from A4 width (210mm - margins)
-            // This ensures perfect full-width alignment without wrap
-            
+
             const tableBody = processedData.map((p, i) => [i+1, p.size, p.cat, p.body, p.design, p.qty]);
             tableBody.push(['', '', '', '', 'GRAND TOTAL', totalQty]);
 
             doc.autoTable({
                 head: [['SR', 'SIZE', 'SURFACE', 'BODY', 'DESIGN NAME', 'QTY']],
                 body: tableBody,
-                startY: 35,
-                theme: 'plain', // Cleanest base
+                startY: 30,
+                theme: 'grid', // MATCHED: Grid Style
                 styles: {
-                    fontSize: 9,
+                    fontSize: 8, // ULTRA COMPACT FONT
                     font: 'helvetica',
-                    cellPadding: 3, // Comfortable padding
-                    textColor: [40, 40, 40], // Dark Grey text
-                    lineWidth: 0, // No borders by default
+                    cellPadding: 0.8, // ULTRA COMPACT PADDING (Allows more entries)
+                    textColor: [40, 40, 40],
+                    lineWidth: 0.1,
+                    lineColor: [200, 200, 200], // Gray Borders
                     valign: 'middle',
-                    overflow: 'hidden' // Force crop if measuring fails (backup)
+                    halign: 'center'
                 },
                 headStyles: {
-                    fillColor: [20, 20, 23], // Corporate Dark Header
+                    fillColor: [30, 41, 59], // MATCHED: Dark Navy Blue Header
                     textColor: 255,
                     fontStyle: 'bold',
-                    cellPadding: 4
+                    lineWidth: 0.1
                 },
                 columnStyles: {
-                    0: { cellWidth: wSr, halign: 'center' },
+                    0: { cellWidth: 10 },
                     1: { cellWidth: wSize },
                     2: { cellWidth: wCat },
                     3: { cellWidth: wBody },
-                    4: { cellWidth: 'auto', fontStyle: 'bold' }, // Auto-Fill Space
-                    5: { cellWidth: wQty, halign: 'right', fontStyle: 'bold' }
+                    4: { cellWidth: 'auto', fontStyle: 'bold', halign: 'left' },
+                    5: { cellWidth: 18, fontStyle: 'bold', halign: 'right' }
                 },
                 didDrawPage: (data) => {
-                    // Header
-                    doc.setFontSize(22);
-                    doc.setFont("helvetica", "bold");
-                    doc.text((els.clientName.value || "STOCK REPORT").toUpperCase(), 105, 20, { align: 'center' });
-                    doc.setLineWidth(0.5);
-                    doc.line(14, 25, 196, 25); // Underline
+                    if (data.pageNumber === 1) {
+                        doc.setFontSize(22); doc.setFont("helvetica", "bold"); doc.setTextColor(20, 20, 20);
+                        doc.text((els.clientName.value || "STOCK REPORT").toUpperCase(), 105, 18, { align: 'center' });
+                    }
                 },
                 didParseCell: (data) => {
-                    // Horizontal Lines Only (MNC Style)
-                    if (data.section === 'body') {
-                        data.cell.styles.border = { bottom: { width: 0.1, color: [220, 220, 220] } };
-                    }
-                    // Grand Total Styling
+                    // Match Index 8 Grand Total Style
                     if (data.row.raw[4] === 'GRAND TOTAL') {
-                        data.cell.styles.fillColor = [240, 240, 245];
+                        data.cell.styles.fillColor = [240, 240, 240];
                         data.cell.styles.fontStyle = 'bold';
                     }
                 }
@@ -375,24 +286,38 @@
             else doc.save(`Stock_${els.clientName.value||'Report'}.pdf`);
         }
 
+        // --- EXCEL EXPORT (MATCHED TO INDEX 8) ---
         function exportData(type) {
             if(!processedData.length) return alert("No Data!");
             if(type === 'pdf') generatePDF(false);
             if(type === 'excel') {
-                const ws = XLSX.utils.json_to_sheet(processedData);
+                const output = [];
+                // Styles matched to Index 8
+                const borderStyle = { top: { style: "thin", color: { rgb: "E5E7EB" } }, bottom: { style: "thin", color: { rgb: "E5E7EB" } }, left: { style: "thin", color: { rgb: "D1D5DB" } }, right: { style: "thin", color: { rgb: "D1D5DB" } } };
+                const sHead = { font: { sz: 10, bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1E293B" } }, alignment: { horizontal: "center", vertical: "center" }, border: { bottom: { style: "medium", color: { rgb: "000000" } } } };
+                const sData = { font: { sz: 9 }, alignment: { horizontal: "center", vertical: "center" }, border: borderStyle }; // Smaller font 9
+                const sGrey = { ...sData, fill: { fgColor: { rgb: "F9FAFB" } } };
+                const sTotal = { font: { sz: 10, bold: true }, fill: { fgColor: { rgb: "E5E7EB" } }, alignment: { horizontal: "center", vertical: "center" }, border: { top: {style:"double"}, bottom: {style:"thin"} } };
+
+                output.push(["SR", "Size", "Surface", "Body", "Design Name", "Qty"].map(h => ({v:h, s:sHead})));
+                
+                let sr=1, grandTotal=0, lastSize=null;
+                processedData.forEach((item, i) => {
+                    grandTotal += item.qty;
+                    const style = (sr % 2 === 0) ? sGrey : sData;
+                    output.push([{v:sr++, s:style}, {v:item.size, s:style}, {v:item.cat, s:style}, {v:item.body, s:style}, {v:item.design, s:style}, {v:item.qty, s:style}]);
+                });
+                output.push([{v:"",s:sTotal}, {v:"",s:sTotal}, {v:"",s:sTotal}, {v:"",s:sTotal}, {v:"GRAND TOTAL",s:sTotal}, {v:grandTotal,s:sTotal}]);
+
+                const ws = XLSX.utils.aoa_to_sheet(output);
+                ws['!cols'] = [{wch:6}, {wch:15}, {wch:12}, {wch:12}, {wch:30}, {wch:10}];
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, "Stock");
-                XLSX.writeFile(wb, "Stock_Report.xlsx");
+                XLSX.writeFile(wb, `Stock_${els.clientName.value||'Report'}.xlsx`);
             }
         }
 
-        function reset() {
-            rawData = null; processedData = [];
-            els.fileUi.classList.add('hidden'); els.uploadUi.classList.remove('hidden');
-            els.fileInput.value = "";
-            document.getElementById('empty').classList.remove('hidden');
-            renderGrid();
-        }
+        function reset() { rawData = null; processedData = []; els.fileUi.classList.add('hidden'); els.uploadUi.classList.remove('hidden'); els.fileInput.value = ""; document.getElementById('empty').classList.remove('hidden'); renderGrid(); }
     </script>
 </body>
 </html>
