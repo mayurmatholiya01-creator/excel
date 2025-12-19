@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - Final v19</title>
+    <title>StockPro X - Ultimate Control</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -17,7 +17,7 @@
             theme: {
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: { glass: "rgba(20, 20, 23, 0.85)", border: "rgba(255, 255, 255, 0.08)" }
+                    colors: { glass: "rgba(20, 20, 23, 0.95)", border: "rgba(255, 255, 255, 0.08)" }
                 }
             }
         }
@@ -29,38 +29,60 @@
         ::-webkit-scrollbar-track { background: #0a0a0c; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #4f46e5; }
-        .sidebar { background: rgba(10, 10, 12, 0.9); backdrop-filter: blur(20px); border-right: 1px solid rgba(255,255,255,0.08); width: 260px; }
+        
+        .sidebar { background: rgba(10, 10, 12, 0.95); backdrop-filter: blur(20px); border-right: 1px solid rgba(255,255,255,0.08); width: 260px; }
         .canvas-bg { background-color: #050505; background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px); background-size: 24px 24px; }
+        
+        /* WEB TABLE STYLING (Restricted Width for Pro Look) */
+        .workspace-container {
+            max-width: 1200px; /* Limits width to look like a doc */
+            margin: 0 auto;
+            transition: all 0.3s ease;
+        }
         
         .data-table { width: 100%; border-collapse: collapse; font-size: 11px; table-layout: fixed; }
         .data-table th { background: #18181b; color: #a1a1aa; font-weight: 600; text-align: center; padding: 10px 4px; border-bottom: 1px solid #27272a; position: sticky; top: 0; z-index: 10; white-space: nowrap; }
-        .data-table td { padding: 6px 4px; border-bottom: 1px solid #27272a; color: #e4e4e7; vertical-align: middle; text-align: center; white-space: nowrap; cursor: cell; position: relative; }
+        .data-table td { padding: 8px 4px; border-bottom: 1px solid #27272a; color: #e4e4e7; vertical-align: middle; text-align: center; white-space: nowrap; cursor: cell; position: relative; }
         .data-table tr:hover td { background: rgba(255, 255, 255, 0.02); }
         .data-table td:focus-within { box-shadow: inset 0 0 0 1.5px #6366f1; background-color: rgba(99, 102, 241, 0.08) !important; outline: none; }
+        
         .tbl-input { background: transparent; border: none; color: #fff; width: 100%; text-align: center; font-family: monospace; padding: 0; margin: 0; height: 100%; display: block; outline: none; }
         input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         
         .del-row-btn { opacity: 0; transition: opacity 0.2s; color: #ef4444; cursor: pointer; }
         .data-table tr:hover .del-row-btn { opacity: 1; }
 
-        .money-card-container { margin-top: 24px; display: flex; justify-content: flex-end; padding-right: 10px; }
-        .money-card { width: 340px; background: linear-gradient(145deg, rgba(20, 20, 23, 0.95), rgba(30, 30, 35, 0.95)); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 0; position: relative; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
-        .mc-header { background: rgba(255,255,255,0.03); padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
+        /* Premium Money Card */
+        .money-card-container { margin-top: 30px; display: flex; justify-content: flex-end; }
+        .money-card { width: 320px; background: linear-gradient(145deg, rgba(20, 20, 23, 0.95), rgba(30, 30, 35, 0.95)); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 0; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        .mc-header { background: rgba(255,255,255,0.03); padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .mc-body { padding: 20px; }
         .mc-footer { background: rgba(99, 102, 241, 0.1); padding: 15px 20px; border-top: 1px solid rgba(99, 102, 241, 0.2); display: flex; justify-content: space-between; align-items: center; }
         .money-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #6366f1, #ec4899); }
 
+        /* Add Row Button */
+        .add-row-btn {
+            margin-top: 10px; width: 100%; padding: 8px; border: 1px dashed rgba(255,255,255,0.2); border-radius: 6px;
+            color: #6366f1; font-size: 11px; font-weight: 600; text-align: center; cursor: pointer; transition: all 0.2s;
+        }
+        .add-row-btn:hover { background: rgba(99, 102, 241, 0.1); border-color: #6366f1; }
+
         .orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.2; pointer-events: none; z-index: -1; }
         .orb-1 { top: -20%; left: -10%; width: 500px; height: 500px; background: #4f46e5; }
         .orb-2 { bottom: -20%; right: -10%; width: 400px; height: 400px; background: #ec4899; }
+        
         .upload-zone { border: 1px dashed rgba(255,255,255,0.15); transition: all 0.2s; }
         .upload-zone:hover, .upload-zone.dragover { border-color: #6366f1; background: rgba(79, 70, 229, 0.05); }
+        
         .switch { position: relative; display: inline-block; width: 32px; height: 18px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #3f3f46; transition: .4s; border-radius: 34px; }
         .slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: #6366f1; }
         input:checked + .slider:before { transform: translateX(14px); }
+
+        /* PDF Preview Frame */
+        #pdfPreviewFrame { width: 100%; height: 100%; border: none; border-radius: 8px; }
     </style>
 </head>
 <body class="flex h-screen w-screen overflow-hidden text-sm">
@@ -78,7 +100,7 @@
                 </div>
                 <h1 class="text-base font-bold text-white tracking-tight">StockPro<span class="text-indigo-500"> X</span></h1>
             </div>
-            <p class="text-[9px] text-zinc-500 font-mono ml-9">FINAL v19.0</p>
+            <p class="text-[9px] text-zinc-500 font-mono ml-9">CONTROL v20.0</p>
         </div>
 
         <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-5">
@@ -87,6 +109,7 @@
                 <input type="text" id="clientName" placeholder="ENTER NAME" 
                     class="w-full bg-[#18181b] border border-zinc-700 text-white text-xs font-semibold rounded focus:border-indigo-500 block p-2.5 outline-none uppercase">
             </div>
+            
             <div class="space-y-1.5">
                 <label class="text-[9px] font-bold text-zinc-500 uppercase tracking-wider">Upload</label>
                 <div class="upload-zone w-full h-20 rounded-lg bg-white/5 flex flex-col items-center justify-center cursor-pointer relative group" id="dropZone">
@@ -100,21 +123,26 @@
                     </div>
                 </div>
             </div>
+
             <div class="space-y-2">
                 <label class="text-[9px] font-bold text-zinc-500 uppercase tracking-wider">Configuration</label>
+                
                 <div class="p-3 rounded-lg bg-[#18181b] border border-zinc-800 flex items-center justify-between">
-                    <div>
-                        <div class="text-[11px] font-semibold text-zinc-300">Smart Merge</div>
-                        <div class="text-[9px] text-zinc-600">Combine Faces</div>
-                    </div>
+                    <div><div class="text-[11px] font-semibold text-zinc-300">Smart Merge</div><div class="text-[9px] text-zinc-600">Combine Faces</div></div>
                     <label class="switch"><input type="checkbox" id="mergeFaces"><span class="slider"></span></label>
                 </div>
+
                 <div class="p-3 rounded-lg bg-indigo-900/10 border border-indigo-500/20 flex items-center justify-between">
-                    <div>
-                        <div class="text-[11px] font-semibold text-indigo-300">Commercial Mode</div>
-                        <div class="text-[9px] text-indigo-500/70">Rate & Amount</div>
-                    </div>
+                    <div><div class="text-[11px] font-semibold text-indigo-300">Commercial Mode</div><div class="text-[9px] text-indigo-500/70">Rate & Amount</div></div>
                     <label class="switch"><input type="checkbox" id="invoiceMode"><span class="slider"></span></label>
+                </div>
+
+                <div id="rateBasisContainer" class="hidden p-3 rounded-lg bg-[#18181b] border border-zinc-800 flex flex-col gap-2">
+                    <label class="text-[9px] font-bold text-zinc-500 uppercase">Rate Basis</label>
+                    <select id="rateType" class="w-full bg-black border border-zinc-700 text-white text-[10px] rounded p-1.5 focus:border-indigo-500 outline-none">
+                        <option value="sqft">Per Sq. Feet (Default)</option>
+                        <option value="box">Per Box</option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -128,63 +156,83 @@
     </aside>
 
     <main class="flex-1 relative flex flex-col h-full bg-[#050505]">
-        <div class="h-10 border-b border-white/5 flex items-center justify-between px-4 bg-[#0a0a0c]/80 backdrop-blur-md z-10">
-            <div class="flex items-center gap-2 text-zinc-500 text-xs">
-                <span class="w-1.5 h-1.5 rounded-full bg-zinc-700" id="liveIndicator"></span>
-                <span class="font-medium tracking-wide text-[11px]">LIVE WORKSPACE</span>
+        <div class="h-12 border-b border-white/5 flex items-center justify-between px-6 bg-[#0a0a0c]/80 backdrop-blur-md z-10">
+            <div class="flex items-center gap-3">
+                <span class="w-2 h-2 rounded-full bg-zinc-700" id="liveIndicator"></span>
+                <span class="font-medium tracking-wide text-[11px] text-zinc-400">LIVE WORKSPACE</span>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <span class="text-[10px] font-bold text-zinc-500">PDF PREVIEW</span>
+                <label class="switch"><input type="checkbox" id="pdfPreviewToggle"><span class="slider"></span></label>
             </div>
         </div>
 
-        <div class="flex-1 overflow-auto canvas-bg relative p-6 pb-20">
+        <div class="flex-1 overflow-auto canvas-bg relative p-8 pb-24">
             <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-zinc-600">
                 <h3 class="text-sm font-medium text-zinc-400">No Data</h3>
                 <p class="text-[10px] mt-1 text-zinc-600">Upload Excel to begin</p>
             </div>
 
-            <div id="tableContainer" class="hidden w-full max-w-6xl mx-auto flex flex-col">
-                <div class="glass-card rounded-lg overflow-hidden border border-white/10 shadow-2xl bg-[#0a0a0c]">
-                    <table class="data-table" id="previewTable">
-                        <thead id="tableHead"></thead>
-                        <tbody id="tableBody"></tbody>
-                    </table>
-                </div>
+            <div id="workspaceView" class="hidden w-full h-full flex flex-col">
+                <div class="workspace-container w-full">
+                    <div class="glass-card rounded-lg overflow-hidden border border-white/10 shadow-2xl bg-[#0a0a0c]">
+                        <table class="data-table" id="previewTable">
+                            <thead id="tableHead"></thead>
+                            <tbody id="tableBody"></tbody>
+                        </table>
+                    </div>
+                    
+                    <div id="addRowBtn" class="add-row-btn hidden" onclick="addNewRow()">+ Add New Item</div>
 
-                <div id="moneyCard" class="hidden money-card-container animate-slide-up">
-                    <div class="money-card">
-                        <div class="mc-header">
-                            <span class="text-xs font-bold text-zinc-300 tracking-wide">PAYMENT SUMMARY</span>
-                        </div>
-                        <div class="mc-body">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-[12px] text-zinc-400 font-medium">Item Total</span>
-                                <span class="text-[13px] font-bold text-white tracking-wide" id="mcSubtotal">0</span>
+                    <div id="moneyCard" class="hidden money-card-container animate-slide-up">
+                        <div class="money-card">
+                            <div class="mc-header">
+                                <span class="text-xs font-bold text-zinc-300 tracking-wide">PAYMENT SUMMARY</span>
                             </div>
-                            <div class="flex justify-between items-center mb-2 group" id="insRow">
-                                <div class="flex items-center gap-1.5">
-                                    <button onclick="toggleInsurance(false)" class="text-zinc-600 hover:text-red-500 transition-colors" title="Remove">✕</button>
-                                    <span class="text-[12px] text-zinc-400 font-medium">Transit Insurance <span class="text-zinc-600 text-[10px]">(<span contenteditable="true" id="insRate" class="outline-none focus:text-indigo-400">0.99</span>%)</span></span>
+                            <div class="mc-body">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-[12px] text-zinc-400 font-medium">Item Total</span>
+                                    <span class="text-[13px] font-bold text-white tracking-wide" id="mcSubtotal">0</span>
                                 </div>
-                                <span class="text-[13px] font-bold text-zinc-300" id="mcIns">0</span>
+                                <div class="flex justify-between items-center mb-2 group" id="insRow">
+                                    <div class="flex items-center gap-1.5">
+                                        <button onclick="toggleInsurance(false)" class="text-zinc-600 hover:text-red-500 transition-colors" title="Remove">✕</button>
+                                        <span class="text-[12px] text-zinc-400 font-medium">Transit Insurance <span class="text-zinc-600 text-[10px]">(<span contenteditable="true" id="insRate" class="outline-none focus:text-indigo-400">0.99</span>%)</span></span>
+                                    </div>
+                                    <span class="text-[13px] font-bold text-zinc-300" id="mcIns">0</span>
+                                </div>
+                                <div id="addInsBtn" class="hidden mb-2 text-right">
+                                    <button onclick="toggleInsurance(true)" class="text-[11px] text-indigo-400 hover:text-indigo-300 font-medium">+ Add Insurance</button>
+                                </div>
+                                <div class="flex justify-between items-center mb-2 pt-2 border-t border-white/10">
+                                    <span class="text-[12px] text-zinc-300 font-semibold">Assessable Value</span>
+                                    <span class="text-[13px] font-bold text-white" id="mcPreTax">0</span>
+                                </div>
+                                <div class="flex justify-between items-center group" id="gstRow">
+                                    <div class="flex items-center gap-1.5">
+                                        <button onclick="toggleGST(false)" class="text-zinc-600 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100" title="Remove">✕</button>
+                                        <span class="text-[12px] text-zinc-400 font-medium">GST <span class="text-zinc-600 text-[10px]">(<span contenteditable="true" id="gstRate" class="outline-none focus:text-indigo-400">18</span>%)</span></span>
+                                    </div>
+                                    <span class="text-[13px] font-bold text-zinc-300" id="mcGst">0</span>
+                                </div>
+                                <div id="addGstBtn" class="hidden text-right mt-1">
+                                    <button onclick="toggleGST(true)" class="text-[11px] text-indigo-400 hover:text-indigo-300 font-medium">+ Add GST</button>
+                                </div>
                             </div>
-                            <div id="addInsBtn" class="hidden mb-2 text-right">
-                                <button onclick="toggleInsurance(true)" class="text-[11px] text-indigo-400 hover:text-indigo-300 font-medium">+ Add Insurance</button>
+                            <div class="mc-footer">
+                                <span class="text-[13px] font-bold text-indigo-200">Total Payable</span>
+                                <span class="text-[16px] font-bold font-mono text-white drop-shadow-[0_0_10px_rgba(99,102,241,0.5)]" id="mcGrandTotal">0</span>
                             </div>
-                            <div class="flex justify-between items-center mb-2 pt-2 border-t border-white/10">
-                                <span class="text-[12px] text-zinc-300 font-semibold">Assessable Value</span>
-                                <span class="text-[13px] font-bold text-white" id="mcPreTax">0</span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-[12px] text-zinc-400 font-medium">GST <span class="text-zinc-600 text-[10px]">(<span contenteditable="true" id="gstRate" class="outline-none focus:text-indigo-400">18</span>%)</span></span>
-                                <span class="text-[13px] font-bold text-zinc-300" id="mcGst">0</span>
-                            </div>
-                        </div>
-                        <div class="mc-footer">
-                            <span class="text-[13px] font-bold text-indigo-200">Total Payable</span>
-                            <span class="text-[16px] font-bold font-mono text-white drop-shadow-[0_0_10px_rgba(99,102,241,0.5)]" id="mcGrandTotal">0</span>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <div id="pdfViewContainer" class="hidden w-full h-full flex justify-center">
+                <iframe id="pdfPreviewFrame"></iframe>
+            </div>
+
         </div>
     </main>
 
@@ -204,44 +252,34 @@
         let globalData = [];
         let isCommercial = false;
         let showInsurance = true;
+        let showGST = true;
+        let rateType = 'sqft'; // 'sqft' or 'box'
 
         const els = {
             fileInput: document.getElementById('fileInput'), dropZone: document.getElementById('dropZone'), uploadContent: document.getElementById('uploadContent'), fileSuccess: document.getElementById('fileSuccess'), fileName: document.getElementById('fileName'),
             removeFileBtn: document.getElementById('removeFileBtn'), mergeToggle: document.getElementById('mergeFaces'), invoiceToggle: document.getElementById('invoiceMode'), tableBody: document.getElementById('tableBody'), tableHead: document.getElementById('tableHead'),
             emptyState: document.getElementById('emptyState'), tableContainer: document.getElementById('tableContainer'), actionButtons: document.getElementById('actionButtons'), liveIndicator: document.getElementById('liveIndicator'), clientName: document.getElementById('clientName'),
             moneyCard: document.getElementById('moneyCard'), mcSubtotal: document.getElementById('mcSubtotal'), mcIns: document.getElementById('mcIns'), mcPreTax: document.getElementById('mcPreTax'), mcGst: document.getElementById('mcGst'),
-            mcGrandTotal: document.getElementById('mcGrandTotal'), insRate: document.getElementById('insRate'), gstRate: document.getElementById('gstRate'), insRow: document.getElementById('insRow'), addInsBtn: document.getElementById('addInsBtn')
+            mcGrandTotal: document.getElementById('mcGrandTotal'), insRate: document.getElementById('insRate'), gstRate: document.getElementById('gstRate'), insRow: document.getElementById('insRow'), addInsBtn: document.getElementById('addInsBtn'),
+            rateBasisContainer: document.getElementById('rateBasisContainer'), rateType: document.getElementById('rateType'), addRowBtn: document.getElementById('addRowBtn'),
+            pdfPreviewToggle: document.getElementById('pdfPreviewToggle'), workspaceView: document.getElementById('workspaceView'), pdfViewContainer: document.getElementById('pdfViewContainer'), pdfPreviewFrame: document.getElementById('pdfPreviewFrame'),
+            gstRow: document.getElementById('gstRow'), addGstBtn: document.getElementById('addGstBtn')
         };
 
-        // --- NAVIGATION LOGIC (POINT 2 FIX: Safe Input Editing) ---
+        // --- EVENT LISTENERS ---
         els.tableBody.addEventListener('keydown', (e) => {
-            const target = e.target;
-            const cell = target.closest('td');
-            if (!cell) return;
-
-            // FIX: If inside input, don't change cell on Left/Right
-            if (target.tagName === 'INPUT' && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
-                return; 
-            }
-
-            const tr = cell.parentElement; 
-            const rowIndex = Array.from(els.tableBody.children).indexOf(tr); 
-            const colIndex = Array.from(tr.children).indexOf(cell);
+            const target = e.target; const cell = target.closest('td'); if (!cell) return;
+            if (target.tagName === 'INPUT' && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) return;
+            const tr = cell.parentElement; const rowIndex = Array.from(els.tableBody.children).indexOf(tr); const colIndex = Array.from(tr.children).indexOf(cell);
             let nextRowIdx = rowIndex, nextColIdx = colIndex;
-
             if (e.key === 'Enter' || e.key === 'ArrowDown') { e.preventDefault(); nextRowIdx++; } 
             else if (e.key === 'ArrowUp') { e.preventDefault(); nextRowIdx--; } 
             else if (e.key === 'ArrowRight') { nextColIdx++; } 
             else if (e.key === 'ArrowLeft') { nextColIdx--; } 
             else { return; }
-
             if (nextRowIdx >= 0 && nextRowIdx < els.tableBody.children.length) {
                 const nextRow = els.tableBody.children[nextRowIdx];
-                if (nextColIdx >= 0 && nextColIdx < nextRow.children.length) { 
-                    const nextCell = nextRow.children[nextColIdx]; 
-                    const input = nextCell.querySelector('input'); 
-                    if(input) input.focus(); else nextCell.focus(); 
-                }
+                if (nextColIdx >= 0 && nextColIdx < nextRow.children.length) { const nextCell = nextRow.children[nextColIdx]; const input = nextCell.querySelector('input'); if(input) input.focus(); else nextCell.focus(); }
             }
         });
 
@@ -252,9 +290,18 @@
         els.dropZone.addEventListener('drop', (e) => { e.preventDefault(); els.dropZone.classList.remove('dragover'); if(e.dataTransfer.files.length) { els.fileInput.files = e.dataTransfer.files; handleFile(); }});
         els.removeFileBtn.addEventListener('click', resetAll);
         els.mergeToggle.addEventListener('change', () => { if(els.fileInput.files.length) processExcel(els.fileInput.files[0]); });
-        els.invoiceToggle.addEventListener('change', (e) => { isCommercial = e.target.checked; renderTable(); });
+        
+        els.invoiceToggle.addEventListener('change', (e) => { 
+            isCommercial = e.target.checked; 
+            if(isCommercial) { els.rateBasisContainer.classList.remove('hidden'); els.addRowBtn.classList.remove('hidden'); }
+            else { els.rateBasisContainer.classList.add('hidden'); els.addRowBtn.classList.add('hidden'); }
+            renderTable(); 
+        });
+
+        els.rateType.addEventListener('change', (e) => { rateType = e.target.value; recalculateAll(); });
         els.insRate.addEventListener('input', calculateMoneyCard);
         els.gstRate.addEventListener('input', calculateMoneyCard);
+        els.pdfPreviewToggle.addEventListener('change', togglePdfPreview);
 
         els.tableBody.addEventListener('input', (e) => {
             const target = e.target;
@@ -263,20 +310,37 @@
                 const field = target.dataset.field || (target.tagName === 'INPUT' ? 'rate' : null);
                 if(rowIdx !== undefined && field) {
                     let val = target.tagName === 'INPUT' ? target.value : target.innerText;
-                    if(field === 'qty' || field === 'rate') val = parseFloat(val) || 0;
-                    globalData[rowIdx][field] = val;
+                    // Handle String inputs vs Numbers
+                    if(field === 'size' || field === 'cat' || field === 'body' || field === 'design') {
+                        globalData[rowIdx][field] = val; // Store string
+                        if(field === 'size') {
+                            // Update ft2 if size changes (basic logic)
+                            let matchSize = val;
+                            if (!SKU_MAP.has(matchSize)) { const dims = val.match(/(\d+)[xX](\d+)/); if (dims) matchSize = `${dims[1]}x${dims[2]}`; }
+                            globalData[rowIdx].ft2PerBox = SKU_MAP.get(matchSize) || 0;
+                        }
+                    } else {
+                        val = parseFloat(val) || 0;
+                        globalData[rowIdx][field] = val;
+                    }
+                    
                     if(isCommercial) {
                         const item = globalData[rowIdx];
-                        const totalArea = item.qty * item.ft2PerBox; item.amount = totalArea * item.rate; 
-                        if(field === 'qty') { row.querySelector('.area-cell').innerText = Math.round(totalArea); }
-                        if(field === 'qty' || field === 'rate') { row.querySelector('.amt-cell').innerText = Math.round(item.amount).toLocaleString('en-IN'); }
+                        const totalArea = item.qty * (item.ft2PerBox || 0);
+                        item.amount = (rateType === 'box') ? (item.qty * item.rate) : (totalArea * item.rate);
+                        
+                        if(field === 'qty' || field === 'size') { row.querySelector('.area-cell').innerText = Math.round(totalArea); }
+                        row.querySelector('.amt-cell').innerText = Math.round(item.amount).toLocaleString('en-IN');
                     }
                     calculateMoneyCard();
                 }
             }
         });
 
-        function resetAll(e) { if(e) e.stopPropagation(); els.fileInput.value = ""; els.uploadContent.classList.remove('hidden'); els.fileSuccess.classList.add('hidden'); els.fileSuccess.classList.remove('flex'); els.emptyState.classList.remove('hidden'); els.tableContainer.classList.add('hidden'); els.actionButtons.classList.add('opacity-50', 'pointer-events-none'); els.liveIndicator.classList.remove('bg-green-500', 'animate-pulse'); els.liveIndicator.classList.add('bg-zinc-700'); globalData = []; }
+        function resetAll(e) { 
+            if(e) e.stopPropagation(); els.fileInput.value = ""; els.uploadContent.classList.remove('hidden'); els.fileSuccess.classList.add('hidden'); els.fileSuccess.classList.remove('flex'); els.emptyState.classList.remove('hidden'); els.workspaceView.classList.add('hidden'); els.actionButtons.classList.add('opacity-50', 'pointer-events-none'); els.liveIndicator.classList.remove('bg-green-500', 'animate-pulse'); els.liveIndicator.classList.add('bg-zinc-700'); globalData = []; 
+            els.pdfPreviewToggle.checked = false; els.pdfViewContainer.classList.add('hidden');
+        }
         function handleFile() { if (els.fileInput.files.length > 0) { const file = els.fileInput.files[0]; els.uploadContent.classList.add('hidden'); els.fileSuccess.classList.remove('hidden'); els.fileSuccess.classList.add('flex'); els.fileName.innerText = file.name; processExcel(file); } }
 
         function processExcel(file) {
@@ -303,29 +367,36 @@
                         if (map.has(key)) map.get(key).qty += qty; else map.set(key, { size, cat, body, design, qty, ft2PerBox, rate: 0 });
                     }
                     globalData = Array.from(map.values());
-                    function getDims(s) { const m = s.match(/(\d+)/g); return m ? { w: parseInt(m[0]||0), h: parseInt(m[1]||0) } : {w:0,h:0}; }
-                    globalData.sort((a, b) => {
-                        const dA = getDims(a.size), dB = getDims(b.size);
-                        if (dA.w !== dB.w) return dA.w - dB.w; if (dA.h !== dB.h) return dA.h - dB.h;
-                        if (a.cat.toLowerCase() < b.cat.toLowerCase()) return -1; if (a.cat.toLowerCase() > b.cat.toLowerCase()) return 1;
-                        if (a.body.toLowerCase() < b.body.toLowerCase()) return -1; if (a.body.toLowerCase() > b.body.toLowerCase()) return 1;
-                        return a.design.localeCompare(b.design);
-                    });
+                    sortData();
                     renderTable();
-                    els.emptyState.classList.add('hidden'); els.tableContainer.classList.remove('hidden'); els.actionButtons.classList.remove('opacity-50', 'pointer-events-none'); els.liveIndicator.classList.remove('bg-zinc-700'); els.liveIndicator.classList.add('bg-green-500', 'animate-pulse');
+                    els.emptyState.classList.add('hidden'); els.workspaceView.classList.remove('hidden'); els.actionButtons.classList.remove('opacity-50', 'pointer-events-none'); els.liveIndicator.classList.remove('bg-zinc-700'); els.liveIndicator.classList.add('bg-green-500', 'animate-pulse');
                 } catch (err) { alert("Error: " + err.message); }
             }; reader.readAsArrayBuffer(file);
+        }
+
+        function sortData() {
+            function getDims(s) { const m = s.match(/(\d+)/g); return m ? { w: parseInt(m[0]||0), h: parseInt(m[1]||0) } : {w:0,h:0}; }
+            globalData.sort((a, b) => {
+                const dA = getDims(a.size), dB = getDims(b.size);
+                if (dA.w !== dB.w) return dA.w - dB.w; if (dA.h !== dB.h) return dA.h - dB.h;
+                if (a.cat.toLowerCase() < b.cat.toLowerCase()) return -1; if (a.cat.toLowerCase() > b.cat.toLowerCase()) return 1;
+                if (a.body.toLowerCase() < b.body.toLowerCase()) return -1; if (a.body.toLowerCase() > b.body.toLowerCase()) return 1;
+                return a.design.localeCompare(b.design);
+            });
         }
 
         function renderTable() {
             els.tableHead.innerHTML = ''; els.tableBody.innerHTML = '';
             let headerHTML = `<tr><th class="w-8"></th><th class="w-10">Sr.No</th><th class="w-32">Size</th><th class="w-24">Surface</th><th class="w-24">Body</th><th>Design Name</th><th class="w-16">Qty</th>`;
-            if (isCommercial) { headerHTML += `<th class="w-16">Rate</th><th class="w-20">Sq. Feet</th><th class="w-24">Amount</th>`; els.moneyCard.classList.remove('hidden'); } else { els.moneyCard.classList.add('hidden'); }
+            if (isCommercial) { headerHTML += `<th class="w-16">Rate</th><th class="w-20">Sq. Feet</th><th class="w-24">Amount</th>`; els.moneyCard.classList.remove('hidden'); els.addRowBtn.classList.remove('hidden'); } else { els.moneyCard.classList.add('hidden'); els.addRowBtn.classList.add('hidden'); }
             headerHTML += `</tr>`; els.tableHead.innerHTML = headerHTML;
             let sr = 1;
             globalData.forEach((item, index) => {
                 const tr = document.createElement('tr'); tr.dataset.index = index;
-                const totalArea = item.qty * item.ft2PerBox; item.amount = totalArea * item.rate;
+                const totalArea = item.qty * (item.ft2PerBox || 0); 
+                // Math Logic based on Rate Type
+                item.amount = (rateType === 'box') ? (item.qty * item.rate) : (totalArea * item.rate);
+                
                 let rowHTML = `<td><span onclick="deleteRow(${index})" class="del-row-btn hover:text-red-500 text-xs font-bold">✕</span></td><td class="text-zinc-500 font-mono">${sr++}</td><td contenteditable="true" data-field="size" class="text-xs outline-none">${item.size}</td><td contenteditable="true" data-field="cat" class="text-xs text-zinc-400 outline-none">${item.cat}</td><td contenteditable="true" data-field="body" class="text-xs text-zinc-400 outline-none">${item.body}</td><td contenteditable="true" data-field="design" class="text-xs text-white font-medium outline-none design-cell"><span class="truncate-cell">${item.design}</span></td><td contenteditable="true" data-field="qty" class="font-mono text-zinc-300 font-bold outline-none">${item.qty}</td>`;
                 if (isCommercial) { rowHTML += `<td><input type="number" value="${item.rate || ''}" class="tbl-input" placeholder="0"></td><td class="font-mono text-zinc-400 text-xs area-cell">${Math.round(totalArea)}</td><td class="font-mono text-indigo-300 font-bold amt-cell">${Math.round(item.amount).toLocaleString('en-IN')}</td>`; }
                 tr.innerHTML = rowHTML; els.tableBody.appendChild(tr);
@@ -333,17 +404,60 @@
             if (isCommercial) calculateMoneyCard();
         }
 
+        function recalculateAll() { renderTable(); }
+
+        function addNewRow() {
+            globalData.push({ size: "1200x1200", cat: "SURFACE", body: "BODY", design: "NEW ITEM", qty: 0, rate: 0, ft2PerBox: 2.88, amount: 0 });
+            renderTable();
+            // Scroll to bottom
+            const tableContainer = document.querySelector('.glass-card');
+            tableContainer.scrollTop = tableContainer.scrollHeight;
+        }
+
         function deleteRow(index) { globalData.splice(index, 1); renderTable(); }
+
+        function toggleInsurance(enable) {
+            showInsurance = enable;
+            if (showInsurance) { els.insRow.classList.remove('hidden'); els.addInsBtn.classList.add('hidden'); els.insRate.innerText = "0.99"; } 
+            else { els.insRow.classList.add('hidden'); els.addInsBtn.classList.remove('hidden'); els.insRate.innerText = "0"; }
+            calculateMoneyCard();
+        }
+
+        function toggleGST(enable) {
+            showGST = enable;
+            if (showGST) { els.gstRow.classList.remove('hidden'); els.addGstBtn.classList.add('hidden'); els.gstRate.innerText = "18"; }
+            else { els.gstRow.classList.add('hidden'); els.addGstBtn.classList.remove('hidden'); els.gstRate.innerText = "0"; }
+            calculateMoneyCard();
+        }
+
         function calculateMoneyCard() {
             if (!isCommercial) return;
-            let subtotal = 0; globalData.forEach(item => { subtotal += (item.qty * item.ft2PerBox * (item.rate || 0)); });
+            let subtotal = 0; globalData.forEach(item => { subtotal += item.amount || 0; });
             let insPercent = showInsurance ? parseFloat(els.insRate.innerText) || 0 : 0; let insAmount = subtotal * (insPercent / 100);
-            let preTax = subtotal + insAmount; let gstPercent = parseFloat(els.gstRate.innerText) || 0; let gstAmount = preTax * (gstPercent / 100); let grandTotal = preTax + gstAmount;
+            let preTax = subtotal + insAmount; 
+            let gstPercent = showGST ? parseFloat(els.gstRate.innerText) || 0 : 0; 
+            let gstAmount = preTax * (gstPercent / 100); 
+            let grandTotal = preTax + gstAmount;
             const fmt = (n) => Math.round(n).toLocaleString('en-IN');
             els.mcSubtotal.innerText = fmt(subtotal); els.mcIns.innerText = fmt(insAmount); els.mcPreTax.innerText = fmt(preTax); els.mcGst.innerText = fmt(gstAmount); els.mcGrandTotal.innerText = fmt(grandTotal);
         }
 
-        // --- SMART ENGINE (LOCKED) ---
+        // --- PDF PREVIEW ---
+        function togglePdfPreview() {
+            if (els.pdfPreviewToggle.checked) {
+                // Show Preview
+                els.workspaceView.classList.add('hidden');
+                els.pdfViewContainer.classList.remove('hidden');
+                const pdfData = exportData('preview'); // Get Data URI
+                els.pdfPreviewFrame.src = pdfData;
+            } else {
+                // Show Workspace
+                els.pdfViewContainer.classList.add('hidden');
+                els.workspaceView.classList.remove('hidden');
+            }
+        }
+
+        // --- LOCKED EXPORT LOGIC (NO VISUAL CHANGES) ---
         function calculateSmartColumnWidths(data, mode) {
             let maxLen = { size: 10, surf: 8, body: 8, design: 15, qty: 5, sr: 3 }; 
             data.forEach(item => {
@@ -385,7 +499,7 @@
                 globalData.forEach((item, i) => {
                     let row = [i+1, item.size, item.cat, item.body, item.design, item.qty];
                     if (isCommercial) {
-                        const area = item.qty * item.ft2PerBox; const amt = area * item.rate; subtotal += amt;
+                        const area = item.qty * (item.ft2PerBox || 0); const amt = item.amount || 0; subtotal += amt;
                         row.push(item.rate, Math.round(area), Math.round(amt).toLocaleString('en-IN'));
                     }
                     output.push(row);
@@ -394,10 +508,12 @@
                     output.push([""]); 
                     let insP = showInsurance ? parseFloat(els.insRate.innerText)||0 : 0; let insV = subtotal * (insP/100);
                     if(showInsurance) output.push(["", "", "", "", "", "", "", `Transit Insurance (${insP}%)`, {v:fmt(insV), s:sFoot}]);
-                    let taxable = subtotal + insV; let gstP = parseFloat(els.gstRate.innerText)||0; let gstV = taxable * (gstP/100);
+                    let taxable = subtotal + insV; 
+                    let gstP = showGST ? parseFloat(els.gstRate.innerText)||0 : 0; 
+                    let gstV = taxable * (gstP/100);
                     output.push(["", "", "", "", "", "", "", "Item Total", {v:fmt(subtotal), s:sFoot}]);
                     output.push(["", "", "", "", "", "", "", "Assessable Value", {v:fmt(taxable), s:sFootBorder}]);
-                    output.push(["", "", "", "", "", "", "", `GST (${gstP}%)`, {v:fmt(gstV), s:sFoot}]);
+                    if(showGST) output.push(["", "", "", "", "", "", "", `GST (${gstP}%)`, {v:fmt(gstV), s:sFoot}]);
                     output.push(["", "", "", "", "", "", "", {v:"Total Payable", s:sGrand}, {v:fmt(taxable + gstV), s:sGrand}]);
                 }
                 const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet(output);
@@ -405,7 +521,7 @@
                 XLSX.utils.book_append_sheet(wb, ws, "Sheet1"); XLSX.writeFile(wb, `${client}.xlsx`);
             }
 
-            if (type === 'pdf') {
+            if (type === 'pdf' || type === 'preview') {
                 const { jsPDF } = window.jspdf; const doc = new jsPDF();
                 const tableBody = []; let subtotal = 0;
                 const smartW = calculateSmartColumnWidths(globalData, isCommercial ? 'commercial' : 'simple');
@@ -421,7 +537,7 @@
                     let dName = item.design;
                     let row = [i+1, item.size, item.cat, item.body, dName, item.qty];
                     if (isCommercial) {
-                        const area = item.qty * item.ft2PerBox; const amt = area * item.rate; subtotal += amt;
+                        const area = item.qty * (item.ft2PerBox || 0); const amt = item.amount || 0; subtotal += amt;
                         row.push(item.rate, Math.round(area), Math.round(amt).toLocaleString('en-IN'));
                     }
                     tableBody.push(row);
@@ -449,7 +565,9 @@
                     let finalY = doc.lastAutoTable.finalY + 10;
                     if (finalY > 250) { doc.addPage(); finalY = 20; }
                     let insP = showInsurance ? parseFloat(els.insRate.innerText)||0 : 0; let insV = subtotal * (insP/100);
-                    let taxable = subtotal + insV; let gstP = parseFloat(els.gstRate.innerText)||0; let gstV = taxable * (gstP/100); let grand = taxable + gstV;
+                    let taxable = subtotal + insV; 
+                    let gstP = showGST ? parseFloat(els.gstRate.innerText)||0 : 0; 
+                    let gstV = taxable * (gstP/100); let grand = taxable + gstV;
                     const moneyX = 140; 
                     doc.setDrawColor(220, 220, 220); doc.line(moneyX, finalY - 5, 205, finalY - 5);
                     doc.setFontSize(9); doc.setTextColor(100, 100, 100);
@@ -457,10 +575,15 @@
                     if (showInsurance) { finalY += 5; doc.setFont(undefined, 'normal'); doc.setTextColor(100, 100, 100); doc.text(`Transit Insurance (${insP}%)`, moneyX, finalY); doc.setFont(undefined, 'bold'); doc.setTextColor(0, 0, 0); doc.text(fmt(insV), 200, finalY, {align:'right'}); }
                     finalY += 3; doc.line(moneyX, finalY, 205, finalY); finalY += 4;
                     doc.setFont(undefined, 'normal'); doc.setTextColor(100, 100, 100); doc.text(`Assessable Value`, moneyX, finalY); doc.setFont(undefined, 'bold'); doc.setTextColor(0, 0, 0); doc.text(fmt(taxable), 200, finalY, {align:'right'});
-                    finalY += 5; doc.setFont(undefined, 'normal'); doc.setTextColor(100, 100, 100); doc.text(`GST (${gstP}%)`, moneyX, finalY); doc.setFont(undefined, 'bold'); doc.setTextColor(0, 0, 0); doc.text(fmt(gstV), 200, finalY, {align:'right'});
+                    if(showGST) { finalY += 5; doc.setFont(undefined, 'normal'); doc.setTextColor(100, 100, 100); doc.text(`GST (${gstP}%)`, moneyX, finalY); doc.setFont(undefined, 'bold'); doc.setTextColor(0, 0, 0); doc.text(fmt(gstV), 200, finalY, {align:'right'}); }
                     finalY += 8; doc.setFillColor(30, 41, 59); doc.rect(moneyX - 2, finalY - 5, 70, 8, 'F'); doc.setTextColor(255, 255, 255); doc.setFontSize(10); doc.text(`Total Payable`, moneyX, finalY); doc.text(fmt(grand), 200, finalY, {align:'right'});
                 }
-                doc.save(`${client}.pdf`);
+                
+                if (type === 'preview') {
+                    return doc.output('datauristring');
+                } else {
+                    doc.save(`${client}.pdf`);
+                }
             }
         }
     </script>
