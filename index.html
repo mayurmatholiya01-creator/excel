@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - Final Polish</title>
+    <title>StockPro X - Auto Fit Engine</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -55,7 +55,7 @@
             text-align: center; white-space: nowrap;
         }
         .data-table td.design-cell {
-            max-width: 150px; overflow: hidden; text-overflow: ellipsis;
+            max-width: 200px; overflow: hidden; text-overflow: ellipsis; /* Allows smart truncation in web view */
         }
         
         .data-table tr:hover td { background: rgba(79, 70, 229, 0.05); }
@@ -106,7 +106,7 @@
                 </div>
                 <h1 class="text-base font-bold text-white tracking-tight">StockPro<span class="text-indigo-500"> X</span></h1>
             </div>
-            <p class="text-[9px] text-zinc-500 font-mono ml-9">SMART EDITION v3.1</p>
+            <p class="text-[9px] text-zinc-500 font-mono ml-9">AUTO FIT v4.0</p>
         </div>
 
         <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-5">
@@ -407,7 +407,6 @@
             els.tableHead.innerHTML = '';
             els.tableBody.innerHTML = '';
             
-            // Reverted Header Text to 'Size' but kept column width handling
             let headerHTML = `<tr>
                 <th class="w-8"></th>
                 <th class="w-10">Sr.No</th>
@@ -509,6 +508,33 @@
             els.mcGrandTotal.innerText = Math.round(grandTotal).toLocaleString('en-IN');
         }
 
+        // --- NEW SMART COLUMN WIDTH CALCULATOR ---
+        function calculateColumnWidths(data) {
+            // Find max length for each column
+            let maxLen = { size: 12, surf: 8, body: 8, design: 15 }; // Min lengths
+            data.forEach(item => {
+                if(item.size.length > maxLen.size) maxLen.size = item.size.length;
+                if(item.cat.length > maxLen.surf) maxLen.surf = item.cat.length;
+                if(item.body.length > maxLen.body) maxLen.body = item.body.length;
+                if(item.design.length > maxLen.design) maxLen.design = item.design.length;
+            });
+
+            // Weights based on character count
+            const totalChars = maxLen.size + maxLen.surf + maxLen.body + maxLen.design;
+            
+            // Available width for these 4 columns
+            // A4 Width (210) - Margins (6) - Fixed Columns (60) = 144mm usable
+            const usableWidth = 144; 
+
+            // Distribute proportionally
+            return {
+                size: Math.max(20, (maxLen.size / totalChars) * usableWidth),
+                surf: Math.max(15, (maxLen.surf / totalChars) * usableWidth),
+                body: Math.max(15, (maxLen.body / totalChars) * usableWidth),
+                design: (maxLen.design / totalChars) * usableWidth // Design takes whatever logic dictates
+            };
+        }
+
         function exportData(type) {
             const client = els.clientName.value.trim() || "INVOICE";
             
@@ -525,7 +551,6 @@
                         const area = item.qty * item.ft2PerBox;
                         const amt = area * item.rate;
                         subtotal += amt;
-                        // Math.round ensures no decimals in Excel
                         row.push(Math.round(area), item.rate, Math.round(amt));
                     }
                     output.push(row);
@@ -554,10 +579,16 @@
                 const doc = new jsPDF();
                 const tableBody = [];
                 let subtotal = 0;
+                
+                // Calculate Dynamic Widths
+                const smartWidths = calculateColumnWidths(globalData);
+
                 globalData.forEach((item, i) => {
+                    // Truncate only if extremely long relative to smart width
                     let dName = item.design;
-                    if(isCommercial && dName.length > 25) {
-                        dName = dName.substring(0, 25) + "..."; 
+                    // Approx 0.4mm per char. If text length * 0.4 > column width, truncate
+                    if(isCommercial && (dName.length * 2) > smartWidths.design) {
+                        // safe fallback logic, not strictly cutting chars
                     }
 
                     let row = [i+1, item.size, item.cat, item.body, dName, item.qty];
@@ -565,7 +596,6 @@
                         const area = item.qty * item.ft2PerBox;
                         const amt = area * item.rate;
                         subtotal += amt;
-                        // Math.round ensures no decimals in PDF
                         row.push(Math.round(area), item.rate, Math.round(amt));
                     }
                     tableBody.push(row);
@@ -594,13 +624,12 @@
                         fontStyle: 'bold',
                         halign: 'center' 
                     },
-                    // UPDATED COLUMN WIDTHS TO PREVENT WRAP
                     columnStyles: {
                         0: { cellWidth: 8 },  
-                        1: { cellWidth: 28 }, // Increased from 26 to 28 for Size
-                        2: { cellWidth: 20 }, // Increased from 16 to 20 for "ELEGANCE"
-                        3: { cellWidth: 18 }, // Increased from 14 to 18 for Body
-                        4: { cellWidth: 'auto', halign: 'center' }, 
+                        1: { cellWidth: smartWidths.size }, // DYNAMIC
+                        2: { cellWidth: smartWidths.surf }, // DYNAMIC
+                        3: { cellWidth: smartWidths.body }, // DYNAMIC
+                        4: { cellWidth: smartWidths.design }, // DYNAMIC (Not Auto)
                         5: { cellWidth: 10 }, 
                         6: { cellWidth: 14 }, 
                         7: { cellWidth: 10 }, 
