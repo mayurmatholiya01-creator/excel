@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - Dashboard Edition</title>
+    <title>StockPro X - Workspace Edition</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
@@ -16,45 +17,57 @@
             theme: {
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: {
-                        sidebar: '#0F0F11',
-                        canvas: '#050505',
-                        panel: '#18181B',
-                        accent: '#6366f1'
-                    }
+                    colors: { glass: "rgba(20, 20, 23, 0.85)", border: "rgba(255, 255, 255, 0.08)" }
                 }
             }
         }
     </script>
 
     <style>
-        body { background: #000; color: #fff; overflow: hidden; }
-        
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        body { background: #050505; color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; }
 
-        /* Grid Pattern for Empty Canvas */
-        .bg-grid {
-            background-image: linear-gradient(to right, #1f1f1f 1px, transparent 1px),
-                              linear-gradient(to bottom, #1f1f1f 1px, transparent 1px);
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0c; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4f46e5; }
+
+        /* Glass Sidebar */
+        .sidebar {
+            background: rgba(10, 10, 12, 0.6);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255,255,255,0.08);
+        }
+
+        /* Canvas Area */
+        .canvas-bg {
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
             background-size: 40px 40px;
         }
 
         /* Editable Table Styles */
-        .editable-input {
-            background: transparent; border: none; width: 100%; color: #d1d5db;
-            text-align: center; font-size: 13px; outline: none; padding: 4px;
-            transition: all 0.2s;
+        .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .data-table th { 
+            background: #18181b; color: #a1a1aa; font-weight: 600; text-align: left; 
+            padding: 12px 16px; border-bottom: 1px solid #27272a; position: sticky; top: 0;
         }
-        .editable-input:focus { background: #27272a; color: #fff; border-radius: 4px; box-shadow: 0 0 0 1px #6366f1; }
-        
-        .upload-zone { transition: all 0.2s ease; border: 1px dashed #3f3f46; }
-        .upload-zone:hover, .upload-zone.dragover { border-color: #6366f1; background: rgba(99, 102, 241, 0.05); }
+        .data-table td { 
+            padding: 10px 16px; border-bottom: 1px solid #27272a; color: #e4e4e7; transition: background 0.2s;
+        }
+        .data-table tr:hover td { background: rgba(79, 70, 229, 0.05); }
+        .data-table td:focus { outline: 2px solid #6366f1; background: #1e1b4b; border-radius: 4px; }
 
-        /* Switch */
+        /* Orbs */
+        .orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.3; pointer-events: none; z-index: -1; }
+        .orb-1 { top: -20%; left: -10%; width: 600px; height: 600px; background: #4f46e5; }
+        .orb-2 { bottom: -20%; right: -10%; width: 500px; height: 500px; background: #ec4899; }
+
+        /* Upload Zone */
+        .upload-zone { border: 1px dashed rgba(255,255,255,0.15); transition: all 0.2s; }
+        .upload-zone:hover, .upload-zone.dragover { border-color: #6366f1; background: rgba(79, 70, 229, 0.05); }
+
         .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #3f3f46; transition: .4s; border-radius: 34px; }
@@ -62,138 +75,154 @@
         input:checked + .slider { background-color: #6366f1; }
         input:checked + .slider:before { transform: translateX(18px); }
 
-        .btn-gradient { background: linear-gradient(135deg, #4f46e5, #9333ea); transition: filter 0.2s; }
-        .btn-gradient:hover { filter: brightness(1.1); }
+        /* Buttons */
+        .btn-grad { background-size: 200% auto; transition: 0.5s; }
+        .btn-grad:hover { background-position: right center; }
     </style>
 </head>
-<body class="flex h-screen w-screen text-sm">
+<body class="flex h-screen w-screen overflow-hidden text-sm">
 
-    <aside class="w-80 bg-sidebar border-r border-white/10 flex flex-col z-20 shadow-2xl">
-        <div class="h-16 flex items-center px-6 border-b border-white/5 gap-3">
-            <div class="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
-                <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+    <div class="fixed inset-0 pointer-events-none">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
+    <aside class="sidebar w-[320px] flex flex-col justify-between shrink-0 z-20 h-full">
+        
+        <div class="p-6 border-b border-white/5">
+            <div class="flex items-center gap-3 mb-1">
+                <div class="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center border border-indigo-500/30">
+                    <svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                </div>
+                <h1 class="text-lg font-bold text-white tracking-tight">StockPro<span class="text-indigo-500"> X</span></h1>
             </div>
-            <h1 class="font-bold text-lg tracking-tight">StockPro<span class="text-indigo-500"> X</span></h1>
+            <p class="text-[10px] text-zinc-500 font-mono ml-11">WORKSPACE EDITION v12.0</p>
         </div>
 
-        <div class="flex-1 overflow-y-auto p-6 space-y-6">
+        <div class="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
             
             <div class="space-y-2">
-                <label class="text-xs font-semibold text-zinc-500 uppercase tracking-wider">1. Project Details</label>
-                <input type="text" id="clientName" placeholder="CLIENT NAME" 
-                    class="w-full bg-panel border border-zinc-700 text-white text-xs font-bold rounded-lg p-3 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder-zinc-600 uppercase">
+                <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Project / Client</label>
+                <input type="text" id="clientName" placeholder="ENTER NAME..." 
+                    class="w-full bg-[#18181b] border border-zinc-700 text-white text-xs font-bold rounded-lg focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 block p-3 outline-none transition-all placeholder-zinc-600 uppercase">
             </div>
 
             <div class="space-y-2">
-                <label class="text-xs font-semibold text-zinc-500 uppercase tracking-wider">2. Source Data</label>
-                <div class="upload-zone w-full h-32 rounded-xl bg-panel flex flex-col items-center justify-center cursor-pointer relative group" id="dropZone">
+                <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Data Source</label>
+                <div class="upload-zone w-full h-28 rounded-xl bg-white/5 flex flex-col items-center justify-center cursor-pointer relative group" id="dropZone">
+                    <input id="fileInput" type="file" class="hidden" accept=".xlsx, .xls" />
+                    
                     <div id="uploadContent" class="text-center">
                         <svg class="w-6 h-6 mx-auto mb-2 text-zinc-500 group-hover:text-indigo-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                        <p class="text-[10px] text-zinc-400">Click or Drop Excel</p>
+                        <span class="text-xs text-zinc-400">Drop Excel File</span>
                     </div>
-                    <div id="fileInfo" class="hidden flex-col items-center">
-                        <div class="w-8 h-8 mb-2 rounded-full bg-green-500/20 flex items-center justify-center text-green-400"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></div>
-                        <p id="fileName" class="text-[10px] font-bold text-white max-w-[150px] truncate">file.xlsx</p>
-                        <p id="removeFile" class="text-[10px] text-red-400 mt-1 hover:underline">Remove</p>
+
+                    <div id="fileSuccess" class="hidden flex-col items-center w-full px-4">
+                        <div class="flex items-center gap-2 mb-2 w-full justify-center">
+                             <svg class="w-4 h-4 text-green-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                             <p id="fileName" class="text-xs font-semibold text-white truncate">data.xlsx</p>
+                        </div>
+                        <button id="removeFileBtn" class="text-[10px] text-red-400 hover:text-red-300 border border-red-500/20 bg-red-500/10 px-3 py-1 rounded-full transition-colors">REMOVE</button>
                     </div>
-                    <input id="fileInput" type="file" class="hidden" accept=".xlsx, .xls" />
                 </div>
             </div>
 
-            <div class="space-y-3 pt-2">
-                <label class="text-xs font-semibold text-zinc-500 uppercase tracking-wider">3. Logic Settings</label>
-                <div class="flex items-center justify-between bg-panel p-3 rounded-lg border border-zinc-800">
-                    <div class="flex flex-col">
-                        <span class="text-xs font-medium text-zinc-200">Smart Merge</span>
-                        <span class="text-[10px] text-zinc-500">Merge -A, -B suffixes</span>
+            <div class="p-4 rounded-xl bg-[#18181b] border border-zinc-800">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-xs font-semibold text-zinc-200">Smart Merge</div>
+                        <div class="text-[10px] text-zinc-500">Combine -A/-B faces</div>
                     </div>
-                    <label class="switch"><input type="checkbox" id="mergeFaces" onchange="reProcess()"><span class="slider"></span></label>
+                    <label class="switch"><input type="checkbox" id="mergeFaces"><span class="slider"></span></label>
                 </div>
             </div>
 
         </div>
 
-        <div class="p-6 border-t border-white/5 space-y-3 bg-sidebar">
-            <button onclick="downloadAction('excel')" class="w-full h-10 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-bold border border-zinc-700 transition-all flex items-center justify-center gap-2">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                DOWNLOAD EXCEL
-            </button>
-            <button onclick="downloadAction('pdf')" class="w-full h-10 rounded-lg btn-gradient text-white text-xs font-bold shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                DOWNLOAD PDF
-            </button>
-            <p id="statusMsg" class="text-[10px] text-center text-zinc-500 h-3"></p>
+        <div class="p-6 border-t border-white/5 bg-[#0a0a0c]/50">
+            <div id="actionButtons" class="flex flex-col gap-3 opacity-50 pointer-events-none transition-opacity duration-300">
+                <button onclick="exportData('pdf')" class="w-full py-3 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                    DOWNLOAD PDF
+                </button>
+                <button onclick="exportData('excel')" class="w-full py-3 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-bold border border-zinc-700 flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                    DOWNLOAD EXCEL
+                </button>
+            </div>
+            <div id="statusText" class="text-center text-[10px] text-zinc-500 mt-3 h-4">WAITING FOR INPUT...</div>
         </div>
     </aside>
 
-    <main class="flex-1 bg-canvas flex flex-col relative overflow-hidden">
+    <main class="flex-1 relative flex flex-col h-full bg-[#050505]">
         
-        <div class="h-16 border-b border-white/5 flex items-center justify-between px-8 bg-black/50 backdrop-blur-md z-10">
-            <h2 class="text-sm font-medium text-zinc-400">Workspace Canvas</h2>
-            <div class="flex items-center gap-4">
-                <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20">
-                    <div class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></div>
-                    <span class="text-[10px] text-indigo-300 font-mono">LIVE EDIT MODE</span>
-                </div>
+        <div class="h-14 border-b border-white/5 flex items-center justify-between px-6 bg-[#0a0a0c]/80 backdrop-blur-md z-10">
+            <div class="flex items-center gap-2 text-zinc-400 text-xs">
+                <span class="w-2 h-2 rounded-full bg-zinc-600" id="liveIndicator"></span>
+                <span class="font-semibold tracking-wide" id="canvasTitle">PREVIEW CANVAS</span>
+            </div>
+            <div class="text-[10px] text-zinc-500 bg-zinc-900 px-3 py-1 rounded-full border border-zinc-800">
+                EDITABLE MODE ACTIVE
             </div>
         </div>
 
-        <div id="canvasArea" class="flex-1 overflow-auto relative bg-grid">
+        <div class="flex-1 overflow-auto canvas-bg relative p-8">
             
             <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-zinc-600">
-                <div class="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-4">
-                    <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                <div class="w-20 h-20 rounded-2xl bg-zinc-900/50 border border-zinc-800 flex items-center justify-center mb-4">
+                    <svg class="w-10 h-10 text-zinc-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                 </div>
-                <p class="text-sm">Upload an Excel file to start editing</p>
+                <h3 class="text-lg font-medium text-zinc-300">Workspace Empty</h3>
+                <p class="text-sm mt-1">Upload an Excel file from the sidebar to begin.</p>
             </div>
 
-            <div id="tableContainer" class="hidden p-8 w-full">
-                <div class="bg-panel border border-white/10 rounded-xl overflow-hidden shadow-2xl">
-                    <table class="w-full text-left border-collapse">
+            <div id="tableContainer" class="hidden w-full max-w-5xl mx-auto pb-20">
+                <div class="glass-card rounded-xl overflow-hidden border border-white/10 shadow-2xl bg-[#0a0a0c]">
+                    <table class="data-table" id="previewTable">
                         <thead>
-                            <tr class="bg-zinc-900/50 border-b border-white/10 text-xs text-zinc-400 uppercase tracking-wider">
-                                <th class="p-4 font-medium text-center w-12">#</th>
-                                <th class="p-4 font-medium text-center">Size (mm)</th>
-                                <th class="p-4 font-medium text-center">Category</th>
-                                <th class="p-4 font-medium text-center">Body</th>
-                                <th class="p-4 font-medium text-left">Design Name</th>
-                                <th class="p-4 font-medium text-center w-24">Qty</th>
+                            <tr>
+                                <th class="w-16">#</th>
+                                <th>Size & Thickness</th>
+                                <th>Surface</th>
+                                <th>Body Type</th>
+                                <th>Design Name</th>
+                                <th class="text-right">Total Qty</th>
                             </tr>
                         </thead>
-                        <tbody id="tableBody" class="divide-y divide-white/5 text-zinc-300">
+                        <tbody id="tableBody">
                             </tbody>
-                        <tfoot class="bg-zinc-900/50 font-bold text-white">
-                            <tr>
-                                <td colspan="5" class="p-4 text-right pr-8 text-xs">GRAND TOTAL</td>
-                                <td class="p-4 text-center text-indigo-400" id="grandTotal">0</td>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
-                <div class="h-20"></div> </div>
+                <div class="mt-4 flex justify-end gap-4 text-xs font-mono text-zinc-500">
+                    <div class="px-3 py-1 bg-zinc-900 rounded border border-zinc-800">TOTAL BOXES: <span id="grandTotalDisplay" class="text-white font-bold">0</span></div>
+                    <div class="px-3 py-1 bg-zinc-900 rounded border border-zinc-800">ITEMS: <span id="itemCountDisplay" class="text-white font-bold">0</span></div>
+                </div>
+            </div>
+
         </div>
     </main>
 
     <script>
-        // --- GLOBAL STATE ---
-        let globalDataList = [];
-        let originalRawData = null; // Store raw for re-processing if needed
-
-        // --- DOM ELEMENTS ---
+        // --- ELEMENTS ---
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
-        const clientInput = document.getElementById('clientName');
         const uploadContent = document.getElementById('uploadContent');
-        const fileInfo = document.getElementById('fileInfo');
+        const fileSuccess = document.getElementById('fileSuccess');
         const fileNameTxt = document.getElementById('fileName');
-        const removeFileBtn = document.getElementById('removeFile');
-        const tableContainer = document.getElementById('tableContainer');
+        const removeFileBtn = document.getElementById('removeFileBtn');
         const emptyState = document.getElementById('emptyState');
+        const tableContainer = document.getElementById('tableContainer');
         const tableBody = document.getElementById('tableBody');
-        const grandTotalEl = document.getElementById('grandTotal');
-        const statusMsg = document.getElementById('statusMsg');
+        const actionButtons = document.getElementById('actionButtons');
+        const statusText = document.getElementById('statusText');
+        const liveIndicator = document.getElementById('liveIndicator');
+        const grandTotalDisplay = document.getElementById('grandTotalDisplay');
+        const itemCountDisplay = document.getElementById('itemCountDisplay');
+        const clientInput = document.getElementById('clientName');
 
-        // --- EVENT LISTENERS ---
+        let globalDataList = []; // Stores the processed data
+
+        // --- UPLOAD HANDLERS ---
         clientInput.addEventListener('input', function() { this.value = this.value.toUpperCase(); });
         
         dropZone.addEventListener('click', (e) => { if(e.target !== removeFileBtn) fileInput.click(); });
@@ -203,231 +232,213 @@
             e.preventDefault(); dropZone.classList.remove('dragover'); 
             if (e.dataTransfer.files.length) { fileInput.files = e.dataTransfer.files; handleFile(); } 
         });
-        
         fileInput.addEventListener('change', handleFile);
-        
-        removeFileBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            fileInput.value = "";
-            globalDataList = [];
-            originalRawData = null;
-            toggleUI(false);
-        });
 
-        function toggleUI(hasFile) {
-            if(hasFile) {
+        function handleFile() {
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
                 uploadContent.classList.add('hidden');
-                fileInfo.classList.remove('hidden');
-                fileInfo.classList.add('flex');
-                fileNameTxt.innerText = fileInput.files[0].name;
-                emptyState.classList.add('hidden');
-                tableContainer.classList.remove('hidden');
-            } else {
-                uploadContent.classList.remove('hidden');
-                fileInfo.classList.add('hidden');
-                fileInfo.classList.remove('flex');
-                emptyState.classList.remove('hidden');
-                tableContainer.classList.add('hidden');
-                statusMsg.innerText = "";
+                fileSuccess.classList.remove('hidden'); 
+                fileSuccess.classList.add('flex');
+                fileNameTxt.innerText = file.name;
+                processExcel(file);
             }
         }
 
-        // --- CORE LOGIC ---
-        function handleFile() {
-            if (fileInput.files.length === 0) return;
-            const file = fileInput.files[0];
-            toggleUI(true);
-            statusMsg.innerText = "Reading file...";
+        removeFileBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            fileInput.value = "";
+            uploadContent.classList.remove('hidden');
+            fileSuccess.classList.add('hidden');
+            fileSuccess.classList.remove('flex');
+            
+            // Reset Canvas
+            emptyState.classList.remove('hidden');
+            tableContainer.classList.add('hidden');
+            actionButtons.classList.add('opacity-50', 'pointer-events-none');
+            actionButtons.classList.remove('opacity-100', 'pointer-events-auto');
+            liveIndicator.classList.remove('bg-green-500', 'animate-pulse');
+            liveIndicator.classList.add('bg-zinc-600');
+            statusText.innerText = "WAITING FOR INPUT...";
+            globalDataList = [];
+        });
+
+        // --- PROCESSING LOGIC ---
+        function processExcel(file) {
+            statusText.innerText = "READING FILE...";
+            statusText.className = "text-center text-[10px] mt-3 h-4 text-indigo-400 font-medium animate-pulse";
             
             const reader = new FileReader();
             reader.onload = function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, {type: 'array'});
-                    originalRawData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: 1, defval: ""});
-                    processAndRender();
-                    statusMsg.innerText = "Data Loaded";
-                } catch (err) {
-                    alert("Error: " + err.message);
-                }
+                setTimeout(() => {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, {type: 'array'});
+                        const rawData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: 1, defval: ""});
+                        
+                        // Smart Headers
+                        let headerIdx = -1, col = { design: -1, cat: -1, size: -1, body: -1, qty: -1 };
+                        for (let i = 0; i < Math.min(rawData.length, 25); i++) {
+                            const r = rawData[i].map(x => String(x).toLowerCase().trim());
+                            if (r.includes('designname') || r.includes('size mm')) {
+                                headerIdx = i; col.design = r.indexOf('designname'); col.cat = r.indexOf('category'); col.size = r.indexOf('size mm'); col.body = r.indexOf('bodytype'); col.qty = r.findIndex(c => c === 'pre' || c === 'total' || c === 'qty'); break;
+                            }
+                        }
+                        if (headerIdx === -1) throw new Error("Headers not found.");
+
+                        const shouldMerge = document.getElementById('mergeFaces').checked;
+                        const map = new Map();
+
+                        // Data Extraction
+                        for (let i = headerIdx + 1; i < rawData.length; i++) {
+                            const r = rawData[i]; if (!r || r.length === 0) continue;
+                            let design = (r[col.design] || "").toString().trim();
+                            let size = (r[col.size] || "").toString().trim();
+                            let cat = col.cat > -1 ? (r[col.cat] || "").toString().trim() : "";
+                            let body = col.body > -1 ? (r[col.body] || "").toString().trim() : "";
+                            let qty = col.qty > -1 ? parseFloat(r[col.qty]) : 0;
+                            
+                            if (!design && !size) continue;
+                            if (shouldMerge) design = design.replace(/-[a-zA-Z]$/, "").trim();
+                            
+                            const key = `${size}_${cat}_${body}_${design}`;
+                            if (map.has(key)) map.get(key).qty += qty; else map.set(key, { size, cat, body, design, qty });
+                        }
+
+                        // Sorting
+                        globalDataList = Array.from(map.values());
+                        function getDims(s) { const m = s.match(/(\d+)/g); return m ? { w: parseInt(m[0]||0), h: parseInt(m[1]||0) } : {w:0,h:0}; }
+                        globalDataList.sort((a, b) => {
+                            const dA = getDims(a.size), dB = getDims(b.size);
+                            if (dA.w !== dB.w) return dA.w - dB.w; if (dA.h !== dB.h) return dA.h - dB.h;
+                            if (a.cat < b.cat) return -1; if (a.cat > b.cat) return 1;
+                            if (a.body < b.body) return -1; if (a.body > b.body) return 1;
+                            return a.design.localeCompare(b.design);
+                        });
+
+                        renderTable();
+                        
+                        // Activate UI
+                        emptyState.classList.add('hidden');
+                        tableContainer.classList.remove('hidden');
+                        actionButtons.classList.remove('opacity-50', 'pointer-events-none');
+                        actionButtons.classList.add('opacity-100', 'pointer-events-auto');
+                        liveIndicator.classList.remove('bg-zinc-600');
+                        liveIndicator.classList.add('bg-green-500', 'animate-pulse');
+                        statusText.innerText = "READY TO EXPORT";
+                        statusText.className = "text-center text-[10px] mt-3 h-4 text-green-500 font-bold";
+
+                    } catch (err) {
+                        alert("Error: " + err.message);
+                        statusText.innerText = "ERROR IN FILE";
+                        statusText.className = "text-center text-[10px] mt-3 h-4 text-red-500 font-bold";
+                    }
+                }, 300);
             };
             reader.readAsArrayBuffer(file);
         }
 
-        function reProcess() {
-            if(originalRawData) processAndRender();
-        }
-
-        function processAndRender() {
-            const rawData = originalRawData;
-            const shouldMergeFaces = document.getElementById('mergeFaces').checked;
-
-            // Headers Detection
-            let headerIdx = -1, col = { design: -1, cat: -1, size: -1, body: -1, qty: -1 };
-            for (let i = 0; i < Math.min(rawData.length, 25); i++) {
-                const r = rawData[i].map(x => String(x).toLowerCase().trim());
-                if (r.includes('designname') || r.includes('size mm')) {
-                    headerIdx = i; col.design = r.indexOf('designname'); col.cat = r.indexOf('category'); col.size = r.indexOf('size mm'); col.body = r.indexOf('bodytype'); col.qty = r.findIndex(c => c === 'pre' || c === 'total' || c === 'qty'); break;
-                }
-            }
-            if (headerIdx === -1) { alert("Headers not found!"); return; }
-
-            // Extraction
-            const map = new Map();
-            for (let i = headerIdx + 1; i < rawData.length; i++) {
-                const r = rawData[i]; if (!r || r.length === 0) continue;
-                let design = (r[col.design] || "").toString().trim();
-                let size = (r[col.size] || "").toString().trim();
-                let cat = col.cat > -1 ? (r[col.cat] || "").toString().trim() : "";
-                let body = col.body > -1 ? (r[col.body] || "").toString().trim() : "";
-                let qty = col.qty > -1 ? parseFloat(r[col.qty]) : 0;
-                
-                if (!design && !size) continue;
-                if (shouldMergeFaces) design = design.replace(/-[a-zA-Z]$/, "").trim();
-                
-                const key = `${size}_${cat}_${body}_${design}`;
-                if (map.has(key)) map.get(key).qty += qty; 
-                else map.set(key, { size, cat, body, design, qty });
-            }
-
-            // Sorting
-            globalDataList = Array.from(map.values());
-            function getDims(s) { const m = s.match(/(\d+)/g); return m ? { w: parseInt(m[0]||0), h: parseInt(m[1]||0) } : {w:0,h:0}; }
-            globalDataList.sort((a, b) => {
-                const dA = getDims(a.size), dB = getDims(b.size);
-                if (dA.w !== dB.w) return dA.w - dB.w; if (dA.h !== dB.h) return dA.h - dB.h;
-                if (a.cat < b.cat) return -1; if (a.cat > b.cat) return 1;
-                return a.design.localeCompare(b.design);
-            });
-
-            renderTable();
-        }
-
-        // --- RENDER EDITABLE TABLE ---
+        // --- RENDERING (EDITABLE CANVAS) ---
         function renderTable() {
-            tableBody.innerHTML = "";
-            let grandTotal = 0;
-            let lastSize = null;
-
+            tableBody.innerHTML = '';
+            let sr = 1, grandTotal = 0, lastSize = null;
+            
             globalDataList.forEach((item, index) => {
-                grandTotal += item.qty;
-                
                 // Size Separator
                 if (lastSize && lastSize !== item.size) {
-                    const sep = document.createElement('tr');
-                    sep.innerHTML = `<td colspan="6" class="h-4 bg-transparent"></td>`;
-                    tableBody.appendChild(sep);
+                    const sepRow = document.createElement('tr');
+                    sepRow.innerHTML = `<td colspan="6" class="bg-zinc-900/50 h-2"></td>`;
+                    tableBody.appendChild(sepRow);
                 }
                 lastSize = item.size;
+                grandTotal += item.qty;
 
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-white/5 transition-colors group";
-                
-                // We map data to inputs. Note: 'index' is used to update globalDataList on change
+                // ContentEditable Cells
                 tr.innerHTML = `
-                    <td class="p-2 text-center text-zinc-500 text-xs">${index + 1}</td>
-                    <td class="p-1"><input type="text" class="editable-input" value="${item.size}" onchange="updateData(${index}, 'size', this.value)"></td>
-                    <td class="p-1"><input type="text" class="editable-input" value="${item.cat}" onchange="updateData(${index}, 'cat', this.value)"></td>
-                    <td class="p-1"><input type="text" class="editable-input" value="${item.body}" onchange="updateData(${index}, 'body', this.value)"></td>
-                    <td class="p-1"><input type="text" class="editable-input text-left px-3" value="${item.design}" onchange="updateData(${index}, 'design', this.value)"></td>
-                    <td class="p-1"><input type="number" class="editable-input font-bold text-indigo-300" value="${item.qty}" onchange="updateData(${index}, 'qty', this.value)"></td>
+                    <td class="text-zinc-500 font-mono">${sr++}</td>
+                    <td contenteditable="true" class="outline-none">${item.size}</td>
+                    <td contenteditable="true" class="outline-none">${item.cat}</td>
+                    <td contenteditable="true" class="outline-none">${item.body}</td>
+                    <td contenteditable="true" class="outline-none text-white font-medium">${item.design}</td>
+                    <td contenteditable="true" class="outline-none text-right font-mono text-indigo-300 font-bold">${item.qty}</td>
                 `;
                 tableBody.appendChild(tr);
             });
 
-            grandTotalEl.innerText = grandTotal;
+            grandTotalDisplay.innerText = grandTotal;
+            itemCountDisplay.innerText = globalDataList.length;
         }
 
-        // --- DATA BINDING ---
-        window.updateData = function(index, field, value) {
-            if(field === 'qty') value = parseFloat(value) || 0;
-            globalDataList[index][field] = value;
+        // --- SYNC FUNCTION (TABLE TO DATA) ---
+        function syncTableData() {
+            // Reads HTML table back into globalDataList before downloading
+            const rows = tableBody.querySelectorAll('tr');
+            const newData = [];
             
-            // Re-calculate total visual only (for performance)
-            let total = globalDataList.reduce((sum, item) => sum + item.qty, 0);
-            grandTotalEl.innerText = total;
-        };
+            rows.forEach(tr => {
+                const tds = tr.querySelectorAll('td');
+                if (tds.length < 6) return; // Skip separator rows
 
-        // --- DOWNLOAD HANDLERS ---
-        function downloadAction(type) {
-            if(globalDataList.length === 0) { alert("No data to download!"); return; }
-            statusMsg.innerText = "Generating " + type.toUpperCase() + "...";
+                newData.push({
+                    size: tds[1].innerText.trim(),
+                    cat: tds[2].innerText.trim(),
+                    body: tds[3].innerText.trim(),
+                    design: tds[4].innerText.trim(),
+                    qty: parseFloat(tds[5].innerText.trim()) || 0
+                });
+            });
+            globalDataList = newData;
+        }
+
+        // --- EXPORT FUNCTIONS ---
+        function exportData(type) {
+            syncTableData(); // Save edits first!
             const clientName = clientInput.value.trim();
 
-            setTimeout(() => {
-                if(type === 'excel') generateExcel(globalDataList, clientName);
-                if(type === 'pdf') generatePDF(globalDataList, clientName);
-                statusMsg.innerText = "Download Complete!";
-                setTimeout(() => statusMsg.innerText = "", 3000);
-            }, 100);
-        }
+            if (type === 'excel') {
+                // Same Logic as before
+                const output = [];
+                const sHead = { font: { name: "Segoe UI", sz: 10, bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1E293B" } }, alignment: { horizontal: "center", vertical: "center" } };
+                const sData = { font: { name: "Segoe UI", sz: 10 }, alignment: { horizontal: "center", vertical: "center" }, border: {top:{style:"thin",color:{rgb:"E5E7EB"}},bottom:{style:"thin",color:{rgb:"E5E7EB"}},left:{style:"thin",color:{rgb:"D1D5DB"}},right:{style:"thin",color:{rgb:"D1D5DB"}}} };
+                
+                output.push(["SR NO", "Size & thikness", "surface", "BodyType", "DesignName", "Total QTY"].map(h => ({v:h, s:sHead})));
+                
+                let sr = 1, grandTotal = 0, lastSize = null;
+                globalDataList.forEach(item => { 
+                    if (lastSize && lastSize !== item.size) output.push(new Array(6).fill({v:"",s:sData})); 
+                    lastSize = item.size; grandTotal += item.qty; 
+                    output.push([{v:sr++, s:sData}, {v:item.size, s:sData}, {v:item.cat, s:sData}, {v:item.body, s:sData}, {v:item.design, s:sData}, {v:item.qty, s:sData}]); 
+                });
+                output.push([{v:"",s:sData}, {v:"",s:sData}, {v:"",s:sData}, {v:"",s:sData}, {v:"GRAND TOTAL",s:sData}, {v:grandTotal,s:sData}]);
 
-        function generateExcel(list, clientName) {
-            let maxW = { size: 10, cat: 10, body: 10, design: 15 };
-            list.forEach(item => { 
-                if(item.size.length > maxW.size) maxW.size = item.size.length; 
-                if(item.cat.length > maxW.cat) maxW.cat = item.cat.length; 
-                if(item.body.length > maxW.body) maxW.body = item.body.length; 
-                if(item.design.length > maxW.design) maxW.design = item.design.length; 
-            });
-            
-            const borderStyle = { top: { style: "thin", color: { rgb: "E5E7EB" } }, bottom: { style: "thin", color: { rgb: "E5E7EB" } }, left: { style: "thin", color: { rgb: "D1D5DB" } }, right: { style: "thin", color: { rgb: "D1D5DB" } } };
-            const sTitle = { font: { name: "Segoe UI", sz: 20, bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "111827" } }, alignment: { horizontal: "center", vertical: "center" } };
-            const sHead = { font: { name: "Segoe UI", sz: 10, bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "4F46E5" } }, alignment: { horizontal: "center", vertical: "center", wrapText: true } };
-            const sData = { font: { name: "Segoe UI", sz: 10, color: { rgb: "333333" } }, alignment: { horizontal: "center", vertical: "center" }, border: borderStyle };
-            const sGrey = { ...sData, fill: { fgColor: { rgb: "F3F4F6" } } };
-            const sTotal = { font: { name: "Segoe UI", sz: 11, bold: true }, fill: { fgColor: { rgb: "E5E7EB" } }, alignment: { horizontal: "center", vertical: "center" }, border: { top: {style:"double"}, bottom: {style:"thin"} } };
+                const newWs = XLSX.utils.aoa_to_sheet(output);
+                newWs['!cols'] = [{wch: 6}, {wch: 15}, {wch: 10}, {wch: 10}, {wch: 30}, {wch: 10}];
+                const newWb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(newWb, newWs, "Stock");
+                XLSX.writeFile(newWb, `Stock_${(clientName||"List")}.xlsx`);
+            }
 
-            const output = [
-                ["", "", "", "", "", ""],
-                ["SR NO", "Size & thikness", "surface", "BodyType", "DesignName", "Total QTY"].map(h => ({v:h, s:sHead}))
-            ];
+            if (type === 'pdf') {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+                const tableData = [];
+                let sr = 1, grandTotal = 0, lastSize = null;
+                
+                globalDataList.forEach(item => { 
+                    if(lastSize && lastSize !== item.size) tableData.push(['', '', '', '', '', '']); 
+                    lastSize = item.size; grandTotal += item.qty; 
+                    tableData.push([sr++, item.size, item.cat, item.body, item.design, item.qty]); 
+                });
+                tableData.push(['', '', '', '', 'GRAND TOTAL', grandTotal]);
 
-            let sr = 1, grandTotal = 0, lastSize = null;
-            list.forEach((item, i) => { 
-                if (lastSize && lastSize !== item.size) output.push(new Array(6).fill({v:"",s:sData})); 
-                lastSize = item.size; grandTotal += item.qty; 
-                const style = (sr % 2 === 0) ? sGrey : sData; 
-                output.push([{v:sr++, s:style}, {v:item.size, s:style}, {v:item.cat, s:style}, {v:item.body, s:style}, {v:item.design, s:style}, {v:item.qty, s:style}]); 
-            });
-            output.push([{v:"",s:sTotal}, {v:"",s:sTotal}, {v:"",s:sTotal}, {v:"",s:sTotal}, {v:"GRAND TOTAL",s:sTotal}, {v:grandTotal,s:sTotal}]);
-
-            const newWs = XLSX.utils.aoa_to_sheet(output);
-            if(!newWs['!merges']) newWs['!merges'] = []; 
-            newWs['!merges'].push({ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }); 
-            newWs['A1'] = { v: clientName || "STOCK REPORT", s: sTitle };
-            newWs['!rows'] = [{hpt: 40}, {hpt: 25}]; // Row heights
-            newWs['!cols'] = [ {wch: 6}, {wch: maxW.size + 4}, {wch: maxW.cat + 4}, {wch: maxW.body + 4}, {wch: maxW.design + 10}, {wch: 12} ];
-            
-            const newWb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(newWb, newWs, "Stock");
-            XLSX.writeFile(newWb, `Stock_${(clientName||"List")}.xlsx`);
-        }
-
-        function generatePDF(list, clientName) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-            const tableData = [];
-            let sr = 1, grandTotal = 0, lastSize = null;
-            list.forEach(item => { if(lastSize && lastSize !== item.size) { tableData.push(['', '', '', '', '', '']); } lastSize = item.size; grandTotal += item.qty; tableData.push([sr++, item.size, item.cat, item.body, item.design, item.qty]); });
-            tableData.push(['', '', '', '', 'GRAND TOTAL', grandTotal]);
-
-            doc.autoTable({
-                head: [['SR NO', 'Size & thikness', 'surface', 'BodyType', 'DesignName', 'Total QTY']], body: tableData, startY: 30, theme: 'grid',
-                styles: { fontSize: 9, cellPadding: 1, valign: 'middle', halign: 'center', lineWidth: 0.1, lineColor: [200, 200, 200] },
-                headStyles: { fillColor: [79, 70, 229], textColor: 255, fontStyle: 'bold' }, // Indigo Header
-                columnStyles: { 0: { cellWidth: 10 }, 4: { cellWidth: 'auto' }, 5: { cellWidth: 18 } },
-                didParseCell: function(data) {
-                    if (data.row.raw[0] === '' && data.row.raw[4] !== 'GRAND TOTAL') { data.cell.styles.fillColor = [255, 255, 255]; data.cell.styles.lineWidth = 0; }
-                    if (data.row.raw[4] === 'GRAND TOTAL') { data.cell.styles.fontStyle = 'bold'; data.cell.styles.fillColor = [240, 240, 240]; }
-                },
-                didDrawPage: function(data) {
-                    if (data.pageNumber === 1) {
-                        doc.setFontSize(22); doc.setTextColor(20, 20, 20); doc.setFont("helvetica", "bold");
-                        doc.text(clientName || "STOCK REPORT", 105, 18, { align: "center" });
-                    }
-                }
-            });
-            doc.save(`Stock_${(clientName||"Report")}.pdf`);
+                doc.autoTable({
+                    head: [['SR NO', 'Size & thikness', 'surface', 'BodyType', 'DesignName', 'Total QTY']], body: tableData, startY: 30, theme: 'grid',
+                    styles: { fontSize: 9, halign: 'center', lineColor: [200, 200, 200], lineWidth: 0.1 },
+                    headStyles: { fillColor: [30, 41, 59] },
+                    didDrawPage: function(data) { if (data.pageNumber === 1) { doc.setFontSize(20); doc.text(clientName || "STOCK REPORT", 105, 20, { align: "center" }); } }
+                });
+                doc.save(`Stock_${(clientName||"Report")}.pdf`);
+            }
         }
     </script>
 </body>
