@@ -44,21 +44,20 @@
             background-size: 24px 24px;
         }
 
-        /* Table Styles - ALL CENTER ALIGNED */
+        /* Table Styles - CENTER ALIGNED */
         .data-table { width: 100%; border-collapse: collapse; font-size: 11px; }
         .data-table th { 
-            background: #18181b; color: #a1a1aa; font-weight: 600; text-align: center; /* CENTER */
-            padding: 10px; border-bottom: 1px solid #27272a; position: sticky; top: 0; z-index: 10;
+            background: #18181b; color: #a1a1aa; font-weight: 600; text-align: center; 
+            padding: 10px; border-bottom: 1px solid #27272a; position: sticky; top: 0; z-index: 10; white-space: nowrap;
         }
         .data-table td { 
             padding: 8px 10px; border-bottom: 1px solid #27272a; color: #e4e4e7; vertical-align: middle; 
-            text-align: center; /* CENTER - NO LEFT ALIGN */
+            text-align: center; 
         }
         
         .data-table tr:hover td { background: rgba(79, 70, 229, 0.05); }
         .data-table td[contenteditable="true"]:focus { outline: 2px solid #6366f1; background: #1e1b4b; border-radius: 4px; }
         
-        /* Input fields inside table */
         .tbl-input { 
             background: transparent; border: 1px solid rgba(255,255,255,0.1); color: #fff; width: 100%; text-align: center; font-family: monospace;
             border-radius: 4px; padding: 4px;
@@ -68,7 +67,6 @@
         .del-row-btn { opacity: 0; transition: opacity 0.2s; color: #ef4444; cursor: pointer; }
         .data-table tr:hover .del-row-btn { opacity: 1; }
 
-        /* Footer Money Card */
         .money-card-container {
             margin-top: 20px;
             display: flex;
@@ -429,18 +427,19 @@
             els.tableHead.innerHTML = '';
             els.tableBody.innerHTML = '';
             
+            // UPDATED HEADERS IN HTML TABLE
             let headerHTML = `<tr>
                 <th class="w-8"></th>
-                <th class="w-10">#</th>
-                <th class="w-24">Size</th>
+                <th class="w-10">Sr.No</th>
+                <th class="w-28">Size & Thickness</th>
                 <th class="w-20">Surface</th>
                 <th class="w-20">Body</th>
                 <th>Design Name</th>
-                <th class="w-16">Box</th>`;
+                <th class="w-16">Qty</th>`;
             
             if (isCommercial) {
                 headerHTML += `
-                <th class="w-20">Total Ft²</th>
+                <th class="w-20">Sq. Feet</th>
                 <th class="w-20">Rate</th>
                 <th class="w-24">Amount</th>`;
                 els.moneyCard.classList.remove('hidden');
@@ -535,8 +534,9 @@
             
             if (type === 'excel') {
                 const output = [];
-                let headers = ["SR", "Size", "Cat", "Body", "Design", "Qty"];
-                if (isCommercial) headers.push("Total Ft2", "Rate", "Amount");
+                // UPDATED EXCEL HEADERS
+                let headers = ["Sr.No", "Size & Thickness", "Surface", "Body", "Design Name", "Qty"];
+                if (isCommercial) headers.push("Sq. Feet", "Rate", "Amount");
                 const sHead = { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1E293B" } }, alignment: { horizontal: "center" } };
                 output.push(headers.map(h => ({v:h, s:sHead})));
                 let subtotal = 0;
@@ -564,7 +564,8 @@
                 }
                 const wb = XLSX.utils.book_new();
                 const ws = XLSX.utils.aoa_to_sheet(output);
-                ws['!cols'] = [{wch:5}, {wch:12}, {wch:10}, {wch:10}, {wch:30}, {wch:8}, {wch:10}, {wch:10}, {wch:12}];
+                // Wider column for Size & Thickness
+                ws['!cols'] = [{wch:6}, {wch:20}, {wch:10}, {wch:10}, {wch:30}, {wch:8}, {wch:10}, {wch:10}, {wch:12}];
                 XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
                 XLSX.writeFile(wb, `${client}.xlsx`);
             }
@@ -575,10 +576,9 @@
                 const tableBody = [];
                 let subtotal = 0;
                 globalData.forEach((item, i) => {
-                    // SMART LOGIC: TRUNCATE DESIGN NAME FOR PDF ONLY IF COMMERCIAL
                     let dName = item.design;
                     if(isCommercial && dName.length > 22) {
-                        dName = dName.substring(0, 22) + "..."; // CUT LOGIC
+                        dName = dName.substring(0, 22) + "..."; 
                     }
 
                     let row = [i+1, item.size, item.cat, item.body, dName, item.qty];
@@ -591,8 +591,9 @@
                     tableBody.push(row);
                 });
 
-                let headRow = [['#', 'Size', 'Surf', 'Body', 'Design', 'Qty']];
-                if (isCommercial) headRow[0].push('Area', 'Rate', 'Amt');
+                // UPDATED PDF HEADERS
+                let headRow = [['Sr.No', 'Size & Thickness', 'Surface', 'Body', 'Design Name', 'Qty']];
+                if (isCommercial) headRow[0].push('Sq. Feet', 'Rate', 'Amount');
 
                 doc.autoTable({
                     head: headRow,
@@ -602,7 +603,7 @@
                     margin: isCommercial ? { left: 5, right: 5 } : { left: 10, right: 10 },
                     styles: { 
                         fontSize: 8, 
-                        halign: 'center', // GLOBAL CENTER ALIGN
+                        halign: 'center', 
                         valign: 'middle',
                         lineColor: [200, 200, 200], 
                         lineWidth: 0.1 
@@ -613,8 +614,11 @@
                         fontStyle: 'bold',
                         halign: 'center' 
                     },
+                    // SMART COLUMN SIZING TO PREVENT WRAP
                     columnStyles: {
-                        0: { cellWidth: 8 }
+                        0: { cellWidth: 10 }, // Sr.No
+                        1: { cellWidth: 25 }, // Size & Thickness (Wide enough to not wrap)
+                        5: { cellWidth: 12 }  // Qty
                     },
                     didDrawPage: function(data) {
                         if(data.pageNumber===1) {
