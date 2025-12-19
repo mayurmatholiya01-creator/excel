@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - Commercial Engine</title>
+    <title>StockPro X - Pro Edition</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -44,39 +44,43 @@
             background-size: 24px 24px;
         }
 
-        /* Table Styles */
+        /* Table Styles - RESTORED ORIGINAL FEEL */
         .data-table { width: 100%; border-collapse: collapse; font-size: 11px; }
         .data-table th { 
-            background: #18181b; color: #a1a1aa; font-weight: 600; text-align: left; 
-            padding: 8px 10px; border-bottom: 1px solid #27272a; position: sticky; top: 0; z-index: 10;
+            background: #18181b; color: #a1a1aa; font-weight: 600; text-align: center; /* Center Align */
+            padding: 10px; border-bottom: 1px solid #27272a; position: sticky; top: 0; z-index: 10;
         }
         .data-table td { 
-            padding: 6px 10px; border-bottom: 1px solid #27272a; color: #e4e4e7; transition: background 0.2s; vertical-align: middle;
+            padding: 8px 10px; border-bottom: 1px solid #27272a; color: #e4e4e7; vertical-align: middle; text-align: center; /* Center Align */
         }
-        .data-table tr:hover td { background: rgba(79, 70, 229, 0.05); }
-        .data-table td:focus { outline: 2px solid #6366f1; background: #1e1b4b; border-radius: 4px; }
+        /* Design Name Left Align for readability */
+        .data-table td.text-left-force { text-align: left; }
         
-        /* Design Name Truncation */
-        .truncate-cell {
-            max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;
-        }
-
-        /* Inputs in Table */
+        .data-table tr:hover td { background: rgba(79, 70, 229, 0.05); }
+        .data-table td[contenteditable="true"]:focus { outline: 2px solid #6366f1; background: #1e1b4b; border-radius: 4px; }
+        
         .tbl-input { 
-            background: transparent; border: 1px solid transparent; color: #fff; width: 100%; text-align: right; font-family: monospace;
-            border-radius: 4px; padding: 2px;
+            background: transparent; border: 1px solid rgba(255,255,255,0.1); color: #fff; width: 100%; text-align: center; font-family: monospace;
+            border-radius: 4px; padding: 4px;
         }
-        .tbl-input:hover { border-color: #3f3f46; }
         .tbl-input:focus { border-color: #6366f1; background: #1e1b4b; outline: none; }
 
-        /* Delete Row Button */
         .del-row-btn { opacity: 0; transition: opacity 0.2s; color: #ef4444; cursor: pointer; }
         .data-table tr:hover .del-row-btn { opacity: 1; }
 
-        /* Money Card */
+        /* Money Card - NOW STATIC FOOTER STYLE */
+        .money-card-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+            padding-right: 10px;
+        }
         .money-card {
-            background: rgba(20, 20, 23, 0.95); border: 1px solid rgba(255,255,255,0.1);
-            backdrop-filter: blur(20px); box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+            width: 300px;
+            background: rgba(20, 20, 23, 0.6); 
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px; 
+            padding: 20px;
         }
 
         .orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.2; pointer-events: none; z-index: -1; }
@@ -109,7 +113,7 @@
                 </div>
                 <h1 class="text-base font-bold text-white tracking-tight">StockPro<span class="text-indigo-500"> X</span></h1>
             </div>
-            <p class="text-[9px] text-zinc-500 font-mono ml-9">COMMERCIAL V1.0</p>
+            <p class="text-[9px] text-zinc-500 font-mono ml-9">PRO EDITION v2.0</p>
         </div>
 
         <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-5">
@@ -169,70 +173,70 @@
                 <span class="w-1.5 h-1.5 rounded-full bg-zinc-700" id="liveIndicator"></span>
                 <span class="font-medium tracking-wide text-[11px]">LIVE WORKSPACE</span>
             </div>
+            <div class="text-[10px] text-zinc-600">v2.0</div>
         </div>
 
-        <div class="flex-1 overflow-auto canvas-bg relative p-6 pb-40">
+        <div class="flex-1 overflow-auto canvas-bg relative p-6 pb-20">
             
             <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-zinc-600">
                 <h3 class="text-sm font-medium text-zinc-400">No Data</h3>
                 <p class="text-[10px] mt-1 text-zinc-600">Upload Excel to begin</p>
             </div>
 
-            <div id="tableContainer" class="hidden w-full max-w-6xl mx-auto">
+            <div id="tableContainer" class="hidden w-full max-w-6xl mx-auto flex flex-col">
                 <div class="glass-card rounded-lg overflow-hidden border border-white/10 shadow-2xl bg-[#0a0a0c]">
                     <table class="data-table" id="previewTable">
-                        <thead id="tableHead">
-                            </thead>
+                        <thead id="tableHead"></thead>
                         <tbody id="tableBody"></tbody>
                     </table>
                 </div>
-            </div>
-        </div>
 
-        <div id="moneyCard" class="hidden absolute bottom-6 right-6 w-72 money-card rounded-xl p-4 z-50 animate-slide-up">
-            <div class="flex justify-between items-center pb-2 border-b border-white/10 mb-2">
-                <span class="text-xs font-bold text-white">SUMMARY</span>
-                <span class="text-[10px] text-zinc-500">INR</span>
-            </div>
-            
-            <div class="flex justify-between items-center mb-1">
-                <span class="text-[11px] text-zinc-400">Subtotal</span>
-                <span class="text-[11px] font-mono text-white" id="mcSubtotal">0</span>
-            </div>
+                <div id="moneyCard" class="hidden money-card-container animate-slide-up">
+                    <div class="money-card">
+                        <div class="flex justify-between items-center pb-2 border-b border-white/10 mb-2">
+                            <span class="text-xs font-bold text-white">SUMMARY</span>
+                            <span class="text-[10px] text-zinc-500">INR</span>
+                        </div>
+                        
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[11px] text-zinc-400">Subtotal</span>
+                            <span class="text-[11px] font-mono text-white" id="mcSubtotal">0</span>
+                        </div>
 
-            <div class="flex justify-between items-center mb-1 group" id="insRow">
-                <div class="flex items-center gap-1">
-                    <button onclick="toggleInsurance(false)" class="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/10 rounded px-1">×</button>
-                    <span class="text-[11px] text-zinc-400">Ins. (<span contenteditable="true" id="insRate" class="outline-none focus:text-indigo-400 border-b border-transparent focus:border-indigo-500">0.99</span>%)</span>
+                        <div class="flex justify-between items-center mb-1 group" id="insRow">
+                            <div class="flex items-center gap-1">
+                                <button onclick="toggleInsurance(false)" class="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/10 rounded px-1">×</button>
+                                <span class="text-[11px] text-zinc-400">Ins. (<span contenteditable="true" id="insRate" class="outline-none focus:text-indigo-400 border-b border-transparent focus:border-indigo-500">0.99</span>%)</span>
+                            </div>
+                            <span class="text-[11px] font-mono text-zinc-300" id="mcIns">0</span>
+                        </div>
+                        
+                        <div id="addInsBtn" class="hidden mb-1">
+                            <button onclick="toggleInsurance(true)" class="text-[10px] text-indigo-400 hover:text-indigo-300">+ Add Insurance</button>
+                        </div>
+
+                        <div class="flex justify-between items-center mb-1 pt-1 border-t border-white/5">
+                            <span class="text-[11px] text-zinc-300 font-medium">Total</span>
+                            <span class="text-[11px] font-mono text-white" id="mcPreTax">0</span>
+                        </div>
+
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-[11px] text-zinc-400">GST (<span contenteditable="true" id="gstRate" class="outline-none focus:text-indigo-400 border-b border-transparent focus:border-indigo-500">18</span>%)</span>
+                            <span class="text-[11px] font-mono text-zinc-300" id="mcGst">0</span>
+                        </div>
+
+                        <div class="flex justify-between items-center pt-2 border-t border-white/10">
+                            <span class="text-sm font-bold text-white">Grand Total</span>
+                            <span class="text-sm font-bold font-mono text-indigo-400" id="mcGrandTotal">0</span>
+                        </div>
+                    </div>
                 </div>
-                <span class="text-[11px] font-mono text-zinc-300" id="mcIns">0</span>
-            </div>
-            
-            <div id="addInsBtn" class="hidden mb-1">
-                <button onclick="toggleInsurance(true)" class="text-[10px] text-indigo-400 hover:text-indigo-300">+ Add Insurance</button>
-            </div>
-
-            <div class="flex justify-between items-center mb-1 pt-1 border-t border-white/5">
-                <span class="text-[11px] text-zinc-300 font-medium">Total</span>
-                <span class="text-[11px] font-mono text-white" id="mcPreTax">0</span>
-            </div>
-
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-[11px] text-zinc-400">GST (<span contenteditable="true" id="gstRate" class="outline-none focus:text-indigo-400 border-b border-transparent focus:border-indigo-500">18</span>%)</span>
-                <span class="text-[11px] font-mono text-zinc-300" id="mcGst">0</span>
-            </div>
-
-            <div class="flex justify-between items-center pt-2 border-t border-white/10">
-                <span class="text-sm font-bold text-white">Grand Total</span>
-                <span class="text-sm font-bold font-mono text-indigo-400" id="mcGrandTotal">0</span>
             </div>
         </div>
 
     </main>
 
     <script>
-        // --- SKU MASTER DATA ---
-        // Using Map for fast lookup. Key matches "size" string from Excel (normalized)
         const RAW_SKU_MASTER = [
               {size:"1200x1200",thk:"9MM",pcs:2,kg:"61",ft2:31.0,m2:2.88},
               {size:"1200x1790",thk:"9MM",pcs:2,kg:"91",ft2:46.242,m2:4.296},
@@ -256,16 +260,12 @@
         ];
         
         const SKU_MAP = new Map();
-        RAW_SKU_MASTER.forEach(item => {
-            SKU_MAP.set(item.size.trim(), item.ft2);
-        });
+        RAW_SKU_MASTER.forEach(item => SKU_MAP.set(item.size.trim(), item.ft2));
 
-        // --- STATE ---
         let globalData = [];
         let isCommercial = false;
         let showInsurance = true;
 
-        // --- DOM ELEMENTS ---
         const els = {
             fileInput: document.getElementById('fileInput'),
             dropZone: document.getElementById('dropZone'),
@@ -295,7 +295,6 @@
             addInsBtn: document.getElementById('addInsBtn')
         };
 
-        // --- EVENT LISTENERS ---
         els.clientName.addEventListener('input', function() { this.value = this.value.toUpperCase(); });
         els.dropZone.addEventListener('click', (e) => { if(e.target !== els.removeFileBtn) els.fileInput.click(); });
         els.fileInput.addEventListener('change', handleFile);
@@ -310,9 +309,35 @@
             renderTable();
         });
 
-        // Money Card Listeners (Live Calc)
         els.insRate.addEventListener('input', calculateMoneyCard);
         els.gstRate.addEventListener('input', calculateMoneyCard);
+
+        // LIVE EDITING EVENT LISTENER (Important Fix)
+        els.tableBody.addEventListener('input', (e) => {
+            const target = e.target;
+            // Handle ContentEditable updates (Name, Qty, etc)
+            if (target.hasAttribute('contenteditable')) {
+                const rowIdx = target.closest('tr').dataset.index;
+                const field = target.dataset.field;
+                if(rowIdx !== undefined && field) {
+                    let val = target.innerText;
+                    if(field === 'qty') val = parseFloat(val) || 0;
+                    globalData[rowIdx][field] = val;
+                    
+                    // If Qty changed, update commercial calculations
+                    if(field === 'qty' && isCommercial) {
+                        const item = globalData[rowIdx];
+                        const totalArea = (item.qty * item.ft2PerBox).toFixed(2);
+                        const amount = (totalArea * item.rate).toFixed(2);
+                        // Update DOM for derived fields
+                        const row = target.closest('tr');
+                        row.querySelector('.area-cell').innerText = totalArea;
+                        row.querySelector('.amt-cell').innerText = amount;
+                    }
+                    calculateMoneyCard();
+                }
+            }
+        });
 
         function resetAll(e) {
             if(e) e.stopPropagation();
@@ -322,7 +347,7 @@
             els.fileSuccess.classList.remove('flex');
             els.emptyState.classList.remove('hidden');
             els.tableContainer.classList.add('hidden');
-            els.moneyCard.classList.add('hidden');
+            // els.moneyCard.classList.add('hidden'); // No longer needed as it lives in container
             els.actionButtons.classList.add('opacity-50', 'pointer-events-none');
             els.liveIndicator.classList.remove('bg-green-500', 'animate-pulse');
             els.liveIndicator.classList.add('bg-zinc-700');
@@ -340,7 +365,6 @@
             }
         }
 
-        // --- PROCESSING LOGIC ---
         function processExcel(file) {
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -349,7 +373,6 @@
                     const workbook = XLSX.read(data, {type: 'array'});
                     const rawData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: 1, defval: ""});
                     
-                    // Smart Headers
                     let headerIdx = -1, col = { design: -1, cat: -1, size: -1, body: -1, qty: -1 };
                     for (let i = 0; i < Math.min(rawData.length, 25); i++) {
                         const r = rawData[i].map(x => String(x).toLowerCase().trim());
@@ -377,34 +400,23 @@
                         if (!design && !size) continue;
                         if (shouldMerge) design = design.replace(/-[a-zA-Z]$/, "").trim();
                         
-                        // SKU MAPPING LOGIC
-                        // Clean size string to match SKU Master (e.g. "1200x1800" from "1200x1800x9mm")
-                        // For now assuming Excel has clean "1200x1800". If not, regex can extract dims.
                         let matchSize = size;
-                        // Attempt to extract purely digitsxdigits if exact match fails
                         if (!SKU_MAP.has(matchSize)) {
                              const dims = size.match(/(\d+)[xX](\d+)/);
                              if (dims) matchSize = `${dims[1]}x${dims[2]}`;
                         }
 
-                        const ft2PerBox = SKU_MAP.get(matchSize) || 0; // Default 0 if not found
+                        const ft2PerBox = SKU_MAP.get(matchSize) || 0;
 
                         const key = `${size}_${cat}_${body}_${design}`;
-                        
                         if (map.has(key)) {
                             map.get(key).qty += qty;
                         } else {
-                            map.set(key, { 
-                                size, cat, body, design, qty, 
-                                ft2PerBox: ft2PerBox, 
-                                rate: 0, // Default Rate
-                                amount: 0 
-                            });
+                            map.set(key, { size, cat, body, design, qty, ft2PerBox, rate: 0 });
                         }
                     }
 
                     globalData = Array.from(map.values());
-                    // Sort
                     function getDims(s) { const m = s.match(/(\d+)/g); return m ? { w: parseInt(m[0]||0), h: parseInt(m[1]||0) } : {w:0,h:0}; }
                     globalData.sort((a, b) => {
                         const dA = getDims(a.size), dB = getDims(b.size);
@@ -424,30 +436,27 @@
             reader.readAsArrayBuffer(file);
         }
 
-        // --- RENDERING ---
         function renderTable() {
             els.tableHead.innerHTML = '';
             els.tableBody.innerHTML = '';
             
-            // Header Construction
             let headerHTML = `<tr>
-                <th class="w-8"></th> <th class="w-10 text-center">#</th>
+                <th class="w-8"></th>
+                <th class="w-10">#</th>
                 <th class="w-24">Size</th>
                 <th class="w-20">Surface</th>
                 <th class="w-20">Body</th>
                 <th>Design Name</th>
-                <th class="w-16 text-right">Box</th>`;
+                <th class="w-16">Box</th>`;
             
             if (isCommercial) {
                 headerHTML += `
-                <th class="w-20 text-right">Total Ft²</th>
-                <th class="w-20 text-right">Rate (Ft²)</th>
-                <th class="w-24 text-right">Amount</th>`;
+                <th class="w-20">Total Ft²</th>
+                <th class="w-20">Rate</th>
+                <th class="w-24">Amount</th>`;
                 els.moneyCard.classList.remove('hidden');
-                els.moneyCard.classList.add('flex', 'flex-col');
             } else {
                 els.moneyCard.classList.add('hidden');
-                els.moneyCard.classList.remove('flex');
             }
             headerHTML += `</tr>`;
             els.tableHead.innerHTML = headerHTML;
@@ -455,25 +464,25 @@
             let sr = 1;
             globalData.forEach((item, index) => {
                 const tr = document.createElement('tr');
+                tr.dataset.index = index; // Store index for editing logic
                 const totalArea = (item.qty * item.ft2PerBox).toFixed(2);
-                item.totalArea = totalArea; // Store for logic
                 item.amount = (totalArea * item.rate).toFixed(2);
 
                 let rowHTML = `
-                    <td class="text-center"><span onclick="deleteRow(${index})" class="del-row-btn hover:text-red-500 text-xs font-bold">✕</span></td>
-                    <td class="text-zinc-500 font-mono text-center">${sr++}</td>
-                    <td class="text-xs">${item.size}</td>
-                    <td class="text-xs text-zinc-400">${item.cat}</td>
-                    <td class="text-xs text-zinc-400">${item.body}</td>
-                    <td class="text-xs text-white font-medium"><span class="truncate-cell" title="${item.design}">${item.design}</span></td>
-                    <td class="text-right font-mono text-zinc-300 font-bold">${item.qty}</td>
+                    <td><span onclick="deleteRow(${index})" class="del-row-btn hover:text-red-500 text-xs font-bold">✕</span></td>
+                    <td class="text-zinc-500 font-mono">${sr++}</td>
+                    <td contenteditable="true" data-field="size" class="text-xs outline-none">${item.size}</td>
+                    <td contenteditable="true" data-field="cat" class="text-xs text-zinc-400 outline-none">${item.cat}</td>
+                    <td contenteditable="true" data-field="body" class="text-xs text-zinc-400 outline-none">${item.body}</td>
+                    <td contenteditable="true" data-field="design" class="text-xs text-white font-medium outline-none text-left-force"><span class="truncate-cell">${item.design}</span></td>
+                    <td contenteditable="true" data-field="qty" class="font-mono text-zinc-300 font-bold outline-none">${item.qty}</td>
                 `;
 
                 if (isCommercial) {
                     rowHTML += `
-                    <td class="text-right font-mono text-zinc-400 text-xs">${totalArea}</td>
-                    <td><input type="number" value="${item.rate || ''}" oninput="updateRow(${index}, this.value)" class="tbl-input" placeholder="0.00"></td>
-                    <td class="text-right font-mono text-indigo-300 font-bold" id="amt-${index}">${item.amount}</td>
+                    <td class="font-mono text-zinc-400 text-xs area-cell">${totalArea}</td>
+                    <td><input type="number" value="${item.rate || ''}" oninput="updateRate(${index}, this.value)" class="tbl-input" placeholder="0"></td>
+                    <td class="font-mono text-indigo-300 font-bold amt-cell">${item.amount}</td>
                     `;
                 }
 
@@ -484,12 +493,16 @@
             if (isCommercial) calculateMoneyCard();
         }
 
-        // --- LIVE LOGIC ---
-        function updateRow(index, newRate) {
+        function updateRate(index, newRate) {
             const item = globalData[index];
             item.rate = parseFloat(newRate) || 0;
-            const newAmount = (item.totalArea * item.rate).toFixed(2);
-            document.getElementById(`amt-${index}`).innerText = newAmount;
+            const totalArea = (item.qty * item.ft2PerBox).toFixed(2);
+            const newAmount = (totalArea * item.rate).toFixed(2);
+            
+            // DOM update optimization
+            const tr = els.tableBody.children[index];
+            tr.querySelector('.amt-cell').innerText = newAmount;
+            
             calculateMoneyCard();
         }
 
@@ -515,53 +528,35 @@
         function calculateMoneyCard() {
             if (!isCommercial) return;
 
-            // 1. Subtotal
             let subtotal = 0;
             globalData.forEach(item => {
+                // Recalculate based on current data state
                 subtotal += (item.qty * item.ft2PerBox * (item.rate || 0));
             });
 
-            // 2. Insurance
             let insPercent = showInsurance ? parseFloat(els.insRate.innerText) || 0 : 0;
             let insAmount = subtotal * (insPercent / 100);
-
-            // 3. PreTax
             let preTax = subtotal + insAmount;
-
-            // 4. GST
             let gstPercent = parseFloat(els.gstRate.innerText) || 0;
             let gstAmount = preTax * (gstPercent / 100);
-
-            // 5. Total
             let grandTotal = preTax + gstAmount;
 
-            // Update UI
-            els.mcSubtotal.innerText = formatMoney(subtotal);
-            els.mcIns.innerText = formatMoney(insAmount);
-            els.mcPreTax.innerText = formatMoney(preTax);
-            els.mcGst.innerText = formatMoney(gstAmount);
-            els.mcGrandTotal.innerText = formatMoney(grandTotal);
+            els.mcSubtotal.innerText = Math.round(subtotal).toLocaleString('en-IN');
+            els.mcIns.innerText = Math.round(insAmount).toLocaleString('en-IN');
+            els.mcPreTax.innerText = Math.round(preTax).toLocaleString('en-IN');
+            els.mcGst.innerText = Math.round(gstAmount).toLocaleString('en-IN');
+            els.mcGrandTotal.innerText = Math.round(grandTotal).toLocaleString('en-IN');
         }
 
-        function formatMoney(num) {
-            return Math.round(num).toLocaleString('en-IN');
-        }
-
-        // --- EXPORT ---
         function exportData(type) {
             const client = els.clientName.value.trim() || "INVOICE";
             
             if (type === 'excel') {
                 const output = [];
-                // Headers
                 let headers = ["SR", "Size", "Cat", "Body", "Design", "Qty"];
                 if (isCommercial) headers.push("Total Ft2", "Rate", "Amount");
-                
-                // Styles
                 const sHead = { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1E293B" } }, alignment: { horizontal: "center" } };
                 output.push(headers.map(h => ({v:h, s:sHead})));
-
-                // Data
                 let subtotal = 0;
                 globalData.forEach((item, i) => {
                     let row = [i+1, item.size, item.cat, item.body, item.design, item.qty];
@@ -573,28 +568,21 @@
                     }
                     output.push(row);
                 });
-
-                // Money Card Append
-                if (isCommercial) {
+                // Excel Footer Logic similar to Money Card...
+                 if (isCommercial) {
                     output.push([""]); 
                     output.push(["", "", "", "", "", "", "", "Subtotal", subtotal]);
-                    
                     let insP = showInsurance ? parseFloat(els.insRate.innerText)||0 : 0;
                     let insV = subtotal * (insP/100);
                     if(showInsurance) output.push(["", "", "", "", "", "", "", `Ins (${insP}%)`, insV]);
-                    
                     let taxable = subtotal + insV;
                     let gstP = parseFloat(els.gstRate.innerText)||0;
                     let gstV = taxable * (gstP/100);
                     output.push(["", "", "", "", "", "", "", `GST (${gstP}%)`, gstV]);
-                    
                     output.push(["", "", "", "", "", "", "", "GRAND TOTAL", taxable + gstV]);
                 }
-
                 const wb = XLSX.utils.book_new();
                 const ws = XLSX.utils.aoa_to_sheet(output);
-                
-                // Column Widths
                 ws['!cols'] = [{wch:5}, {wch:12}, {wch:10}, {wch:10}, {wch:30}, {wch:8}, {wch:10}, {wch:10}, {wch:12}];
                 XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
                 XLSX.writeFile(wb, `${client}.xlsx`);
@@ -602,11 +590,9 @@
 
             if (type === 'pdf') {
                 const { jsPDF } = window.jspdf;
-                const doc = new jsPDF(); // Portrait A4
-                
+                const doc = new jsPDF();
                 const tableBody = [];
                 let subtotal = 0;
-                
                 globalData.forEach((item, i) => {
                     let row = [i+1, item.size, item.cat, item.body, item.design, item.qty];
                     if (isCommercial) {
@@ -621,17 +607,30 @@
                 let headRow = [['#', 'Size', 'Surf', 'Body', 'Design', 'Qty']];
                 if (isCommercial) headRow[0].push('Area', 'Rate', 'Amt');
 
+                // PDF RESTORED LOGIC
                 doc.autoTable({
                     head: headRow,
                     body: tableBody,
                     startY: 30,
                     theme: 'grid',
-                    margin: { left: 5, right: 5 }, // Narrow Margins
-                    styles: { fontSize: 8, cellPadding: 1, overflow: 'linebreak' },
+                    // Logic: Narrow margins ONLY if commercial, else Standard
+                    margin: isCommercial ? { left: 5, right: 5 } : { left: 10, right: 10 },
+                    styles: { 
+                        fontSize: 8, 
+                        halign: 'center', // CENTER ALIGN RESTORED
+                        valign: 'middle',
+                        lineColor: [200, 200, 200], 
+                        lineWidth: 0.1 
+                    },
+                    headStyles: { 
+                        fillColor: [30, 41, 59], // ORIGINAL DARK BLUE RESTORED
+                        textColor: 255, 
+                        fontStyle: 'bold',
+                        halign: 'center' 
+                    },
                     columnStyles: {
-                        4: { cellWidth: 'auto' }, // Design gets remaining space
-                        // Force fixed widths for others to ensure fit
-                        0: {cellWidth: 6}, 1: {cellWidth: 20}, 5: {cellWidth: 10}
+                        4: { cellWidth: 'auto', halign: 'left' }, // Design Name keeps Left align for readability
+                        0: { cellWidth: 8 }
                     },
                     didDrawPage: function(data) {
                         if(data.pageNumber===1) {
@@ -641,13 +640,10 @@
                     }
                 });
 
-                // Money Card in PDF
                 if (isCommercial) {
                     let finalY = doc.lastAutoTable.finalY + 10;
-                    
-                    // Check if page break needed
                     if (finalY > 250) { doc.addPage(); finalY = 20; }
-
+                    
                     let insP = showInsurance ? parseFloat(els.insRate.innerText)||0 : 0;
                     let insV = subtotal * (insP/100);
                     let taxable = subtotal + insV;
@@ -655,31 +651,15 @@
                     let gstV = taxable * (gstP/100);
                     let grand = taxable + gstV;
 
-                    const moneyX = 140; // Right side align
+                    const moneyX = 140; 
                     doc.setFontSize(9);
-                    doc.text(`Subtotal:`, moneyX, finalY); 
-                    doc.text(formatMoney(subtotal), 200, finalY, {align:'right'});
-                    
-                    if (showInsurance) {
-                        finalY += 5;
-                        doc.text(`Insurance (${insP}%):`, moneyX, finalY);
-                        doc.text(formatMoney(insV), 200, finalY, {align:'right'});
-                    }
-
-                    finalY += 5;
-                    doc.text(`Taxable Amt:`, moneyX, finalY);
-                    doc.text(formatMoney(taxable), 200, finalY, {align:'right'});
-
-                    finalY += 5;
-                    doc.text(`GST (${gstP}%):`, moneyX, finalY);
-                    doc.text(formatMoney(gstV), 200, finalY, {align:'right'});
-
-                    finalY += 6;
-                    doc.setFontSize(11); doc.setFont(undefined, 'bold');
-                    doc.text(`GRAND TOTAL:`, moneyX, finalY);
-                    doc.text(formatMoney(grand), 200, finalY, {align:'right'});
+                    doc.text(`Subtotal:`, moneyX, finalY); doc.text(Math.round(subtotal).toLocaleString(), 200, finalY, {align:'right'});
+                    if (showInsurance) { finalY += 5; doc.text(`Insurance (${insP}%):`, moneyX, finalY); doc.text(Math.round(insV).toLocaleString(), 200, finalY, {align:'right'}); }
+                    finalY += 5; doc.text(`Taxable Amt:`, moneyX, finalY); doc.text(Math.round(taxable).toLocaleString(), 200, finalY, {align:'right'});
+                    finalY += 5; doc.text(`GST (${gstP}%):`, moneyX, finalY); doc.text(Math.round(gstV).toLocaleString(), 200, finalY, {align:'right'});
+                    finalY += 6; doc.setFontSize(11); doc.setFont(undefined, 'bold');
+                    doc.text(`GRAND TOTAL:`, moneyX, finalY); doc.text(Math.round(grand).toLocaleString(), 200, finalY, {align:'right'});
                 }
-
                 doc.save(`${client}.pdf`);
             }
         }
