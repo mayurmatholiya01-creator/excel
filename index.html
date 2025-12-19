@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - Excel UI</title>
+    <title>StockPro X - Auto Intelligence</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -34,52 +34,18 @@
         .sidebar { background: rgba(10, 10, 12, 0.9); backdrop-filter: blur(20px); border-right: 1px solid rgba(255,255,255,0.08); width: 260px; }
         .canvas-bg { background-color: #050505; background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px); background-size: 24px 24px; }
 
-        /* --- TABLE STYLES (UPDATED FOR EXCEL FEEL) --- */
         .data-table { width: 100%; border-collapse: collapse; font-size: 11px; table-layout: fixed; }
-        .data-table th { 
-            background: #18181b; color: #a1a1aa; font-weight: 600; text-align: center; 
-            padding: 10px 4px; border-bottom: 1px solid #27272a; position: sticky; top: 0; z-index: 10; white-space: nowrap;
-        }
-        .data-table td { 
-            padding: 6px 4px; border-bottom: 1px solid #27272a; color: #e4e4e7; vertical-align: middle; 
-            text-align: center; white-space: nowrap; cursor: cell; position: relative;
-        }
+        .data-table th { background: #18181b; color: #a1a1aa; font-weight: 600; text-align: center; padding: 10px 4px; border-bottom: 1px solid #27272a; position: sticky; top: 0; z-index: 10; white-space: nowrap; }
+        .data-table td { padding: 6px 4px; border-bottom: 1px solid #27272a; color: #e4e4e7; vertical-align: middle; text-align: center; white-space: nowrap; cursor: cell; position: relative; }
         .data-table tr:hover td { background: rgba(255, 255, 255, 0.02); }
-
-        /* --- MINIMAL RICH FOCUS (MAGIC FIX) --- */
-        /* Hides default ugly outline */
-        .data-table td:focus, .data-table td:focus-within, .tbl-input:focus {
-            outline: none !important;
-        }
-        /* Custom Inner Glow Border */
-        .data-table td:focus-within {
-            box-shadow: inset 0 0 0 1.5px #6366f1; /* Sharp Indigo Border */
-            background-color: rgba(99, 102, 241, 0.08) !important; /* Slight Tint */
-        }
-
-        /* --- HIDE NUMBER SPINNERS (RATE FIX) --- */
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { 
-            -webkit-appearance: none; margin: 0; 
-        }
-        input[type=number] { -moz-appearance: textfield; }
-
-        /* Input Fields in Table */
-        .tbl-input { 
-            background: transparent; border: none; color: #fff; width: 100%; text-align: center; font-family: monospace;
-            padding: 0; margin: 0; height: 100%; display: block;
-        }
-
-        .del-row-btn { opacity: 0; transition: opacity 0.2s; color: #ef4444; cursor: pointer; }
-        .data-table tr:hover .del-row-btn { opacity: 1; }
+        .data-table td:focus-within { box-shadow: inset 0 0 0 1.5px #6366f1; background-color: rgba(99, 102, 241, 0.08) !important; outline: none; }
+        
+        .tbl-input { background: transparent; border: none; color: #fff; width: 100%; text-align: center; font-family: monospace; padding: 0; margin: 0; height: 100%; display: block; outline: none; }
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 
         .money-card-container { margin-top: 24px; display: flex; justify-content: flex-end; padding-right: 10px; }
-        .money-card {
-            width: 340px; background: linear-gradient(145deg, rgba(20, 20, 23, 0.95), rgba(30, 30, 35, 0.95)); 
-            border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 0; 
-            position: relative; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-        }
-        .mc-header { background: rgba(255,255,255,0.03); padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
+        .money-card { width: 340px; background: linear-gradient(145deg, rgba(20, 20, 23, 0.95), rgba(30, 30, 35, 0.95)); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 0; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        .mc-header { background: rgba(255,255,255,0.03); padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .mc-body { padding: 20px; }
         .mc-footer { background: rgba(99, 102, 241, 0.1); padding: 15px 20px; border-top: 1px solid rgba(99, 102, 241, 0.2); display: flex; justify-content: space-between; align-items: center; }
         .money-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #6366f1, #ec4899); }
@@ -90,7 +56,6 @@
 
         .upload-zone { border: 1px dashed rgba(255,255,255,0.15); transition: all 0.2s; }
         .upload-zone:hover, .upload-zone.dragover { border-color: #6366f1; background: rgba(79, 70, 229, 0.05); }
-
         .switch { position: relative; display: inline-block; width: 32px; height: 18px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #3f3f46; transition: .4s; border-radius: 34px; }
@@ -114,7 +79,7 @@
                 </div>
                 <h1 class="text-base font-bold text-white tracking-tight">StockPro<span class="text-indigo-500"> X</span></h1>
             </div>
-            <p class="text-[9px] text-zinc-500 font-mono ml-9">EXCEL UI v14.0</p>
+            <p class="text-[9px] text-zinc-500 font-mono ml-9">AUTO-FIT v16.0</p>
         </div>
 
         <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-5">
@@ -225,26 +190,13 @@
     </main>
 
     <script>
-        // --- DATA & STATE ---
         const RAW_SKU_MASTER = [
-              {size:"1200x1200",thk:"9MM",pcs:2,kg:"61",ft2:31.0,m2:2.88},
-              {size:"1200x1790",thk:"9MM",pcs:2,kg:"91",ft2:46.242,m2:4.296},
-              {size:"1200x1800",thk:"9MM",pcs:2,kg:"91 TO 96.5",ft2:46.5,m2:4.32},
-              {size:"1200x2400",thk:"9MM",pcs:1,kg:"62",ft2:31.0,m2:2.88},
-              {size:"1200x2800",thk:"6MM",pcs:1,kg:"50.5",ft2:36.167,m2:3.36},
-              {size:"1200x3180",thk:"15MM",pcs:1,kg:"136",ft2:41.075,m2:3.816},
-              {size:"1200x3200",thk:"15MM",pcs:1,kg:"136",ft2:41.337,m2:3.84},
-              {size:"1600x1600",thk:"9MM",pcs:1,kg:"55",ft2:27.556,m2:2.56},
-              {size:"1600x3200",thk:"6MM",pcs:1,kg:"74",ft2:55.116,m2:5.12},
-              {size:"1600x3200",thk:"12MM",pcs:1,kg:"148",ft2:55.116,m2:5.12},
-              {size:"1620x3240",thk:"12MM",pcs:1,kg:"150",ft2:56.5,m2:5.249},
-              {size:"790x2980",thk:"15MM",pcs:1,kg:"87",ft2:25.338,m2:2.354},
-              {size:"800x3000",thk:"15MM",pcs:1,kg:"84.5",ft2:25.834,m2:2.4},
-              {size:"800x2400",thk:"15MM",pcs:1,kg:"67.5",ft2:20.67,m2:1.9},
-              {size:"1000x3000",thk:"5MM",pcs:1,kg:"35.5",ft2:32.29,m2:3.0},
-              {size:"1200x2600",thk:"6MM",pcs:1,kg:"42.5",ft2:33.58,m2:3.1},
-              {size:"1200x3000",thk:"9MM",pcs:1,kg:"77.5",ft2:38.75,m2:3.6},
-              {size:"1200x3200",thk:"15MM",pcs:1,kg:"136",ft2:41.33,m2:3.8},
+              {size:"1200x1200",thk:"9MM",pcs:2,kg:"61",ft2:31.0,m2:2.88}, {size:"1200x1790",thk:"9MM",pcs:2,kg:"91",ft2:46.242,m2:4.296}, {size:"1200x1800",thk:"9MM",pcs:2,kg:"91 TO 96.5",ft2:46.5,m2:4.32},
+              {size:"1200x2400",thk:"9MM",pcs:1,kg:"62",ft2:31.0,m2:2.88}, {size:"1200x2800",thk:"6MM",pcs:1,kg:"50.5",ft2:36.167,m2:3.36}, {size:"1200x3180",thk:"15MM",pcs:1,kg:"136",ft2:41.075,m2:3.816},
+              {size:"1200x3200",thk:"15MM",pcs:1,kg:"136",ft2:41.337,m2:3.84}, {size:"1600x1600",thk:"9MM",pcs:1,kg:"55",ft2:27.556,m2:2.56}, {size:"1600x3200",thk:"6MM",pcs:1,kg:"74",ft2:55.116,m2:5.12},
+              {size:"1600x3200",thk:"12MM",pcs:1,kg:"148",ft2:55.116,m2:5.12}, {size:"1620x3240",thk:"12MM",pcs:1,kg:"150",ft2:56.5,m2:5.249}, {size:"790x2980",thk:"15MM",pcs:1,kg:"87",ft2:25.338,m2:2.354},
+              {size:"800x3000",thk:"15MM",pcs:1,kg:"84.5",ft2:25.834,m2:2.4}, {size:"800x2400",thk:"15MM",pcs:1,kg:"67.5",ft2:20.67,m2:1.9}, {size:"1000x3000",thk:"5MM",pcs:1,kg:"35.5",ft2:32.29,m2:3.0},
+              {size:"1200x2600",thk:"6MM",pcs:1,kg:"42.5",ft2:33.58,m2:3.1}, {size:"1200x3000",thk:"9MM",pcs:1,kg:"77.5",ft2:38.75,m2:3.6}, {size:"1200x3200",thk:"15MM",pcs:1,kg:"136",ft2:41.33,m2:3.8},
               {size:"800x3200",thk:"15MM",pcs:1,kg:"74",ft2:27.56,m2:2.6}
         ];
         const SKU_MAP = new Map();
@@ -255,72 +207,24 @@
         let showInsurance = true;
 
         const els = {
-            fileInput: document.getElementById('fileInput'),
-            dropZone: document.getElementById('dropZone'),
-            uploadContent: document.getElementById('uploadContent'),
-            fileSuccess: document.getElementById('fileSuccess'),
-            fileName: document.getElementById('fileName'),
-            removeFileBtn: document.getElementById('removeFileBtn'),
-            mergeToggle: document.getElementById('mergeFaces'),
-            invoiceToggle: document.getElementById('invoiceMode'),
-            tableBody: document.getElementById('tableBody'),
-            tableHead: document.getElementById('tableHead'),
-            emptyState: document.getElementById('emptyState'),
-            tableContainer: document.getElementById('tableContainer'),
-            actionButtons: document.getElementById('actionButtons'),
-            liveIndicator: document.getElementById('liveIndicator'),
-            clientName: document.getElementById('clientName'),
-            moneyCard: document.getElementById('moneyCard'),
-            mcSubtotal: document.getElementById('mcSubtotal'),
-            mcIns: document.getElementById('mcIns'),
-            mcPreTax: document.getElementById('mcPreTax'),
-            mcGst: document.getElementById('mcGst'),
-            mcGrandTotal: document.getElementById('mcGrandTotal'),
-            insRate: document.getElementById('insRate'),
-            gstRate: document.getElementById('gstRate'),
-            insRow: document.getElementById('insRow'),
-            addInsBtn: document.getElementById('addInsBtn')
+            fileInput: document.getElementById('fileInput'), dropZone: document.getElementById('dropZone'), uploadContent: document.getElementById('uploadContent'), fileSuccess: document.getElementById('fileSuccess'), fileName: document.getElementById('fileName'),
+            removeFileBtn: document.getElementById('removeFileBtn'), mergeToggle: document.getElementById('mergeFaces'), invoiceToggle: document.getElementById('invoiceMode'), tableBody: document.getElementById('tableBody'), tableHead: document.getElementById('tableHead'),
+            emptyState: document.getElementById('emptyState'), tableContainer: document.getElementById('tableContainer'), actionButtons: document.getElementById('actionButtons'), liveIndicator: document.getElementById('liveIndicator'), clientName: document.getElementById('clientName'),
+            moneyCard: document.getElementById('moneyCard'), mcSubtotal: document.getElementById('mcSubtotal'), mcIns: document.getElementById('mcIns'), mcPreTax: document.getElementById('mcPreTax'), mcGst: document.getElementById('mcGst'),
+            mcGrandTotal: document.getElementById('mcGrandTotal'), insRate: document.getElementById('insRate'), gstRate: document.getElementById('gstRate'), insRow: document.getElementById('insRow'), addInsBtn: document.getElementById('addInsBtn')
         };
 
-        // --- EXCEL-LIKE NAVIGATION LOGIC ---
         els.tableBody.addEventListener('keydown', (e) => {
-            const target = e.target.closest('td');
-            if (!target) return;
-
-            const tr = target.parentElement;
-            const rowIndex = Array.from(els.tableBody.children).indexOf(tr);
-            const colIndex = Array.from(tr.children).indexOf(target);
-            
-            // Map actions
+            const target = e.target.closest('td'); if (!target) return;
+            const tr = target.parentElement; const rowIndex = Array.from(els.tableBody.children).indexOf(tr); const colIndex = Array.from(tr.children).indexOf(target);
             let nextRowIdx = rowIndex, nextColIdx = colIndex;
-
-            if (e.key === 'Enter' || e.key === 'ArrowDown') {
-                e.preventDefault(); nextRowIdx++;
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault(); nextRowIdx--;
-            } else if (e.key === 'ArrowRight') {
-                // Only move if at end of text range or it's a non-input cell
-                // For simplicity in this robust version, we allow standard movement
-                nextColIdx++;
-            } else if (e.key === 'ArrowLeft') {
-                nextColIdx--;
-            } else {
-                return; // Default behavior for typing
-            }
-
-            // Boundary Checks
+            if (e.key === 'Enter' || e.key === 'ArrowDown') { e.preventDefault(); nextRowIdx++; } else if (e.key === 'ArrowUp') { e.preventDefault(); nextRowIdx--; } else if (e.key === 'ArrowRight') { nextColIdx++; } else if (e.key === 'ArrowLeft') { nextColIdx--; } else { return; }
             if (nextRowIdx >= 0 && nextRowIdx < els.tableBody.children.length) {
                 const nextRow = els.tableBody.children[nextRowIdx];
-                if (nextColIdx >= 0 && nextColIdx < nextRow.children.length) {
-                    const nextCell = nextRow.children[nextColIdx];
-                    // Focus Input if exists, else Cell
-                    const input = nextCell.querySelector('input');
-                    if(input) input.focus(); else nextCell.focus();
-                }
+                if (nextColIdx >= 0 && nextColIdx < nextRow.children.length) { const nextCell = nextRow.children[nextColIdx]; const input = nextCell.querySelector('input'); if(input) input.focus(); else nextCell.focus(); }
             }
         });
 
-        // --- EXISTING EVENT LISTENERS ---
         els.clientName.addEventListener('input', function() { this.value = this.value.toUpperCase(); });
         els.dropZone.addEventListener('click', (e) => { if(e.target !== els.removeFileBtn) els.fileInput.click(); });
         els.fileInput.addEventListener('change', handleFile);
@@ -335,97 +239,49 @@
         els.tableBody.addEventListener('input', (e) => {
             const target = e.target;
             if (target.hasAttribute('contenteditable') || target.tagName === 'INPUT') {
-                const row = target.closest('tr');
-                const rowIdx = row.dataset.index;
+                const row = target.closest('tr'); const rowIdx = row.dataset.index;
                 const field = target.dataset.field || (target.tagName === 'INPUT' ? 'rate' : null);
-                
                 if(rowIdx !== undefined && field) {
                     let val = target.tagName === 'INPUT' ? target.value : target.innerText;
                     if(field === 'qty' || field === 'rate') val = parseFloat(val) || 0;
-                    
                     globalData[rowIdx][field] = val;
-                    
                     if(isCommercial) {
                         const item = globalData[rowIdx];
-                        const totalArea = item.qty * item.ft2PerBox;
-                        item.amount = totalArea * item.rate; // Recalculate amount
-                        
-                        // DOM Update for dependent fields
-                        if(field === 'qty') {
-                            row.querySelector('.area-cell').innerText = Math.round(totalArea);
-                        }
-                        if(field === 'qty' || field === 'rate') {
-                            row.querySelector('.amt-cell').innerText = Math.round(item.amount).toLocaleString('en-IN');
-                        }
+                        const totalArea = item.qty * item.ft2PerBox; item.amount = totalArea * item.rate; 
+                        if(field === 'qty') { row.querySelector('.area-cell').innerText = Math.round(totalArea); }
+                        if(field === 'qty' || field === 'rate') { row.querySelector('.amt-cell').innerText = Math.round(item.amount).toLocaleString('en-IN'); }
                     }
                     calculateMoneyCard();
                 }
             }
         });
 
-        function resetAll(e) {
-            if(e) e.stopPropagation();
-            els.fileInput.value = "";
-            els.uploadContent.classList.remove('hidden');
-            els.fileSuccess.classList.add('hidden');
-            els.fileSuccess.classList.remove('flex');
-            els.emptyState.classList.remove('hidden');
-            els.tableContainer.classList.add('hidden');
-            els.actionButtons.classList.add('opacity-50', 'pointer-events-none');
-            els.liveIndicator.classList.remove('bg-green-500', 'animate-pulse');
-            els.liveIndicator.classList.add('bg-zinc-700');
-            globalData = [];
-        }
-
-        function handleFile() {
-            if (els.fileInput.files.length > 0) {
-                const file = els.fileInput.files[0];
-                els.uploadContent.classList.add('hidden');
-                els.fileSuccess.classList.remove('hidden'); 
-                els.fileSuccess.classList.add('flex');
-                els.fileName.innerText = file.name;
-                processExcel(file);
-            }
-        }
+        function resetAll(e) { if(e) e.stopPropagation(); els.fileInput.value = ""; els.uploadContent.classList.remove('hidden'); els.fileSuccess.classList.add('hidden'); els.fileSuccess.classList.remove('flex'); els.emptyState.classList.remove('hidden'); els.tableContainer.classList.add('hidden'); els.actionButtons.classList.add('opacity-50', 'pointer-events-none'); els.liveIndicator.classList.remove('bg-green-500', 'animate-pulse'); els.liveIndicator.classList.add('bg-zinc-700'); globalData = []; }
+        function handleFile() { if (els.fileInput.files.length > 0) { const file = els.fileInput.files[0]; els.uploadContent.classList.add('hidden'); els.fileSuccess.classList.remove('hidden'); els.fileSuccess.classList.add('flex'); els.fileName.innerText = file.name; processExcel(file); } }
 
         function processExcel(file) {
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, {type: 'array'});
+                    const data = new Uint8Array(e.target.result); const workbook = XLSX.read(data, {type: 'array'});
                     const rawData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: 1, defval: ""});
-                    
                     let headerIdx = -1, col = { design: -1, cat: -1, size: -1, body: -1, qty: -1 };
                     for (let i = 0; i < Math.min(rawData.length, 25); i++) {
                         const r = rawData[i].map(x => String(x).toLowerCase().trim());
-                        if (r.includes('designname') || r.includes('size mm')) {
-                            headerIdx = i; col.design = r.indexOf('designname'); col.cat = r.indexOf('category'); col.size = r.indexOf('size mm'); col.body = r.indexOf('bodytype'); col.qty = r.findIndex(c => c === 'pre' || c === 'total' || c === 'qty'); break;
-                        }
+                        if (r.includes('designname') || r.includes('size mm')) { headerIdx = i; col.design = r.indexOf('designname'); col.cat = r.indexOf('category'); col.size = r.indexOf('size mm'); col.body = r.indexOf('bodytype'); col.qty = r.findIndex(c => c === 'pre' || c === 'total' || c === 'qty'); break; }
                     }
                     if (headerIdx === -1) throw new Error("Headers missing");
-
-                    const shouldMerge = els.mergeToggle.checked;
-                    const map = new Map();
-
+                    const shouldMerge = els.mergeToggle.checked; const map = new Map();
                     for (let i = headerIdx + 1; i < rawData.length; i++) {
                         const r = rawData[i]; if (!r || r.length === 0) continue;
-                        let design = (r[col.design] || "").toString().trim();
-                        let size = (r[col.size] || "").toString().trim();
-                        let cat = col.cat > -1 ? (r[col.cat] || "").toString().trim() : "";
-                        let body = col.body > -1 ? (r[col.body] || "").toString().trim() : "";
-                        let qty = col.qty > -1 ? parseFloat(r[col.qty]) : 0;
+                        let design = (r[col.design] || "").toString().trim(); let size = (r[col.size] || "").toString().trim(); let cat = col.cat > -1 ? (r[col.cat] || "").toString().trim() : ""; let body = col.body > -1 ? (r[col.body] || "").toString().trim() : ""; let qty = col.qty > -1 ? parseFloat(r[col.qty]) : 0;
                         if (!design && !size) continue;
                         if (shouldMerge) design = design.replace(/-[a-zA-Z]$/, "").trim();
-                        
-                        let matchSize = size;
-                        if (!SKU_MAP.has(matchSize)) { const dims = size.match(/(\d+)[xX](\d+)/); if (dims) matchSize = `${dims[1]}x${dims[2]}`; }
+                        let matchSize = size; if (!SKU_MAP.has(matchSize)) { const dims = size.match(/(\d+)[xX](\d+)/); if (dims) matchSize = `${dims[1]}x${dims[2]}`; }
                         const ft2PerBox = SKU_MAP.get(matchSize) || 0;
-
                         const key = `${size}_${cat}_${body}_${design}`;
                         if (map.has(key)) map.get(key).qty += qty; else map.set(key, { size, cat, body, design, qty, ft2PerBox, rate: 0 });
                     }
-
                     globalData = Array.from(map.values());
                     function getDims(s) { const m = s.match(/(\d+)/g); return m ? { w: parseInt(m[0]||0), h: parseInt(m[1]||0) } : {w:0,h:0}; }
                     globalData.sort((a, b) => {
@@ -435,107 +291,90 @@
                         if (a.body.toLowerCase() < b.body.toLowerCase()) return -1; if (a.body.toLowerCase() > b.body.toLowerCase()) return 1;
                         return a.design.localeCompare(b.design);
                     });
-
                     renderTable();
-                    els.emptyState.classList.add('hidden');
-                    els.tableContainer.classList.remove('hidden');
-                    els.actionButtons.classList.remove('opacity-50', 'pointer-events-none');
-                    els.liveIndicator.classList.remove('bg-zinc-700');
-                    els.liveIndicator.classList.add('bg-green-500', 'animate-pulse');
-
+                    els.emptyState.classList.add('hidden'); els.tableContainer.classList.remove('hidden'); els.actionButtons.classList.remove('opacity-50', 'pointer-events-none'); els.liveIndicator.classList.remove('bg-zinc-700'); els.liveIndicator.classList.add('bg-green-500', 'animate-pulse');
                 } catch (err) { alert("Error: " + err.message); }
-            };
-            reader.readAsArrayBuffer(file);
+            }; reader.readAsArrayBuffer(file);
         }
 
         function renderTable() {
-            els.tableHead.innerHTML = '';
-            els.tableBody.innerHTML = '';
-            
+            els.tableHead.innerHTML = ''; els.tableBody.innerHTML = '';
             let headerHTML = `<tr><th class="w-8"></th><th class="w-10">Sr.No</th><th class="w-32">Size</th><th class="w-24">Surface</th><th class="w-24">Body</th><th>Design Name</th><th class="w-16">Qty</th>`;
-            if (isCommercial) { headerHTML += `<th class="w-20">Sq. Feet</th><th class="w-16">Rate</th><th class="w-24">Amount</th>`; els.moneyCard.classList.remove('hidden'); } 
-            else { els.moneyCard.classList.add('hidden'); }
-            headerHTML += `</tr>`;
-            els.tableHead.innerHTML = headerHTML;
-
+            if (isCommercial) { headerHTML += `<th class="w-20">Sq. Feet</th><th class="w-16">Rate</th><th class="w-24">Amount</th>`; els.moneyCard.classList.remove('hidden'); } else { els.moneyCard.classList.add('hidden'); }
+            headerHTML += `</tr>`; els.tableHead.innerHTML = headerHTML;
             let sr = 1;
             globalData.forEach((item, index) => {
-                const tr = document.createElement('tr');
-                tr.dataset.index = index;
-                const totalArea = item.qty * item.ft2PerBox;
-                item.amount = totalArea * item.rate;
-
-                let rowHTML = `
-                    <td><span onclick="deleteRow(${index})" class="del-row-btn hover:text-red-500 text-xs font-bold">✕</span></td>
-                    <td class="text-zinc-500 font-mono">${sr++}</td>
-                    <td contenteditable="true" data-field="size" class="text-xs outline-none">${item.size}</td>
-                    <td contenteditable="true" data-field="cat" class="text-xs text-zinc-400 outline-none">${item.cat}</td>
-                    <td contenteditable="true" data-field="body" class="text-xs text-zinc-400 outline-none">${item.body}</td>
-                    <td contenteditable="true" data-field="design" class="text-xs text-white font-medium outline-none design-cell"><span class="truncate-cell">${item.design}</span></td>
-                    <td contenteditable="true" data-field="qty" class="font-mono text-zinc-300 font-bold outline-none">${item.qty}</td>
-                `;
-
-                if (isCommercial) {
-                    rowHTML += `
-                    <td class="font-mono text-zinc-400 text-xs area-cell">${Math.round(totalArea)}</td>
-                    <td><input type="number" value="${item.rate || ''}" class="tbl-input" placeholder="0"></td>
-                    <td class="font-mono text-indigo-300 font-bold amt-cell">${Math.round(item.amount).toLocaleString('en-IN')}</td>
-                    `;
-                }
-                tr.innerHTML = rowHTML;
-                els.tableBody.appendChild(tr);
+                const tr = document.createElement('tr'); tr.dataset.index = index;
+                const totalArea = item.qty * item.ft2PerBox; item.amount = totalArea * item.rate;
+                let rowHTML = `<td><span onclick="deleteRow(${index})" class="del-row-btn hover:text-red-500 text-xs font-bold">✕</span></td><td class="text-zinc-500 font-mono">${sr++}</td><td contenteditable="true" data-field="size" class="text-xs outline-none">${item.size}</td><td contenteditable="true" data-field="cat" class="text-xs text-zinc-400 outline-none">${item.cat}</td><td contenteditable="true" data-field="body" class="text-xs text-zinc-400 outline-none">${item.body}</td><td contenteditable="true" data-field="design" class="text-xs text-white font-medium outline-none design-cell"><span class="truncate-cell">${item.design}</span></td><td contenteditable="true" data-field="qty" class="font-mono text-zinc-300 font-bold outline-none">${item.qty}</td>`;
+                if (isCommercial) { rowHTML += `<td class="font-mono text-zinc-400 text-xs area-cell">${Math.round(totalArea)}</td><td><input type="number" value="${item.rate || ''}" class="tbl-input" placeholder="0"></td><td class="font-mono text-indigo-300 font-bold amt-cell">${Math.round(item.amount).toLocaleString('en-IN')}</td>`; }
+                tr.innerHTML = rowHTML; els.tableBody.appendChild(tr);
             });
-
             if (isCommercial) calculateMoneyCard();
         }
 
-        function deleteRow(index) {
-            globalData.splice(index, 1);
-            renderTable();
-        }
-
-        function toggleInsurance(enable) {
-            showInsurance = enable;
-            if (showInsurance) { els.insRow.classList.remove('hidden'); els.addInsBtn.classList.add('hidden'); els.insRate.innerText = "0.99"; } 
-            else { els.insRow.classList.add('hidden'); els.addInsBtn.classList.remove('hidden'); els.insRate.innerText = "0"; }
-            calculateMoneyCard();
-        }
-
+        function deleteRow(index) { globalData.splice(index, 1); renderTable(); }
         function calculateMoneyCard() {
             if (!isCommercial) return;
-            let subtotal = 0;
-            globalData.forEach(item => { subtotal += (item.qty * item.ft2PerBox * (item.rate || 0)); });
-            let insPercent = showInsurance ? parseFloat(els.insRate.innerText) || 0 : 0;
-            let insAmount = subtotal * (insPercent / 100);
-            let preTax = subtotal + insAmount;
-            let gstPercent = parseFloat(els.gstRate.innerText) || 0;
-            let gstAmount = preTax * (gstPercent / 100);
-            let grandTotal = preTax + gstAmount;
-
+            let subtotal = 0; globalData.forEach(item => { subtotal += (item.qty * item.ft2PerBox * (item.rate || 0)); });
+            let insPercent = showInsurance ? parseFloat(els.insRate.innerText) || 0 : 0; let insAmount = subtotal * (insPercent / 100);
+            let preTax = subtotal + insAmount; let gstPercent = parseFloat(els.gstRate.innerText) || 0; let gstAmount = preTax * (gstPercent / 100); let grandTotal = preTax + gstAmount;
             const fmt = (n) => Math.round(n).toLocaleString('en-IN');
-            els.mcSubtotal.innerText = fmt(subtotal);
-            els.mcIns.innerText = fmt(insAmount);
-            els.mcPreTax.innerText = fmt(preTax);
-            els.mcGst.innerText = fmt(gstAmount);
-            els.mcGrandTotal.innerText = fmt(grandTotal);
+            els.mcSubtotal.innerText = fmt(subtotal); els.mcIns.innerText = fmt(insAmount); els.mcPreTax.innerText = fmt(preTax); els.mcGst.innerText = fmt(gstAmount); els.mcGrandTotal.innerText = fmt(grandTotal);
         }
 
-        // --- EXPORT FUNCTIONS (LOCKED & PRESERVED) ---
-        function calculateColumnWidths(data) {
-            let maxLen = { size: 12, surf: 8, body: 8, design: 15 }; 
+        // --- INTELLIGENT AUTO-FIT LOGIC ---
+        function calculateSmartColumnWidths(data, mode) {
+            // Step 1: Scan Data for Max Lengths
+            let maxLen = { size: 10, surf: 8, body: 8, design: 15, qty: 5, sr: 3 }; 
             data.forEach(item => {
                 if(item.size.length > maxLen.size) maxLen.size = item.size.length;
                 if(item.cat.length > maxLen.surf) maxLen.surf = item.cat.length;
                 if(item.body.length > maxLen.body) maxLen.body = item.body.length;
                 if(item.design.length > maxLen.design) maxLen.design = item.design.length;
+                if(item.qty.toString().length > maxLen.qty) maxLen.qty = item.qty.toString().length;
             });
-            const totalChars = maxLen.size + maxLen.surf + maxLen.body + maxLen.design;
-            const usableWidth = 144; 
+
+            // Conversion factor (approx mm per char for font size 8-9)
+            const f = 1.8; 
+            
+            // Calculate Raw Ideal Widths (mm) + Padding
+            let raw = {
+                sr: 8, 
+                size: Math.max(25, maxLen.size * f + 4), // Min 25mm for safety
+                surf: Math.max(18, maxLen.surf * f + 4),
+                body: Math.max(18, maxLen.body * f + 4),
+                design: Math.max(40, maxLen.design * f + 4), // Min 40mm for Design
+                qty: Math.max(12, maxLen.qty * f + 4),
+                // Commercial extras
+                sq: 15, rate: 12, amt: 20
+            };
+
+            // Available Width (A4 = 210mm - 20mm margins = 190mm)
+            const availableWidth = 190;
+            
+            // Calculate Total Raw Width based on Mode
+            let totalRaw = raw.sr + raw.size + raw.surf + raw.body + raw.design + raw.qty;
+            if(mode === 'commercial') totalRaw += (raw.sq + raw.rate + raw.amt);
+
+            // Step 2: Distribution Logic
+            // Scale Factor: If TotalRaw < Available, scale up (>1). If TotalRaw > Available, scale down (<1).
+            let scale = availableWidth / totalRaw;
+
+            // Apply Scale but keep minimum safety limits so text doesn't crush
+            // If scale is too small (e.g. 0.5), we might need to clamp it or accept some wrapping/smaller font.
+            // Here we prioritize fitting to page width.
+            
             return {
-                size: Math.max(20, (maxLen.size / totalChars) * usableWidth),
-                surf: Math.max(15, (maxLen.surf / totalChars) * usableWidth),
-                body: Math.max(15, (maxLen.body / totalChars) * usableWidth),
-                design: (maxLen.design / totalChars) * usableWidth 
+                sr: raw.sr * scale,
+                size: raw.size * scale,
+                surf: raw.surf * scale,
+                body: raw.body * scale,
+                design: raw.design * scale,
+                qty: raw.qty * scale,
+                sq: raw.sq * scale,
+                rate: raw.rate * scale,
+                amt: raw.amt * scale
             };
         }
 
@@ -552,67 +391,49 @@
                 const sFoot = { font: { bold: true }, alignment: { horizontal: "right" } };
                 const sFootBorder = { font: { bold: true }, alignment: { horizontal: "right" }, border: sBorderTop };
                 const sGrand = { font: { bold: true, sz: 12, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1E293B" } }, alignment: { horizontal: "right" } };
-
                 output.push(headers.map(h => ({v:h, s:sHead})));
                 let subtotal = 0;
                 globalData.forEach((item, i) => {
                     let row = [i+1, item.size, item.cat, item.body, item.design, item.qty];
                     if (isCommercial) {
-                        const area = item.qty * item.ft2PerBox;
-                        const amt = area * item.rate;
-                        subtotal += amt;
+                        const area = item.qty * item.ft2PerBox; const amt = area * item.rate; subtotal += amt;
                         row.push(Math.round(area), item.rate, Math.round(amt).toLocaleString('en-IN'));
                     }
                     output.push(row);
                 });
                  if (isCommercial) {
                     output.push([""]); 
-                    let insP = showInsurance ? parseFloat(els.insRate.innerText)||0 : 0;
-                    let insV = subtotal * (insP/100);
+                    let insP = showInsurance ? parseFloat(els.insRate.innerText)||0 : 0; let insV = subtotal * (insP/100);
                     if(showInsurance) output.push(["", "", "", "", "", "", "", `Transit Insurance (${insP}%)`, {v:fmt(insV), s:sFoot}]);
-                    let taxable = subtotal + insV;
-                    let gstP = parseFloat(els.gstRate.innerText)||0;
-                    let gstV = taxable * (gstP/100);
+                    let taxable = subtotal + insV; let gstP = parseFloat(els.gstRate.innerText)||0; let gstV = taxable * (gstP/100);
                     output.push(["", "", "", "", "", "", "", "Item Total", {v:fmt(subtotal), s:sFoot}]);
                     output.push(["", "", "", "", "", "", "", "Assessable Value", {v:fmt(taxable), s:sFootBorder}]);
                     output.push(["", "", "", "", "", "", "", `GST (${gstP}%)`, {v:fmt(gstV), s:sFoot}]);
                     output.push(["", "", "", "", "", "", "", {v:"Total Payable", s:sGrand}, {v:fmt(taxable + gstV), s:sGrand}]);
                 }
-                const wb = XLSX.utils.book_new();
-                const ws = XLSX.utils.aoa_to_sheet(output);
+                const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet(output);
                 ws['!cols'] = [{wch:6}, {wch:22}, {wch:12}, {wch:12}, {wch:35}, {wch:8}, {wch:10}, {wch:8}, {wch:15}];
-                XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-                XLSX.writeFile(wb, `${client}.xlsx`);
+                XLSX.utils.book_append_sheet(wb, ws, "Sheet1"); XLSX.writeFile(wb, `${client}.xlsx`);
             }
 
             if (type === 'pdf') {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-                const tableBody = [];
-                let subtotal = 0;
-                let colStyles = {};
-                let margins = {};
-                let bodyFontSize = 9; 
+                const { jsPDF } = window.jspdf; const doc = new jsPDF();
+                const tableBody = []; let subtotal = 0;
                 
+                // --- CALL THE SMART ENGINE ---
+                const smartW = calculateSmartColumnWidths(globalData, isCommercial ? 'commercial' : 'simple');
+                
+                let colStyles = {};
                 if (isCommercial) {
-                    bodyFontSize = 8.5; 
-                    const smartWidths = calculateColumnWidths(globalData);
-                    colStyles = { 0: { cellWidth: 8 }, 1: { cellWidth: smartWidths.size }, 2: { cellWidth: smartWidths.surf }, 3: { cellWidth: smartWidths.body }, 4: { cellWidth: smartWidths.design }, 5: { cellWidth: 10 }, 6: { cellWidth: 14 }, 7: { cellWidth: 10 }, 8: { cellWidth: 18, halign: 'right' } };
-                    margins = { left: 3, right: 3 };
+                    colStyles = { 0: { cellWidth: smartW.sr }, 1: { cellWidth: smartW.size }, 2: { cellWidth: smartW.surf }, 3: { cellWidth: smartW.body }, 4: { cellWidth: smartW.design }, 5: { cellWidth: smartW.qty }, 6: { cellWidth: smartW.sq }, 7: { cellWidth: smartW.rate }, 8: { cellWidth: smartW.amt, halign: 'right' } };
                 } else {
-                    bodyFontSize = 9; 
-                    colStyles = { 0: { cellWidth: 10 }, 1: { cellWidth: 35 }, 2: { cellWidth: 22 }, 3: { cellWidth: 22 }, 4: { cellWidth: 'auto' }, 5: { cellWidth: 20 } };
-                    margins = { left: 10, right: 10 };
+                    colStyles = { 0: { cellWidth: smartW.sr }, 1: { cellWidth: smartW.size }, 2: { cellWidth: smartW.surf }, 3: { cellWidth: smartW.body }, 4: { cellWidth: smartW.design }, 5: { cellWidth: smartW.qty } };
                 }
 
                 globalData.forEach((item, i) => {
-                    let dName = item.design;
-                    if(isCommercial && dName.length > 30) dName = dName.substring(0, 30) + "..."; 
-                    let row = [i+1, item.size, item.cat, item.body, dName, item.qty];
+                    let row = [i+1, item.size, item.cat, item.body, item.design, item.qty];
                     if (isCommercial) {
-                        const area = item.qty * item.ft2PerBox;
-                        const amt = area * item.rate;
-                        subtotal += amt;
+                        const area = item.qty * item.ft2PerBox; const amt = area * item.rate; subtotal += amt;
                         row.push(Math.round(area), item.rate, Math.round(amt).toLocaleString('en-IN'));
                     }
                     tableBody.push(row);
@@ -622,8 +443,8 @@
                 if (isCommercial) headRow[0].push('Sq. Feet', 'Rate', 'Amount');
 
                 doc.autoTable({
-                    head: headRow, body: tableBody, startY: 30, theme: 'grid', margin: margins,
-                    styles: { fontSize: bodyFontSize, halign: 'center', valign: 'middle', lineColor: [229, 231, 235], lineWidth: 0.1, cellPadding: { top: 2, bottom: 2, left: 1, right: 1 }, textColor: [51, 51, 51] },
+                    head: headRow, body: tableBody, startY: 30, theme: 'grid', margin: { left: 10, right: 10 },
+                    styles: { fontSize: 9, halign: 'center', valign: 'middle', lineColor: [229, 231, 235], lineWidth: 0.1, cellPadding: { top: 2, bottom: 2, left: 1, right: 1 }, textColor: [51, 51, 51] },
                     headStyles: { fillColor: [30, 41, 59], textColor: 255, fontStyle: 'bold', halign: 'center' },
                     alternateRowStyles: { fillColor: [249, 250, 251] },
                     columnStyles: colStyles, 
@@ -639,17 +460,10 @@
                 if (isCommercial) {
                     let finalY = doc.lastAutoTable.finalY + 10;
                     if (finalY > 250) { doc.addPage(); finalY = 20; }
-                    let insP = showInsurance ? parseFloat(els.insRate.innerText)||0 : 0;
-                    let insV = subtotal * (insP/100);
-                    let taxable = subtotal + insV;
-                    let gstP = parseFloat(els.gstRate.innerText)||0;
-                    let gstV = taxable * (gstP/100);
-                    let grand = taxable + gstV;
-
+                    let insP = showInsurance ? parseFloat(els.insRate.innerText)||0 : 0; let insV = subtotal * (insP/100);
+                    let taxable = subtotal + insV; let gstP = parseFloat(els.gstRate.innerText)||0; let gstV = taxable * (gstP/100); let grand = taxable + gstV;
                     const moneyX = 140; 
-                    doc.setDrawColor(220, 220, 220);
-                    doc.line(moneyX, finalY - 5, 205, finalY - 5);
-
+                    doc.setDrawColor(220, 220, 220); doc.line(moneyX, finalY - 5, 205, finalY - 5);
                     doc.setFontSize(9); doc.setTextColor(100, 100, 100);
                     doc.text(`Item Total`, moneyX, finalY); doc.setTextColor(0, 0, 0); doc.setFont(undefined, 'bold'); doc.text(fmt(subtotal), 200, finalY, {align:'right'});
                     if (showInsurance) { finalY += 5; doc.setFont(undefined, 'normal'); doc.setTextColor(100, 100, 100); doc.text(`Transit Insurance (${insP}%)`, moneyX, finalY); doc.setFont(undefined, 'bold'); doc.setTextColor(0, 0, 0); doc.text(fmt(insV), 200, finalY, {align:'right'}); }
