@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - Workspace Edition</title>
+    <title>StockPro X - Compact Workspace</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -27,57 +27,53 @@
         body { background: #050505; color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; }
 
         /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #0a0a0c; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #4f46e5; }
 
-        /* Glass Sidebar */
+        /* Glass Sidebar - More Compact */
         .sidebar {
-            background: rgba(10, 10, 12, 0.6);
+            background: rgba(10, 10, 12, 0.8);
             backdrop-filter: blur(20px);
             border-right: 1px solid rgba(255,255,255,0.08);
+            width: 260px; /* Reduced Width */
         }
 
-        /* Canvas Area */
+        /* Dotted Canvas Background */
         .canvas-bg {
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
+            background-color: #050505;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 24px 24px; /* Dot spacing */
         }
 
         /* Editable Table Styles */
-        .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
         .data-table th { 
             background: #18181b; color: #a1a1aa; font-weight: 600; text-align: left; 
-            padding: 12px 16px; border-bottom: 1px solid #27272a; position: sticky; top: 0;
+            padding: 10px 12px; border-bottom: 1px solid #27272a; position: sticky; top: 0;
         }
         .data-table td { 
-            padding: 10px 16px; border-bottom: 1px solid #27272a; color: #e4e4e7; transition: background 0.2s;
+            padding: 8px 12px; border-bottom: 1px solid #27272a; color: #e4e4e7; transition: background 0.2s;
         }
         .data-table tr:hover td { background: rgba(79, 70, 229, 0.05); }
         .data-table td:focus { outline: 2px solid #6366f1; background: #1e1b4b; border-radius: 4px; }
 
         /* Orbs */
-        .orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.3; pointer-events: none; z-index: -1; }
-        .orb-1 { top: -20%; left: -10%; width: 600px; height: 600px; background: #4f46e5; }
-        .orb-2 { bottom: -20%; right: -10%; width: 500px; height: 500px; background: #ec4899; }
+        .orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.2; pointer-events: none; z-index: -1; }
+        .orb-1 { top: -20%; left: -10%; width: 500px; height: 500px; background: #4f46e5; }
+        .orb-2 { bottom: -20%; right: -10%; width: 400px; height: 400px; background: #ec4899; }
 
-        /* Upload Zone */
+        /* Compact Upload Zone */
         .upload-zone { border: 1px dashed rgba(255,255,255,0.15); transition: all 0.2s; }
         .upload-zone:hover, .upload-zone.dragover { border-color: #6366f1; background: rgba(79, 70, 229, 0.05); }
 
-        .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+        .switch { position: relative; display: inline-block; width: 36px; height: 20px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #3f3f46; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: #6366f1; }
-        input:checked + .slider:before { transform: translateX(18px); }
-
-        /* Buttons */
-        .btn-grad { background-size: 200% auto; transition: 0.5s; }
-        .btn-grad:hover { background-position: right center; }
+        input:checked + .slider:before { transform: translateX(16px); }
     </style>
 </head>
 <body class="flex h-screen w-screen overflow-hidden text-sm">
@@ -87,51 +83,51 @@
         <div class="orb orb-2"></div>
     </div>
 
-    <aside class="sidebar w-[320px] flex flex-col justify-between shrink-0 z-20 h-full">
+    <aside class="sidebar flex flex-col justify-between shrink-0 z-20 h-full">
         
-        <div class="p-6 border-b border-white/5">
-            <div class="flex items-center gap-3 mb-1">
-                <div class="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center border border-indigo-500/30">
-                    <svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+        <div class="p-4 border-b border-white/5">
+            <div class="flex items-center gap-2 mb-0.5">
+                <div class="w-7 h-7 rounded-md bg-indigo-500/20 flex items-center justify-center border border-indigo-500/30">
+                    <svg class="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                 </div>
-                <h1 class="text-lg font-bold text-white tracking-tight">StockPro<span class="text-indigo-500"> X</span></h1>
+                <h1 class="text-base font-bold text-white tracking-tight">StockPro<span class="text-indigo-500"> X</span></h1>
             </div>
-            <p class="text-[10px] text-zinc-500 font-mono ml-11">WORKSPACE EDITION v12.0</p>
+            <p class="text-[9px] text-zinc-500 font-mono ml-9">WORKSPACE v12.1</p>
         </div>
 
-        <div class="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
+        <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-5">
             
-            <div class="space-y-2">
-                <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Project / Client</label>
-                <input type="text" id="clientName" placeholder="ENTER NAME..." 
-                    class="w-full bg-[#18181b] border border-zinc-700 text-white text-xs font-bold rounded-lg focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 block p-3 outline-none transition-all placeholder-zinc-600 uppercase">
+            <div class="space-y-1.5">
+                <label class="text-[9px] font-bold text-zinc-500 uppercase tracking-wider">Project / Client</label>
+                <input type="text" id="clientName" placeholder="CLIENT NAME" 
+                    class="w-full bg-[#18181b] border border-zinc-700 text-white text-xs font-semibold rounded focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 block p-2.5 outline-none transition-all placeholder-zinc-600 uppercase">
             </div>
 
-            <div class="space-y-2">
-                <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Data Source</label>
-                <div class="upload-zone w-full h-28 rounded-xl bg-white/5 flex flex-col items-center justify-center cursor-pointer relative group" id="dropZone">
+            <div class="space-y-1.5">
+                <label class="text-[9px] font-bold text-zinc-500 uppercase tracking-wider">Source</label>
+                <div class="upload-zone w-full h-24 rounded-lg bg-white/5 flex flex-col items-center justify-center cursor-pointer relative group" id="dropZone">
                     <input id="fileInput" type="file" class="hidden" accept=".xlsx, .xls" />
                     
                     <div id="uploadContent" class="text-center">
-                        <svg class="w-6 h-6 mx-auto mb-2 text-zinc-500 group-hover:text-indigo-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                        <span class="text-xs text-zinc-400">Drop Excel File</span>
+                        <svg class="w-5 h-5 mx-auto mb-1 text-zinc-500 group-hover:text-indigo-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                        <span class="text-[10px] text-zinc-400">Excel File</span>
                     </div>
 
-                    <div id="fileSuccess" class="hidden flex-col items-center w-full px-4">
-                        <div class="flex items-center gap-2 mb-2 w-full justify-center">
-                             <svg class="w-4 h-4 text-green-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                             <p id="fileName" class="text-xs font-semibold text-white truncate">data.xlsx</p>
+                    <div id="fileSuccess" class="hidden flex-col items-center w-full px-2">
+                         <div class="flex items-center gap-1.5 mb-1.5 w-full justify-center">
+                             <svg class="w-3 h-3 text-green-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                             <p id="fileName" class="text-[10px] font-semibold text-white truncate max-w-[120px]">data.xlsx</p>
                         </div>
-                        <button id="removeFileBtn" class="text-[10px] text-red-400 hover:text-red-300 border border-red-500/20 bg-red-500/10 px-3 py-1 rounded-full transition-colors">REMOVE</button>
+                        <button id="removeFileBtn" class="text-[9px] text-red-400 hover:text-red-300 border border-red-500/20 bg-red-500/10 px-2 py-0.5 rounded transition-colors">REMOVE</button>
                     </div>
                 </div>
             </div>
 
-            <div class="p-4 rounded-xl bg-[#18181b] border border-zinc-800">
+            <div class="p-3 rounded-lg bg-[#18181b] border border-zinc-800">
                 <div class="flex items-center justify-between">
                     <div>
-                        <div class="text-xs font-semibold text-zinc-200">Smart Merge</div>
-                        <div class="text-[10px] text-zinc-500">Combine -A/-B faces</div>
+                        <div class="text-[11px] font-semibold text-zinc-300">Smart Merge</div>
+                        <div class="text-[9px] text-zinc-600">Combine Faces</div>
                     </div>
                     <label class="switch"><input type="checkbox" id="mergeFaces"><span class="slider"></span></label>
                 </div>
@@ -139,63 +135,60 @@
 
         </div>
 
-        <div class="p-6 border-t border-white/5 bg-[#0a0a0c]/50">
-            <div id="actionButtons" class="flex flex-col gap-3 opacity-50 pointer-events-none transition-opacity duration-300">
-                <button onclick="exportData('pdf')" class="w-full py-3 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+        <div class="p-4 border-t border-white/5 bg-[#0a0a0c]/50">
+            <div id="actionButtons" class="flex flex-col gap-2 opacity-50 pointer-events-none transition-opacity duration-300">
+                <button onclick="exportData('pdf')" class="w-full py-2.5 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2 transition-colors">
                     DOWNLOAD PDF
                 </button>
-                <button onclick="exportData('excel')" class="w-full py-3 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-bold border border-zinc-700 flex items-center justify-center gap-2">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                    DOWNLOAD EXCEL
+                <button onclick="exportData('excel')" class="w-full py-2.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[11px] font-bold border border-zinc-700 flex items-center justify-center gap-2 transition-colors">
+                    DOWNLOAD XLSX
                 </button>
             </div>
-            <div id="statusText" class="text-center text-[10px] text-zinc-500 mt-3 h-4">WAITING FOR INPUT...</div>
+            <div id="statusText" class="text-center text-[9px] text-zinc-600 mt-2 h-3 font-mono">IDLE</div>
         </div>
     </aside>
 
     <main class="flex-1 relative flex flex-col h-full bg-[#050505]">
         
-        <div class="h-14 border-b border-white/5 flex items-center justify-between px-6 bg-[#0a0a0c]/80 backdrop-blur-md z-10">
-            <div class="flex items-center gap-2 text-zinc-400 text-xs">
-                <span class="w-2 h-2 rounded-full bg-zinc-600" id="liveIndicator"></span>
-                <span class="font-semibold tracking-wide" id="canvasTitle">PREVIEW CANVAS</span>
+        <div class="h-12 border-b border-white/5 flex items-center justify-between px-6 bg-[#0a0a0c]/80 backdrop-blur-md z-10">
+            <div class="flex items-center gap-2 text-zinc-500 text-xs">
+                <span class="w-1.5 h-1.5 rounded-full bg-zinc-700" id="liveIndicator"></span>
+                <span class="font-medium tracking-wide text-[11px]" id="canvasTitle">LIVE PREVIEW</span>
             </div>
-            <div class="text-[10px] text-zinc-500 bg-zinc-900 px-3 py-1 rounded-full border border-zinc-800">
-                EDITABLE MODE ACTIVE
+            <div class="text-[9px] text-zinc-600 bg-zinc-900/50 px-2 py-0.5 rounded border border-zinc-800/50">
+                CANVAS MODE
             </div>
         </div>
 
         <div class="flex-1 overflow-auto canvas-bg relative p-8">
             
             <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-zinc-600">
-                <div class="w-20 h-20 rounded-2xl bg-zinc-900/50 border border-zinc-800 flex items-center justify-center mb-4">
-                    <svg class="w-10 h-10 text-zinc-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                <div class="w-16 h-16 rounded-xl bg-zinc-900/50 border border-zinc-800 flex items-center justify-center mb-3">
+                    <svg class="w-8 h-8 text-zinc-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                 </div>
-                <h3 class="text-lg font-medium text-zinc-300">Workspace Empty</h3>
-                <p class="text-sm mt-1">Upload an Excel file from the sidebar to begin.</p>
+                <h3 class="text-base font-medium text-zinc-400">No Data</h3>
+                <p class="text-xs mt-1 text-zinc-600">Import Excel file to start</p>
             </div>
 
             <div id="tableContainer" class="hidden w-full max-w-5xl mx-auto pb-20">
-                <div class="glass-card rounded-xl overflow-hidden border border-white/10 shadow-2xl bg-[#0a0a0c]">
+                <div class="glass-card rounded-lg overflow-hidden border border-white/10 shadow-2xl bg-[#0a0a0c]">
                     <table class="data-table" id="previewTable">
                         <thead>
                             <tr>
-                                <th class="w-16">#</th>
-                                <th>Size & Thickness</th>
+                                <th class="w-12 text-center">#</th>
+                                <th>Size</th>
                                 <th>Surface</th>
-                                <th>Body Type</th>
+                                <th>Body</th>
                                 <th>Design Name</th>
-                                <th class="text-right">Total Qty</th>
+                                <th class="text-right">Qty</th>
                             </tr>
                         </thead>
-                        <tbody id="tableBody">
-                            </tbody>
+                        <tbody id="tableBody"></tbody>
                     </table>
                 </div>
-                <div class="mt-4 flex justify-end gap-4 text-xs font-mono text-zinc-500">
-                    <div class="px-3 py-1 bg-zinc-900 rounded border border-zinc-800">TOTAL BOXES: <span id="grandTotalDisplay" class="text-white font-bold">0</span></div>
-                    <div class="px-3 py-1 bg-zinc-900 rounded border border-zinc-800">ITEMS: <span id="itemCountDisplay" class="text-white font-bold">0</span></div>
+                <div class="mt-3 flex justify-end gap-3 text-[10px] font-mono text-zinc-500">
+                    <div class="px-2 py-1 bg-zinc-900 rounded border border-zinc-800">QTY: <span id="grandTotalDisplay" class="text-indigo-400 font-bold">0</span></div>
+                    <div class="px-2 py-1 bg-zinc-900 rounded border border-zinc-800">ROWS: <span id="itemCountDisplay" class="text-white font-bold">0</span></div>
                 </div>
             </div>
 
@@ -219,10 +212,11 @@
         const grandTotalDisplay = document.getElementById('grandTotalDisplay');
         const itemCountDisplay = document.getElementById('itemCountDisplay');
         const clientInput = document.getElementById('clientName');
+        const mergeToggle = document.getElementById('mergeFaces'); // Toggle Element
 
-        let globalDataList = []; // Stores the processed data
+        let globalDataList = []; 
 
-        // --- UPLOAD HANDLERS ---
+        // --- LISTENERS ---
         clientInput.addEventListener('input', function() { this.value = this.value.toUpperCase(); });
         
         dropZone.addEventListener('click', (e) => { if(e.target !== removeFileBtn) fileInput.click(); });
@@ -232,7 +226,17 @@
             e.preventDefault(); dropZone.classList.remove('dragover'); 
             if (e.dataTransfer.files.length) { fileInput.files = e.dataTransfer.files; handleFile(); } 
         });
+        
+        // 1. File Upload Change
         fileInput.addEventListener('change', handleFile);
+
+        // 2. Toggle Change (LIVE UPDATE FIX)
+        mergeToggle.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                // Agar file loaded hai, toh wapis process karo current settings ke sath
+                processExcel(fileInput.files[0]);
+            }
+        });
 
         function handleFile() {
             if (fileInput.files.length > 0) {
@@ -252,21 +256,20 @@
             fileSuccess.classList.add('hidden');
             fileSuccess.classList.remove('flex');
             
-            // Reset Canvas
             emptyState.classList.remove('hidden');
             tableContainer.classList.add('hidden');
             actionButtons.classList.add('opacity-50', 'pointer-events-none');
             actionButtons.classList.remove('opacity-100', 'pointer-events-auto');
             liveIndicator.classList.remove('bg-green-500', 'animate-pulse');
-            liveIndicator.classList.add('bg-zinc-600');
-            statusText.innerText = "WAITING FOR INPUT...";
+            liveIndicator.classList.add('bg-zinc-700');
+            statusText.innerText = "IDLE";
             globalDataList = [];
         });
 
-        // --- PROCESSING LOGIC ---
+        // --- LOGIC ---
         function processExcel(file) {
-            statusText.innerText = "READING FILE...";
-            statusText.className = "text-center text-[10px] mt-3 h-4 text-indigo-400 font-medium animate-pulse";
+            statusText.innerText = "PROCESSING...";
+            statusText.className = "text-center text-[9px] mt-2 h-3 text-indigo-400 font-bold animate-pulse";
             
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -276,7 +279,6 @@
                         const workbook = XLSX.read(data, {type: 'array'});
                         const rawData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: 1, defval: ""});
                         
-                        // Smart Headers
                         let headerIdx = -1, col = { design: -1, cat: -1, size: -1, body: -1, qty: -1 };
                         for (let i = 0; i < Math.min(rawData.length, 25); i++) {
                             const r = rawData[i].map(x => String(x).toLowerCase().trim());
@@ -284,12 +286,12 @@
                                 headerIdx = i; col.design = r.indexOf('designname'); col.cat = r.indexOf('category'); col.size = r.indexOf('size mm'); col.body = r.indexOf('bodytype'); col.qty = r.findIndex(c => c === 'pre' || c === 'total' || c === 'qty'); break;
                             }
                         }
-                        if (headerIdx === -1) throw new Error("Headers not found.");
+                        if (headerIdx === -1) throw new Error("Headers missing");
 
-                        const shouldMerge = document.getElementById('mergeFaces').checked;
+                        // Checkbox State Read Here
+                        const shouldMerge = mergeToggle.checked; 
+                        
                         const map = new Map();
-
-                        // Data Extraction
                         for (let i = headerIdx + 1; i < rawData.length; i++) {
                             const r = rawData[i]; if (!r || r.length === 0) continue;
                             let design = (r[col.design] || "").toString().trim();
@@ -299,13 +301,13 @@
                             let qty = col.qty > -1 ? parseFloat(r[col.qty]) : 0;
                             
                             if (!design && !size) continue;
+                            // Merge Logic Applied Dynamically
                             if (shouldMerge) design = design.replace(/-[a-zA-Z]$/, "").trim();
                             
                             const key = `${size}_${cat}_${body}_${design}`;
                             if (map.has(key)) map.get(key).qty += qty; else map.set(key, { size, cat, body, design, qty });
                         }
 
-                        // Sorting
                         globalDataList = Array.from(map.values());
                         function getDims(s) { const m = s.match(/(\d+)/g); return m ? { w: parseInt(m[0]||0), h: parseInt(m[1]||0) } : {w:0,h:0}; }
                         globalDataList.sort((a, b) => {
@@ -318,49 +320,45 @@
 
                         renderTable();
                         
-                        // Activate UI
                         emptyState.classList.add('hidden');
                         tableContainer.classList.remove('hidden');
                         actionButtons.classList.remove('opacity-50', 'pointer-events-none');
                         actionButtons.classList.add('opacity-100', 'pointer-events-auto');
-                        liveIndicator.classList.remove('bg-zinc-600');
+                        liveIndicator.classList.remove('bg-zinc-700');
                         liveIndicator.classList.add('bg-green-500', 'animate-pulse');
-                        statusText.innerText = "READY TO EXPORT";
-                        statusText.className = "text-center text-[10px] mt-3 h-4 text-green-500 font-bold";
+                        statusText.innerText = "READY";
+                        statusText.className = "text-center text-[9px] mt-2 h-3 text-green-500 font-bold";
 
                     } catch (err) {
-                        alert("Error: " + err.message);
-                        statusText.innerText = "ERROR IN FILE";
-                        statusText.className = "text-center text-[10px] mt-3 h-4 text-red-500 font-bold";
+                        console.error(err);
+                        statusText.innerText = "ERROR";
+                        statusText.className = "text-center text-[9px] mt-2 h-3 text-red-500 font-bold";
                     }
-                }, 300);
+                }, 100); // Faster response
             };
             reader.readAsArrayBuffer(file);
         }
 
-        // --- RENDERING (EDITABLE CANVAS) ---
         function renderTable() {
             tableBody.innerHTML = '';
             let sr = 1, grandTotal = 0, lastSize = null;
             
-            globalDataList.forEach((item, index) => {
-                // Size Separator
+            globalDataList.forEach((item) => {
                 if (lastSize && lastSize !== item.size) {
                     const sepRow = document.createElement('tr');
-                    sepRow.innerHTML = `<td colspan="6" class="bg-zinc-900/50 h-2"></td>`;
+                    sepRow.innerHTML = `<td colspan="6" class="bg-white/5 h-1"></td>`;
                     tableBody.appendChild(sepRow);
                 }
                 lastSize = item.size;
                 grandTotal += item.qty;
 
                 const tr = document.createElement('tr');
-                // ContentEditable Cells
                 tr.innerHTML = `
-                    <td class="text-zinc-500 font-mono">${sr++}</td>
+                    <td class="text-zinc-500 font-mono text-center">${sr++}</td>
                     <td contenteditable="true" class="outline-none">${item.size}</td>
                     <td contenteditable="true" class="outline-none">${item.cat}</td>
                     <td contenteditable="true" class="outline-none">${item.body}</td>
-                    <td contenteditable="true" class="outline-none text-white font-medium">${item.design}</td>
+                    <td contenteditable="true" class="outline-none text-zinc-300 font-medium">${item.design}</td>
                     <td contenteditable="true" class="outline-none text-right font-mono text-indigo-300 font-bold">${item.qty}</td>
                 `;
                 tableBody.appendChild(tr);
@@ -370,16 +368,12 @@
             itemCountDisplay.innerText = globalDataList.length;
         }
 
-        // --- SYNC FUNCTION (TABLE TO DATA) ---
         function syncTableData() {
-            // Reads HTML table back into globalDataList before downloading
             const rows = tableBody.querySelectorAll('tr');
             const newData = [];
-            
             rows.forEach(tr => {
                 const tds = tr.querySelectorAll('td');
-                if (tds.length < 6) return; // Skip separator rows
-
+                if (tds.length < 6) return; 
                 newData.push({
                     size: tds[1].innerText.trim(),
                     cat: tds[2].innerText.trim(),
@@ -391,13 +385,11 @@
             globalDataList = newData;
         }
 
-        // --- EXPORT FUNCTIONS ---
         function exportData(type) {
-            syncTableData(); // Save edits first!
+            syncTableData();
             const clientName = clientInput.value.trim();
 
             if (type === 'excel') {
-                // Same Logic as before
                 const output = [];
                 const sHead = { font: { name: "Segoe UI", sz: 10, bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1E293B" } }, alignment: { horizontal: "center", vertical: "center" } };
                 const sData = { font: { name: "Segoe UI", sz: 10 }, alignment: { horizontal: "center", vertical: "center" }, border: {top:{style:"thin",color:{rgb:"E5E7EB"}},bottom:{style:"thin",color:{rgb:"E5E7EB"}},left:{style:"thin",color:{rgb:"D1D5DB"}},right:{style:"thin",color:{rgb:"D1D5DB"}}} };
