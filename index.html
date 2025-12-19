@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - Synchronized</title>
+    <title>StockPro X - Luxury Edition</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -69,20 +69,30 @@
         .del-row-btn { opacity: 0; transition: opacity 0.2s; color: #ef4444; cursor: pointer; }
         .data-table tr:hover .del-row-btn { opacity: 1; }
 
+        /* Premium Money Card on Web */
         .money-card-container { margin-top: 24px; display: flex; justify-content: flex-end; padding-right: 10px; }
         .money-card {
             width: 340px; 
-            background: rgba(20, 20, 23, 0.95); 
+            background: linear-gradient(145deg, rgba(20, 20, 23, 0.95), rgba(30, 30, 35, 0.95)); 
             border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 16px; 
-            padding: 24px;
+            border-radius: 12px; 
+            padding: 0; /* Removing padding for header effect */
             position: relative;
             overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         }
-        .money-card::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-            background: linear-gradient(90deg, #6366f1, #ec4899);
+        .mc-header {
+            background: rgba(255,255,255,0.03);
+            padding: 12px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .mc-body { padding: 20px; }
+        .mc-footer {
+            background: rgba(99, 102, 241, 0.1);
+            padding: 15px 20px;
+            border-top: 1px solid rgba(99, 102, 241, 0.2);
+            display: flex; justify-content: space-between; align-items: center;
         }
 
         .orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.2; pointer-events: none; z-index: -1; }
@@ -115,7 +125,7 @@
                 </div>
                 <h1 class="text-base font-bold text-white tracking-tight">StockPro<span class="text-indigo-500"> X</span></h1>
             </div>
-            <p class="text-[9px] text-zinc-500 font-mono ml-9">SYNCHRONIZED v10.0</p>
+            <p class="text-[9px] text-zinc-500 font-mono ml-9">LUXURY v11.0</p>
         </div>
 
         <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-5">
@@ -191,43 +201,42 @@
 
                 <div id="moneyCard" class="hidden money-card-container animate-slide-up">
                     <div class="money-card">
-                        <div class="flex justify-between items-center pb-2 border-b border-white/10 mb-2">
-                            <span class="text-xs font-bold text-white">PAYMENT SUMMARY</span>
-                            <span class="text-[10px] text-zinc-500">INR</span>
+                        <div class="mc-header">
+                            <span class="text-xs font-bold text-zinc-300 tracking-wide">PAYMENT SUMMARY</span>
                         </div>
                         
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="text-[12px] text-zinc-400 font-medium">Item Total</span>
-                            <span class="text-[13px] font-bold text-white tracking-wide" id="mcSubtotal">0</span>
-                        </div>
-
-                        <div class="flex justify-between items-center mb-1 group" id="insRow">
-                            <div class="flex items-center gap-1.5">
-                                <button onclick="toggleInsurance(false)" class="text-zinc-600 hover:text-red-500 transition-colors" title="Remove">
-                                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                                </button>
-                                <span class="text-[12px] text-zinc-400 font-medium">Transit Insurance <span class="text-zinc-600 text-[10px]">(<span contenteditable="true" id="insRate" class="outline-none focus:text-indigo-400">0.99</span>%)</span></span>
+                        <div class="mc-body">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-[12px] text-zinc-400 font-medium">Item Total</span>
+                                <span class="text-[13px] font-bold text-white tracking-wide" id="mcSubtotal">0</span>
                             </div>
-                            <span class="text-[13px] font-bold text-zinc-300" id="mcIns">0</span>
-                        </div>
-                        
-                        <div id="addInsBtn" class="hidden mb-3 text-right">
-                            <button onclick="toggleInsurance(true)" class="text-[11px] text-indigo-400 hover:text-indigo-300 font-medium">+ Add Insurance</button>
+
+                            <div class="flex justify-between items-center mb-2 group" id="insRow">
+                                <div class="flex items-center gap-1.5">
+                                    <button onclick="toggleInsurance(false)" class="text-zinc-600 hover:text-red-500 transition-colors" title="Remove">✕</button>
+                                    <span class="text-[12px] text-zinc-400 font-medium">Transit Insurance <span class="text-zinc-600 text-[10px]">(<span contenteditable="true" id="insRate" class="outline-none focus:text-indigo-400">0.99</span>%)</span></span>
+                                </div>
+                                <span class="text-[13px] font-bold text-zinc-300" id="mcIns">0</span>
+                            </div>
+                            
+                            <div id="addInsBtn" class="hidden mb-2 text-right">
+                                <button onclick="toggleInsurance(true)" class="text-[11px] text-indigo-400 hover:text-indigo-300 font-medium">+ Add Insurance</button>
+                            </div>
+
+                            <div class="flex justify-between items-center mb-2 pt-2 border-t border-white/5">
+                                <span class="text-[12px] text-zinc-300 font-semibold">Assessable Value</span>
+                                <span class="text-[13px] font-bold text-white" id="mcPreTax">0</span>
+                            </div>
+
+                            <div class="flex justify-between items-center">
+                                <span class="text-[12px] text-zinc-400 font-medium">GST <span class="text-zinc-600 text-[10px]">(<span contenteditable="true" id="gstRate" class="outline-none focus:text-indigo-400">18</span>%)</span></span>
+                                <span class="text-[13px] font-bold text-zinc-300" id="mcGst">0</span>
+                            </div>
                         </div>
 
-                        <div class="flex justify-between items-center mb-1 pt-3 border-t border-white/5">
-                            <span class="text-[12px] text-zinc-300 font-semibold">Assessable Value</span>
-                            <span class="text-[13px] font-bold text-white" id="mcPreTax">0</span>
-                        </div>
-
-                        <div class="flex justify-between items-center mb-4">
-                            <span class="text-[12px] text-zinc-400 font-medium">GST <span class="text-zinc-600 text-[10px]">(<span contenteditable="true" id="gstRate" class="outline-none focus:text-indigo-400">18</span>%)</span></span>
-                            <span class="text-[13px] font-bold text-zinc-300" id="mcGst">0</span>
-                        </div>
-
-                        <div class="flex justify-between items-center pt-4 border-t border-white/10 relative">
-                            <span class="text-[14px] font-bold text-white tracking-tight">Total Payable</span>
-                            <span class="text-[16px] font-bold font-mono text-indigo-400 drop-shadow-[0_0_10px_rgba(99,102,241,0.3)]" id="mcGrandTotal">0</span>
+                        <div class="mc-footer">
+                            <span class="text-[13px] font-bold text-indigo-200">Total Payable</span>
+                            <span class="text-[16px] font-bold font-mono text-white drop-shadow-[0_0_10px_rgba(99,102,241,0.5)]" id="mcGrandTotal">0</span>
                         </div>
                     </div>
                 </div>
@@ -466,7 +475,7 @@
                     rowHTML += `
                     <td class="font-mono text-zinc-400 text-xs area-cell">${Math.round(totalArea)}</td>
                     <td><input type="number" value="${item.rate || ''}" oninput="updateRate(${index}, this.value)" class="tbl-input" placeholder="0"></td>
-                    <td class="font-mono text-indigo-300 font-bold amt-cell">${Math.round(item.amount)}</td>
+                    <td class="font-mono text-indigo-300 font-bold amt-cell">${Math.round(item.amount).toLocaleString('en-IN')}</td>
                     `;
                 }
                 tr.innerHTML = rowHTML;
@@ -482,7 +491,7 @@
             const totalArea = item.qty * item.ft2PerBox;
             item.amount = totalArea * item.rate; 
             const tr = els.tableBody.children[index];
-            tr.querySelector('.amt-cell').innerText = Math.round(item.amount); 
+            tr.querySelector('.amt-cell').innerText = Math.round(item.amount).toLocaleString('en-IN'); 
             calculateMoneyCard();
         }
 
@@ -546,27 +555,22 @@
         }
 
         function exportData(type) {
-            const client = els.clientName.value.trim() || "INVOICE";
+            const client = els.clientName.value.trim() || "PROFORMA INVOICE";
             const fmt = (n) => Math.round(n).toLocaleString('en-IN');
             
-            // --- EXCEL LOGIC ---
             if (type === 'excel') {
                 const output = [];
                 let headers = ["Sr.No", "Size", "Surface", "Body", "Design Name", "Qty"];
                 if (isCommercial) headers.push("Sq. Feet", "Rate", "Amount");
                 
-                // Header Style
+                // RICH STYLES
                 const sHead = { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1E293B" } }, alignment: { horizontal: "center" } };
-                // Footer Label Style (Bold + Grey BG)
-                const sFootLbl = { font: { bold: true }, fill: { fgColor: { rgb: "F3F4F6" } }, alignment: { horizontal: "right" } };
-                // Footer Value Style (Bold)
-                const sFootVal = { font: { bold: true }, alignment: { horizontal: "right" } };
-                // Grand Total Style (White Text + Blue BG)
-                const sGrand = { font: { bold: true, sz: 12, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "4F46E5" } }, alignment: { horizontal: "right" } };
+                // Grand Total Style: Deep Navy Blue BG + White Text
+                const sGrand = { font: { bold: true, sz: 12, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1E293B" } }, alignment: { horizontal: "right" } };
+                const sFoot = { font: { bold: true }, alignment: { horizontal: "right" } };
 
                 output.push(headers.map(h => ({v:h, s:sHead})));
                 let subtotal = 0;
-                
                 globalData.forEach((item, i) => {
                     let row = [i+1, item.size, item.cat, item.body, item.design, item.qty];
                     if (isCommercial) {
@@ -577,26 +581,20 @@
                     }
                     output.push(row);
                 });
-
-                if (isCommercial) {
+                 if (isCommercial) {
                     output.push([""]); 
-                    // Calculation
                     let insP = showInsurance ? parseFloat(els.insRate.innerText)||0 : 0;
                     let insV = subtotal * (insP/100);
+                    if(showInsurance) output.push(["", "", "", "", "", "", "", `Transit Insurance (${insP}%)`, {v:Math.round(insV), s:sFoot}]);
                     let taxable = subtotal + insV;
                     let gstP = parseFloat(els.gstRate.innerText)||0;
                     let gstV = taxable * (gstP/100);
-                    let grand = taxable + gstV;
-
-                    // Append Footer Rows with Styles
-                    const pad = ["", "", "", "", "", "", ""]; // Padding cells
-                    output.push([...pad, {v:"Item Total", s:sFootLbl}, {v:Math.round(subtotal), s:sFootVal}]);
-                    if(showInsurance) output.push([...pad, {v:`Transit Insurance (${insP}%)`, s:sFootLbl}, {v:Math.round(insV), s:sFootVal}]);
-                    output.push([...pad, {v:"Assessable Value", s:sFootLbl}, {v:Math.round(taxable), s:sFootVal}]);
-                    output.push([...pad, {v:`GST (${gstP}%)`, s:sFootLbl}, {v:Math.round(gstV), s:sFootVal}]);
-                    output.push([...pad, {v:"Total Payable", s:sGrand}, {v:Math.round(grand), s:sGrand}]);
+                    output.push(["", "", "", "", "", "", "", "Item Total", {v:Math.round(subtotal), s:sFoot}]);
+                    output.push(["", "", "", "", "", "", "", "Assessable Value", {v:Math.round(taxable), s:sFoot}]);
+                    output.push(["", "", "", "", "", "", "", `GST (${gstP}%)`, {v:Math.round(gstV), s:sFoot}]);
+                    // RICH TOTAL ROW
+                    output.push(["", "", "", "", "", "", "", {v:"Total Payable", s:sGrand}, {v:Math.round(taxable + gstV), s:sGrand}]);
                 }
-
                 const wb = XLSX.utils.book_new();
                 const ws = XLSX.utils.aoa_to_sheet(output);
                 ws['!cols'] = [{wch:6}, {wch:22}, {wch:12}, {wch:12}, {wch:35}, {wch:8}, {wch:10}, {wch:8}, {wch:15}];
@@ -604,7 +602,6 @@
                 XLSX.writeFile(wb, `${client}.xlsx`);
             }
 
-            // --- PDF LOGIC ---
             if (type === 'pdf') {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
@@ -663,8 +660,11 @@
                     columnStyles: colStyles, 
                     didDrawPage: function(data) {
                         if(data.pageNumber===1) {
-                            doc.setFontSize(14); doc.text(client, 105, 15, {align:'center'});
-                            doc.setFontSize(8); doc.text("Generated by StockPro X", 105, 20, {align:'center'});
+                            // PREMIUM COMPACT HEADER
+                            doc.setFontSize(16); doc.setFont("helvetica", "bold"); doc.setTextColor(20, 20, 20);
+                            doc.text(client.toUpperCase(), 105, 15, {align:'center'});
+                            doc.setLineWidth(0.5); doc.setDrawColor(200, 200, 200);
+                            // doc.line(10, 20, 200, 20); // Optional Underline
                         }
                     }
                 });
@@ -680,41 +680,33 @@
                     let grand = taxable + gstV;
 
                     const moneyX = 140; 
+                    doc.setFontSize(9); doc.setTextColor(100, 100, 100);
                     
-                    // --- PDF FOOTER DESIGN (UPDATED) ---
-                    // Draw Line
-                    doc.setDrawColor(200, 200, 200);
-                    doc.line(moneyX, finalY - 5, 205, finalY - 5);
-
-                    doc.setFontSize(9); doc.setTextColor(100, 100, 100); // Label Color
                     doc.text(`Item Total`, moneyX, finalY); 
-                    doc.setTextColor(0, 0, 0); doc.setFont(undefined, 'bold'); // Value Color
+                    doc.setTextColor(0, 0, 0); doc.setFont(undefined, 'bold');
                     doc.text(fmt(subtotal), 200, finalY, {align:'right'});
                     
                     if (showInsurance) { 
-                        finalY += 5; 
-                        doc.setFont(undefined, 'normal'); doc.setTextColor(100, 100, 100);
+                        finalY += 5; doc.setFont(undefined, 'normal'); doc.setTextColor(100, 100, 100);
                         doc.text(`Transit Insurance (${insP}%)`, moneyX, finalY); 
                         doc.setFont(undefined, 'bold'); doc.setTextColor(0, 0, 0);
                         doc.text(fmt(insV), 200, finalY, {align:'right'}); 
                     }
                     
-                    finalY += 5; 
-                    doc.setFont(undefined, 'normal'); doc.setTextColor(100, 100, 100);
+                    finalY += 5; doc.setFont(undefined, 'normal'); doc.setTextColor(100, 100, 100);
                     doc.text(`Assessable Value`, moneyX, finalY); 
                     doc.setFont(undefined, 'bold'); doc.setTextColor(0, 0, 0);
                     doc.text(fmt(taxable), 200, finalY, {align:'right'});
 
-                    finalY += 5; 
-                    doc.setFont(undefined, 'normal'); doc.setTextColor(100, 100, 100);
+                    finalY += 5; doc.setFont(undefined, 'normal'); doc.setTextColor(100, 100, 100);
                     doc.text(`GST (${gstP}%)`, moneyX, finalY); 
                     doc.setFont(undefined, 'bold'); doc.setTextColor(0, 0, 0);
                     doc.text(fmt(gstV), 200, finalY, {align:'right'});
 
+                    // RICH PDF TOTAL
                     finalY += 8; 
-                    // Grand Total Highlight
-                    doc.setFillColor(79, 70, 229); // Indigo bg
-                    doc.rect(moneyX - 2, finalY - 4, 70, 7, 'F');
+                    doc.setFillColor(30, 41, 59); // MATCH HEADER COLOR (Deep Slate)
+                    doc.rect(moneyX - 2, finalY - 5, 70, 8, 'F');
                     doc.setTextColor(255, 255, 255); doc.setFontSize(10);
                     doc.text(`Total Payable`, moneyX, finalY); 
                     doc.text(fmt(grand), 200, finalY, {align:'right'});
