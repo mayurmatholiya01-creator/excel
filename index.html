@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - Final Stable</title>
+    <title>StockPro X - Final v19</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -78,7 +78,7 @@
                 </div>
                 <h1 class="text-base font-bold text-white tracking-tight">StockPro<span class="text-indigo-500"> X</span></h1>
             </div>
-            <p class="text-[9px] text-zinc-500 font-mono ml-9">STABLE v18.0</p>
+            <p class="text-[9px] text-zinc-500 font-mono ml-9">FINAL v19.0</p>
         </div>
 
         <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-5">
@@ -213,14 +213,35 @@
             mcGrandTotal: document.getElementById('mcGrandTotal'), insRate: document.getElementById('insRate'), gstRate: document.getElementById('gstRate'), insRow: document.getElementById('insRow'), addInsBtn: document.getElementById('addInsBtn')
         };
 
+        // --- NAVIGATION LOGIC (POINT 2 FIX: Safe Input Editing) ---
         els.tableBody.addEventListener('keydown', (e) => {
-            const target = e.target.closest('td'); if (!target) return;
-            const tr = target.parentElement; const rowIndex = Array.from(els.tableBody.children).indexOf(tr); const colIndex = Array.from(tr.children).indexOf(target);
+            const target = e.target;
+            const cell = target.closest('td');
+            if (!cell) return;
+
+            // FIX: If inside input, don't change cell on Left/Right
+            if (target.tagName === 'INPUT' && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+                return; 
+            }
+
+            const tr = cell.parentElement; 
+            const rowIndex = Array.from(els.tableBody.children).indexOf(tr); 
+            const colIndex = Array.from(tr.children).indexOf(cell);
             let nextRowIdx = rowIndex, nextColIdx = colIndex;
-            if (e.key === 'Enter' || e.key === 'ArrowDown') { e.preventDefault(); nextRowIdx++; } else if (e.key === 'ArrowUp') { e.preventDefault(); nextRowIdx--; } else if (e.key === 'ArrowRight') { nextColIdx++; } else if (e.key === 'ArrowLeft') { nextColIdx--; } else { return; }
+
+            if (e.key === 'Enter' || e.key === 'ArrowDown') { e.preventDefault(); nextRowIdx++; } 
+            else if (e.key === 'ArrowUp') { e.preventDefault(); nextRowIdx--; } 
+            else if (e.key === 'ArrowRight') { nextColIdx++; } 
+            else if (e.key === 'ArrowLeft') { nextColIdx--; } 
+            else { return; }
+
             if (nextRowIdx >= 0 && nextRowIdx < els.tableBody.children.length) {
                 const nextRow = els.tableBody.children[nextRowIdx];
-                if (nextColIdx >= 0 && nextColIdx < nextRow.children.length) { const nextCell = nextRow.children[nextColIdx]; const input = nextCell.querySelector('input'); if(input) input.focus(); else nextCell.focus(); }
+                if (nextColIdx >= 0 && nextColIdx < nextRow.children.length) { 
+                    const nextCell = nextRow.children[nextColIdx]; 
+                    const input = nextCell.querySelector('input'); 
+                    if(input) input.focus(); else nextCell.focus(); 
+                }
             }
         });
 
@@ -322,9 +343,8 @@
             els.mcSubtotal.innerText = fmt(subtotal); els.mcIns.innerText = fmt(insAmount); els.mcPreTax.innerText = fmt(preTax); els.mcGst.innerText = fmt(gstAmount); els.mcGrandTotal.innerText = fmt(grandTotal);
         }
 
-        // --- RESTORED SMART ENGINE (V16 LOGIC) ---
+        // --- SMART ENGINE (LOCKED) ---
         function calculateSmartColumnWidths(data, mode) {
-            // Scan for lengths
             let maxLen = { size: 10, surf: 8, body: 8, design: 15, qty: 5, sr: 3 }; 
             data.forEach(item => {
                 if(item.size.length > maxLen.size) maxLen.size = item.size.length;
@@ -333,28 +353,17 @@
                 if(item.design.length > maxLen.design) maxLen.design = item.design.length;
                 if(item.qty.toString().length > maxLen.qty) maxLen.qty = item.qty.toString().length;
             });
-
-            const f = 1.8; // Factor
+            const f = 1.8; 
             let raw = {
-                sr: 8, 
-                size: Math.max(25, maxLen.size * f + 4), 
-                surf: Math.max(18, maxLen.surf * f + 4), 
-                body: Math.max(25, maxLen.body * f + 4), // Min 25mm for safe wrap prevention
-                design: Math.max(40, maxLen.design * f + 4),
-                qty: Math.max(12, maxLen.qty * f + 4),
-                sq: 15, rate: 12, amt: 22
+                sr: 8, size: Math.max(25, maxLen.size * f + 4), surf: Math.max(18, maxLen.surf * f + 4), body: Math.max(25, maxLen.body * f + 4),
+                design: Math.max(40, maxLen.design * f + 4), qty: Math.max(12, maxLen.qty * f + 4), sq: 15, rate: 12, amt: 22
             };
-
             const availableWidth = 190;
             let totalRaw = raw.sr + raw.size + raw.surf + raw.body + raw.design + raw.qty;
             if(mode === 'commercial') totalRaw += (raw.sq + raw.rate + raw.amt);
-
             let scale = availableWidth / totalRaw;
-            
             return {
-                sr: raw.sr * scale, size: raw.size * scale, surf: raw.surf * scale, 
-                body: raw.body * scale, design: raw.design * scale, qty: raw.qty * scale, 
-                sq: raw.sq * scale, rate: raw.rate * scale, amt: raw.amt * scale
+                sr: raw.sr * scale, size: raw.size * scale, surf: raw.surf * scale, body: raw.body * scale, design: raw.design * scale, qty: raw.qty * scale, sq: raw.sq * scale, rate: raw.rate * scale, amt: raw.amt * scale
             };
         }
 
@@ -399,8 +408,6 @@
             if (type === 'pdf') {
                 const { jsPDF } = window.jspdf; const doc = new jsPDF();
                 const tableBody = []; let subtotal = 0;
-                
-                // USE RESTORED SMART ENGINE FOR BOTH MODES
                 const smartW = calculateSmartColumnWidths(globalData, isCommercial ? 'commercial' : 'simple');
                 
                 let colStyles = {};
@@ -411,7 +418,7 @@
                 }
 
                 globalData.forEach((item, i) => {
-                    let dName = item.design; // No truncation needed with smart width
+                    let dName = item.design;
                     let row = [i+1, item.size, item.cat, item.body, dName, item.qty];
                     if (isCommercial) {
                         const area = item.qty * item.ft2PerBox; const amt = area * item.rate; subtotal += amt;
