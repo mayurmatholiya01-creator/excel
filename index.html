@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - Smart Edition</title>
+    <title>StockPro X - Final Polish</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -54,7 +54,6 @@
             padding: 8px 4px; border-bottom: 1px solid #27272a; color: #e4e4e7; vertical-align: middle; 
             text-align: center; white-space: nowrap;
         }
-        /* Design name allows truncation in HTML preview */
         .data-table td.design-cell {
             max-width: 150px; overflow: hidden; text-overflow: ellipsis;
         }
@@ -107,7 +106,7 @@
                 </div>
                 <h1 class="text-base font-bold text-white tracking-tight">StockPro<span class="text-indigo-500"> X</span></h1>
             </div>
-            <p class="text-[9px] text-zinc-500 font-mono ml-9">SMART EDITION v3.0</p>
+            <p class="text-[9px] text-zinc-500 font-mono ml-9">SMART EDITION v3.1</p>
         </div>
 
         <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-5">
@@ -301,7 +300,6 @@
                         const totalArea = item.qty * item.ft2PerBox;
                         const amount = totalArea * item.rate;
                         const row = target.closest('tr');
-                        // Display Rounded in Table
                         row.querySelector('.area-cell').innerText = Math.round(totalArea);
                         row.querySelector('.amt-cell').innerText = Math.round(amount);
                     }
@@ -409,13 +407,13 @@
             els.tableHead.innerHTML = '';
             els.tableBody.innerHTML = '';
             
-            // Header: Changed 'Size & Thickness' to 'Size' to prevent wrapping
+            // Reverted Header Text to 'Size' but kept column width handling
             let headerHTML = `<tr>
                 <th class="w-8"></th>
                 <th class="w-10">Sr.No</th>
                 <th class="w-32">Size</th> 
-                <th class="w-20">Surface</th>
-                <th class="w-20">Body</th>
+                <th class="w-24">Surface</th>
+                <th class="w-24">Body</th>
                 <th>Design Name</th>
                 <th class="w-16">Qty</th>`;
             
@@ -435,7 +433,6 @@
             globalData.forEach((item, index) => {
                 const tr = document.createElement('tr');
                 tr.dataset.index = index;
-                // Backend High Precision
                 const totalArea = item.qty * item.ft2PerBox;
                 item.amount = totalArea * item.rate;
 
@@ -467,11 +464,9 @@
             const item = globalData[index];
             item.rate = parseFloat(newRate) || 0;
             const totalArea = item.qty * item.ft2PerBox;
-            // Recalculate Amount
             item.amount = totalArea * item.rate; 
-            
             const tr = els.tableBody.children[index];
-            tr.querySelector('.amt-cell').innerText = Math.round(item.amount); // Show integer
+            tr.querySelector('.amt-cell').innerText = Math.round(item.amount); 
             calculateMoneyCard();
         }
 
@@ -498,7 +493,6 @@
             if (!isCommercial) return;
             let subtotal = 0;
             globalData.forEach(item => {
-                // Backend High Precision sum
                 subtotal += (item.qty * item.ft2PerBox * (item.rate || 0));
             });
             let insPercent = showInsurance ? parseFloat(els.insRate.innerText) || 0 : 0;
@@ -531,7 +525,7 @@
                         const area = item.qty * item.ft2PerBox;
                         const amt = area * item.rate;
                         subtotal += amt;
-                        // Excel Output: Integer (Math.round)
+                        // Math.round ensures no decimals in Excel
                         row.push(Math.round(area), item.rate, Math.round(amt));
                     }
                     output.push(row);
@@ -562,7 +556,6 @@
                 let subtotal = 0;
                 globalData.forEach((item, i) => {
                     let dName = item.design;
-                    // SMART TRUNCATE: Let auto-width handle it, but fallback if extremely long
                     if(isCommercial && dName.length > 25) {
                         dName = dName.substring(0, 25) + "..."; 
                     }
@@ -572,7 +565,7 @@
                         const area = item.qty * item.ft2PerBox;
                         const amt = area * item.rate;
                         subtotal += amt;
-                        // PDF Output: Clean Integer
+                        // Math.round ensures no decimals in PDF
                         row.push(Math.round(area), item.rate, Math.round(amt));
                     }
                     tableBody.push(row);
@@ -586,10 +579,9 @@
                     body: tableBody,
                     startY: 30,
                     theme: 'grid',
-                    // SMART MARGINS: 3mm left/right for Max Space
                     margin: isCommercial ? { left: 3, right: 3 } : { left: 10, right: 10 },
                     styles: { 
-                        fontSize: 7.5, // Slightly smaller font for better fit
+                        fontSize: 7.5,
                         halign: 'center', 
                         valign: 'middle',
                         lineColor: [200, 200, 200], 
@@ -602,17 +594,17 @@
                         fontStyle: 'bold',
                         halign: 'center' 
                     },
+                    // UPDATED COLUMN WIDTHS TO PREVENT WRAP
                     columnStyles: {
-                        0: { cellWidth: 8 },  // Sr
-                        1: { cellWidth: 26 }, // Size (Wide enough for 1200x2400x9MM)
-                        2: { cellWidth: 16 }, // Surf
-                        3: { cellWidth: 14 }, // Body
-                        4: { cellWidth: 'auto', halign: 'center' }, // Design (Smart Fit)
-                        5: { cellWidth: 10 }, // Qty
-                        // Commercial Cols
-                        6: { cellWidth: 14 }, // Area
-                        7: { cellWidth: 10 }, // Rate
-                        8: { cellWidth: 18 }  // Amt
+                        0: { cellWidth: 8 },  
+                        1: { cellWidth: 28 }, // Increased from 26 to 28 for Size
+                        2: { cellWidth: 20 }, // Increased from 16 to 20 for "ELEGANCE"
+                        3: { cellWidth: 18 }, // Increased from 14 to 18 for Body
+                        4: { cellWidth: 'auto', halign: 'center' }, 
+                        5: { cellWidth: 10 }, 
+                        6: { cellWidth: 14 }, 
+                        7: { cellWidth: 10 }, 
+                        8: { cellWidth: 18 }  
                     },
                     didDrawPage: function(data) {
                         if(data.pageNumber===1) {
