@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - Perfected</title>
+    <title>StockPro X - Final Pro</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -106,7 +106,7 @@
                 </div>
                 <h1 class="text-base font-bold text-white tracking-tight">StockPro<span class="text-indigo-500"> X</span></h1>
             </div>
-            <p class="text-[9px] text-zinc-500 font-mono ml-9">HYBRID EDITION v5.0</p>
+            <p class="text-[9px] text-zinc-500 font-mono ml-9">PRO EDITION v6.0</p>
         </div>
 
         <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-5">
@@ -577,8 +577,10 @@
                 // 1. Calculate Widths
                 let colStyles = {};
                 let margins = {};
+                let bodyFontSize = 9; // Default Larger Font
                 
                 if (isCommercial) {
+                    bodyFontSize = 8.5; // Slightly smaller for dense data
                     const smartWidths = calculateColumnWidths(globalData);
                     colStyles = {
                         0: { cellWidth: 8 },  
@@ -594,6 +596,7 @@
                     margins = { left: 3, right: 3 };
                 } else {
                     // RESTORED OLD LOGIC FOR STANDARD MODE
+                    bodyFontSize = 9; // Comfortable size
                     colStyles = {
                         0: { cellWidth: 10 },
                         1: { cellWidth: 35 }, 
@@ -632,18 +635,23 @@
                     theme: 'grid',
                     margin: margins,
                     styles: { 
-                        fontSize: 8, // Standard Font size
+                        fontSize: bodyFontSize, 
                         halign: 'center', 
                         valign: 'middle',
                         lineColor: [200, 200, 200], 
                         lineWidth: 0.1,
-                        cellPadding: 1.5
+                        cellPadding: 1.2, // Optimized padding
+                        textColor: [0, 0, 0] // PURE BLACK TEXT
                     },
                     headStyles: { 
                         fillColor: [30, 41, 59], 
                         textColor: 255, 
                         fontStyle: 'bold',
                         halign: 'center' 
+                    },
+                    // ZEBRA STRIPING
+                    alternateRowStyles: {
+                        fillColor: [248, 249, 250] // Light Grey
                     },
                     columnStyles: colStyles, // Applied based on mode
                     didDrawPage: function(data) {
