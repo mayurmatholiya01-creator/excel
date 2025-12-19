@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - Corporate Edition</title>
+    <title>StockPro X - Synchronized</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -69,7 +69,6 @@
         .del-row-btn { opacity: 0; transition: opacity 0.2s; color: #ef4444; cursor: pointer; }
         .data-table tr:hover .del-row-btn { opacity: 1; }
 
-        /* --- PRO MONEY CARD --- */
         .money-card-container { margin-top: 24px; display: flex; justify-content: flex-end; padding-right: 10px; }
         .money-card {
             width: 340px; 
@@ -81,7 +80,6 @@
             overflow: hidden;
             box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
-        /* Gradient Top Border */
         .money-card::before {
             content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
             background: linear-gradient(90deg, #6366f1, #ec4899);
@@ -117,7 +115,7 @@
                 </div>
                 <h1 class="text-base font-bold text-white tracking-tight">StockPro<span class="text-indigo-500"> X</span></h1>
             </div>
-            <p class="text-[9px] text-zinc-500 font-mono ml-9">CORPORATE v9.0</p>
+            <p class="text-[9px] text-zinc-500 font-mono ml-9">SYNCHRONIZED v10.0</p>
         </div>
 
         <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-5">
@@ -193,13 +191,17 @@
 
                 <div id="moneyCard" class="hidden money-card-container animate-slide-up">
                     <div class="money-card">
+                        <div class="flex justify-between items-center pb-2 border-b border-white/10 mb-2">
+                            <span class="text-xs font-bold text-white">PAYMENT SUMMARY</span>
+                            <span class="text-[10px] text-zinc-500">INR</span>
+                        </div>
                         
-                        <div class="flex justify-between items-center mb-3">
+                        <div class="flex justify-between items-center mb-1">
                             <span class="text-[12px] text-zinc-400 font-medium">Item Total</span>
                             <span class="text-[13px] font-bold text-white tracking-wide" id="mcSubtotal">0</span>
                         </div>
 
-                        <div class="flex justify-between items-center mb-3 group" id="insRow">
+                        <div class="flex justify-between items-center mb-1 group" id="insRow">
                             <div class="flex items-center gap-1.5">
                                 <button onclick="toggleInsurance(false)" class="text-zinc-600 hover:text-red-500 transition-colors" title="Remove">
                                     <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -213,7 +215,7 @@
                             <button onclick="toggleInsurance(true)" class="text-[11px] text-indigo-400 hover:text-indigo-300 font-medium">+ Add Insurance</button>
                         </div>
 
-                        <div class="flex justify-between items-center mb-3 pt-3 border-t border-white/5">
+                        <div class="flex justify-between items-center mb-1 pt-3 border-t border-white/5">
                             <span class="text-[12px] text-zinc-300 font-semibold">Assessable Value</span>
                             <span class="text-[13px] font-bold text-white" id="mcPreTax">0</span>
                         </div>
@@ -547,13 +549,24 @@
             const client = els.clientName.value.trim() || "INVOICE";
             const fmt = (n) => Math.round(n).toLocaleString('en-IN');
             
+            // --- EXCEL LOGIC ---
             if (type === 'excel') {
                 const output = [];
                 let headers = ["Sr.No", "Size", "Surface", "Body", "Design Name", "Qty"];
                 if (isCommercial) headers.push("Sq. Feet", "Rate", "Amount");
+                
+                // Header Style
                 const sHead = { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1E293B" } }, alignment: { horizontal: "center" } };
+                // Footer Label Style (Bold + Grey BG)
+                const sFootLbl = { font: { bold: true }, fill: { fgColor: { rgb: "F3F4F6" } }, alignment: { horizontal: "right" } };
+                // Footer Value Style (Bold)
+                const sFootVal = { font: { bold: true }, alignment: { horizontal: "right" } };
+                // Grand Total Style (White Text + Blue BG)
+                const sGrand = { font: { bold: true, sz: 12, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "4F46E5" } }, alignment: { horizontal: "right" } };
+
                 output.push(headers.map(h => ({v:h, s:sHead})));
                 let subtotal = 0;
+                
                 globalData.forEach((item, i) => {
                     let row = [i+1, item.size, item.cat, item.body, item.design, item.qty];
                     if (isCommercial) {
@@ -564,27 +577,34 @@
                     }
                     output.push(row);
                 });
-                 if (isCommercial) {
+
+                if (isCommercial) {
                     output.push([""]); 
-                    // UPDATED EXCEL TERMS
-                    output.push(["", "", "", "", "", "", "", "Item Total", Math.round(subtotal)]);
+                    // Calculation
                     let insP = showInsurance ? parseFloat(els.insRate.innerText)||0 : 0;
                     let insV = subtotal * (insP/100);
-                    if(showInsurance) output.push(["", "", "", "", "", "", "", `Transit Insurance (${insP}%)`, Math.round(insV)]);
                     let taxable = subtotal + insV;
                     let gstP = parseFloat(els.gstRate.innerText)||0;
                     let gstV = taxable * (gstP/100);
-                    output.push(["", "", "", "", "", "", "", "Assessable Value", Math.round(taxable)]);
-                    output.push(["", "", "", "", "", "", "", `GST (${gstP}%)`, Math.round(gstV)]);
-                    output.push(["", "", "", "", "", "", "", "Total Payable", Math.round(taxable + gstV)]);
+                    let grand = taxable + gstV;
+
+                    // Append Footer Rows with Styles
+                    const pad = ["", "", "", "", "", "", ""]; // Padding cells
+                    output.push([...pad, {v:"Item Total", s:sFootLbl}, {v:Math.round(subtotal), s:sFootVal}]);
+                    if(showInsurance) output.push([...pad, {v:`Transit Insurance (${insP}%)`, s:sFootLbl}, {v:Math.round(insV), s:sFootVal}]);
+                    output.push([...pad, {v:"Assessable Value", s:sFootLbl}, {v:Math.round(taxable), s:sFootVal}]);
+                    output.push([...pad, {v:`GST (${gstP}%)`, s:sFootLbl}, {v:Math.round(gstV), s:sFootVal}]);
+                    output.push([...pad, {v:"Total Payable", s:sGrand}, {v:Math.round(grand), s:sGrand}]);
                 }
+
                 const wb = XLSX.utils.book_new();
                 const ws = XLSX.utils.aoa_to_sheet(output);
-                ws['!cols'] = [{wch:6}, {wch:22}, {wch:12}, {wch:12}, {wch:35}, {wch:8}, {wch:10}, {wch:8}, {wch:12}];
+                ws['!cols'] = [{wch:6}, {wch:22}, {wch:12}, {wch:12}, {wch:35}, {wch:8}, {wch:10}, {wch:8}, {wch:15}];
                 XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
                 XLSX.writeFile(wb, `${client}.xlsx`);
             }
 
+            // --- PDF LOGIC ---
             if (type === 'pdf') {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
@@ -599,36 +619,23 @@
                     bodyFontSize = 8.5; 
                     const smartWidths = calculateColumnWidths(globalData);
                     colStyles = {
-                        0: { cellWidth: 8 },  
-                        1: { cellWidth: smartWidths.size }, 
-                        2: { cellWidth: smartWidths.surf }, 
-                        3: { cellWidth: smartWidths.body }, 
-                        4: { cellWidth: smartWidths.design }, 
-                        5: { cellWidth: 10 }, 
-                        6: { cellWidth: 14 }, 
-                        7: { cellWidth: 10 }, 
-                        8: { cellWidth: 18 }  
+                        0: { cellWidth: 8 }, 1: { cellWidth: smartWidths.size }, 2: { cellWidth: smartWidths.surf }, 
+                        3: { cellWidth: smartWidths.body }, 4: { cellWidth: smartWidths.design }, 5: { cellWidth: 10 }, 
+                        6: { cellWidth: 14 }, 7: { cellWidth: 10 }, 8: { cellWidth: 18 }  
                     };
                     margins = { left: 3, right: 3 };
                 } else {
                     bodyFontSize = 9; 
                     colStyles = {
-                        0: { cellWidth: 10 },
-                        1: { cellWidth: 35 }, 
-                        2: { cellWidth: 22 },
-                        3: { cellWidth: 22 },
-                        4: { cellWidth: 'auto' }, 
-                        5: { cellWidth: 20 }
+                        0: { cellWidth: 10 }, 1: { cellWidth: 35 }, 2: { cellWidth: 22 }, 3: { cellWidth: 22 }, 
+                        4: { cellWidth: 'auto' }, 5: { cellWidth: 20 }
                     };
                     margins = { left: 10, right: 10 };
                 }
 
                 globalData.forEach((item, i) => {
                     let dName = item.design;
-                    if(isCommercial && isCommercial && dName.length > 30) {
-                        dName = dName.substring(0, 30) + "..."; 
-                    }
-
+                    if(isCommercial && dName.length > 30) dName = dName.substring(0, 30) + "..."; 
                     let row = [i+1, item.size, item.cat, item.body, dName, item.qty];
                     if (isCommercial) {
                         const area = item.qty * item.ft2PerBox;
@@ -649,23 +656,10 @@
                     theme: 'grid',
                     margin: margins,
                     styles: { 
-                        fontSize: bodyFontSize, 
-                        halign: 'center', 
-                        valign: 'middle',
-                        lineColor: [229, 231, 235], 
-                        lineWidth: 0.1,
-                        cellPadding: { top: 2, bottom: 2, left: 1, right: 1 }, 
-                        textColor: [51, 51, 51] 
+                        fontSize: bodyFontSize, halign: 'center', valign: 'middle', lineColor: [229, 231, 235], lineWidth: 0.1, cellPadding: { top: 2, bottom: 2, left: 1, right: 1 }, textColor: [51, 51, 51] 
                     },
-                    headStyles: { 
-                        fillColor: [30, 41, 59], 
-                        textColor: 255, 
-                        fontStyle: 'bold',
-                        halign: 'center' 
-                    },
-                    alternateRowStyles: {
-                        fillColor: [249, 250, 251] 
-                    },
+                    headStyles: { fillColor: [30, 41, 59], textColor: 255, fontStyle: 'bold', halign: 'center' },
+                    alternateRowStyles: { fillColor: [249, 250, 251] },
                     columnStyles: colStyles, 
                     didDrawPage: function(data) {
                         if(data.pageNumber===1) {
@@ -686,15 +680,44 @@
                     let grand = taxable + gstV;
 
                     const moneyX = 140; 
-                    doc.setFontSize(9); doc.setTextColor(50, 50, 50);
                     
-                    // UPDATED PROFESSIONAL LABELS IN PDF (Corrected)
-                    doc.text(`Item Total:`, moneyX, finalY); doc.text(fmt(subtotal), 200, finalY, {align:'right'});
-                    if (showInsurance) { finalY += 5; doc.text(`Transit Insurance (${insP}%):`, moneyX, finalY); doc.text(fmt(insV), 200, finalY, {align:'right'}); }
-                    finalY += 5; doc.text(`Assessable Value:`, moneyX, finalY); doc.text(fmt(taxable), 200, finalY, {align:'right'});
-                    finalY += 5; doc.text(`GST (${gstP}%):`, moneyX, finalY); doc.text(fmt(gstV), 200, finalY, {align:'right'});
-                    finalY += 6; doc.setFontSize(11); doc.setFont(undefined, 'bold');
-                    doc.text(`Total Payable:`, moneyX, finalY); doc.text(fmt(grand), 200, finalY, {align:'right'});
+                    // --- PDF FOOTER DESIGN (UPDATED) ---
+                    // Draw Line
+                    doc.setDrawColor(200, 200, 200);
+                    doc.line(moneyX, finalY - 5, 205, finalY - 5);
+
+                    doc.setFontSize(9); doc.setTextColor(100, 100, 100); // Label Color
+                    doc.text(`Item Total`, moneyX, finalY); 
+                    doc.setTextColor(0, 0, 0); doc.setFont(undefined, 'bold'); // Value Color
+                    doc.text(fmt(subtotal), 200, finalY, {align:'right'});
+                    
+                    if (showInsurance) { 
+                        finalY += 5; 
+                        doc.setFont(undefined, 'normal'); doc.setTextColor(100, 100, 100);
+                        doc.text(`Transit Insurance (${insP}%)`, moneyX, finalY); 
+                        doc.setFont(undefined, 'bold'); doc.setTextColor(0, 0, 0);
+                        doc.text(fmt(insV), 200, finalY, {align:'right'}); 
+                    }
+                    
+                    finalY += 5; 
+                    doc.setFont(undefined, 'normal'); doc.setTextColor(100, 100, 100);
+                    doc.text(`Assessable Value`, moneyX, finalY); 
+                    doc.setFont(undefined, 'bold'); doc.setTextColor(0, 0, 0);
+                    doc.text(fmt(taxable), 200, finalY, {align:'right'});
+
+                    finalY += 5; 
+                    doc.setFont(undefined, 'normal'); doc.setTextColor(100, 100, 100);
+                    doc.text(`GST (${gstP}%)`, moneyX, finalY); 
+                    doc.setFont(undefined, 'bold'); doc.setTextColor(0, 0, 0);
+                    doc.text(fmt(gstV), 200, finalY, {align:'right'});
+
+                    finalY += 8; 
+                    // Grand Total Highlight
+                    doc.setFillColor(79, 70, 229); // Indigo bg
+                    doc.rect(moneyX - 2, finalY - 4, 70, 7, 'F');
+                    doc.setTextColor(255, 255, 255); doc.setFontSize(10);
+                    doc.text(`Total Payable`, moneyX, finalY); 
+                    doc.text(fmt(grand), 200, finalY, {align:'right'});
                 }
                 doc.save(`${client}.pdf`);
             }
