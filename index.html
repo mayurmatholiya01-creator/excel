@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - Final</title>
+    <title>StockPro X - Smart Edition</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -44,15 +44,19 @@
             background-size: 24px 24px;
         }
 
-        /* Table Styles - CENTER ALIGNED */
+        /* Table Styles */
         .data-table { width: 100%; border-collapse: collapse; font-size: 11px; }
         .data-table th { 
             background: #18181b; color: #a1a1aa; font-weight: 600; text-align: center; 
-            padding: 10px; border-bottom: 1px solid #27272a; position: sticky; top: 0; z-index: 10; white-space: nowrap;
+            padding: 10px 4px; border-bottom: 1px solid #27272a; position: sticky; top: 0; z-index: 10; white-space: nowrap;
         }
         .data-table td { 
-            padding: 8px 10px; border-bottom: 1px solid #27272a; color: #e4e4e7; vertical-align: middle; 
-            text-align: center; 
+            padding: 8px 4px; border-bottom: 1px solid #27272a; color: #e4e4e7; vertical-align: middle; 
+            text-align: center; white-space: nowrap;
+        }
+        /* Design name allows truncation in HTML preview */
+        .data-table td.design-cell {
+            max-width: 150px; overflow: hidden; text-overflow: ellipsis;
         }
         
         .data-table tr:hover td { background: rgba(79, 70, 229, 0.05); }
@@ -67,18 +71,10 @@
         .del-row-btn { opacity: 0; transition: opacity 0.2s; color: #ef4444; cursor: pointer; }
         .data-table tr:hover .del-row-btn { opacity: 1; }
 
-        .money-card-container {
-            margin-top: 20px;
-            display: flex;
-            justify-content: flex-end;
-            padding-right: 10px;
-        }
+        .money-card-container { margin-top: 20px; display: flex; justify-content: flex-end; padding-right: 10px; }
         .money-card {
-            width: 300px;
-            background: rgba(20, 20, 23, 0.6); 
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px; 
-            padding: 20px;
+            width: 300px; background: rgba(20, 20, 23, 0.6); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px; padding: 20px;
         }
 
         .orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.2; pointer-events: none; z-index: -1; }
@@ -111,7 +107,7 @@
                 </div>
                 <h1 class="text-base font-bold text-white tracking-tight">StockPro<span class="text-indigo-500"> X</span></h1>
             </div>
-            <p class="text-[9px] text-zinc-500 font-mono ml-9">FINAL VERSION</p>
+            <p class="text-[9px] text-zinc-500 font-mono ml-9">SMART EDITION v3.0</p>
         </div>
 
         <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-5">
@@ -172,7 +168,6 @@
         </div>
 
         <div class="flex-1 overflow-auto canvas-bg relative p-6 pb-20">
-            
             <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-zinc-600">
                 <h3 class="text-sm font-medium text-zinc-400">No Data</h3>
                 <p class="text-[10px] mt-1 text-zinc-600">Upload Excel to begin</p>
@@ -192,12 +187,10 @@
                             <span class="text-xs font-bold text-white">SUMMARY</span>
                             <span class="text-[10px] text-zinc-500">INR</span>
                         </div>
-                        
                         <div class="flex justify-between items-center mb-1">
                             <span class="text-[11px] text-zinc-400">Subtotal</span>
                             <span class="text-[11px] font-mono text-white" id="mcSubtotal">0</span>
                         </div>
-
                         <div class="flex justify-between items-center mb-1 group" id="insRow">
                             <div class="flex items-center gap-1">
                                 <button onclick="toggleInsurance(false)" class="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/10 rounded px-1">×</button>
@@ -205,21 +198,17 @@
                             </div>
                             <span class="text-[11px] font-mono text-zinc-300" id="mcIns">0</span>
                         </div>
-                        
                         <div id="addInsBtn" class="hidden mb-1">
                             <button onclick="toggleInsurance(true)" class="text-[10px] text-indigo-400 hover:text-indigo-300">+ Add Insurance</button>
                         </div>
-
                         <div class="flex justify-between items-center mb-1 pt-1 border-t border-white/5">
                             <span class="text-[11px] text-zinc-300 font-medium">Total</span>
                             <span class="text-[11px] font-mono text-white" id="mcPreTax">0</span>
                         </div>
-
                         <div class="flex justify-between items-center mb-2">
                             <span class="text-[11px] text-zinc-400">GST (<span contenteditable="true" id="gstRate" class="outline-none focus:text-indigo-400 border-b border-transparent focus:border-indigo-500">18</span>%)</span>
                             <span class="text-[11px] font-mono text-zinc-300" id="mcGst">0</span>
                         </div>
-
                         <div class="flex justify-between items-center pt-2 border-t border-white/10">
                             <span class="text-sm font-bold text-white">Grand Total</span>
                             <span class="text-sm font-bold font-mono text-indigo-400" id="mcGrandTotal">0</span>
@@ -228,7 +217,6 @@
                 </div>
             </div>
         </div>
-
     </main>
 
     <script>
@@ -253,7 +241,6 @@
               {size:"1200x3200",thk:"15MM",pcs:1,kg:"136",ft2:41.33,m2:3.8},
               {size:"800x3200",thk:"15MM",pcs:1,kg:"74",ft2:27.56,m2:2.6}
         ];
-        
         const SKU_MAP = new Map();
         RAW_SKU_MASTER.forEach(item => SKU_MAP.set(item.size.trim(), item.ft2));
 
@@ -294,15 +281,9 @@
         els.fileInput.addEventListener('change', handleFile);
         els.dropZone.addEventListener('dragover', (e) => { e.preventDefault(); els.dropZone.classList.add('dragover'); });
         els.dropZone.addEventListener('drop', (e) => { e.preventDefault(); els.dropZone.classList.remove('dragover'); if(e.dataTransfer.files.length) { els.fileInput.files = e.dataTransfer.files; handleFile(); }});
-        
         els.removeFileBtn.addEventListener('click', resetAll);
         els.mergeToggle.addEventListener('change', () => { if(els.fileInput.files.length) processExcel(els.fileInput.files[0]); });
-        
-        els.invoiceToggle.addEventListener('change', (e) => {
-            isCommercial = e.target.checked;
-            renderTable();
-        });
-
+        els.invoiceToggle.addEventListener('change', (e) => { isCommercial = e.target.checked; renderTable(); });
         els.insRate.addEventListener('input', calculateMoneyCard);
         els.gstRate.addEventListener('input', calculateMoneyCard);
 
@@ -317,11 +298,12 @@
                     globalData[rowIdx][field] = val;
                     if(field === 'qty' && isCommercial) {
                         const item = globalData[rowIdx];
-                        const totalArea = (item.qty * item.ft2PerBox).toFixed(2);
-                        const amount = (totalArea * item.rate).toFixed(2);
+                        const totalArea = item.qty * item.ft2PerBox;
+                        const amount = totalArea * item.rate;
                         const row = target.closest('tr');
-                        row.querySelector('.area-cell').innerText = totalArea;
-                        row.querySelector('.amt-cell').innerText = amount;
+                        // Display Rounded in Table
+                        row.querySelector('.area-cell').innerText = Math.round(totalArea);
+                        row.querySelector('.amt-cell').innerText = Math.round(amount);
                     }
                     calculateMoneyCard();
                 }
@@ -427,11 +409,11 @@
             els.tableHead.innerHTML = '';
             els.tableBody.innerHTML = '';
             
-            // UPDATED HEADERS IN HTML TABLE
+            // Header: Changed 'Size & Thickness' to 'Size' to prevent wrapping
             let headerHTML = `<tr>
                 <th class="w-8"></th>
                 <th class="w-10">Sr.No</th>
-                <th class="w-28">Size & Thickness</th>
+                <th class="w-32">Size</th> 
                 <th class="w-20">Surface</th>
                 <th class="w-20">Body</th>
                 <th>Design Name</th>
@@ -440,7 +422,7 @@
             if (isCommercial) {
                 headerHTML += `
                 <th class="w-20">Sq. Feet</th>
-                <th class="w-20">Rate</th>
+                <th class="w-16">Rate</th>
                 <th class="w-24">Amount</th>`;
                 els.moneyCard.classList.remove('hidden');
             } else {
@@ -453,8 +435,9 @@
             globalData.forEach((item, index) => {
                 const tr = document.createElement('tr');
                 tr.dataset.index = index;
-                const totalArea = (item.qty * item.ft2PerBox).toFixed(2);
-                item.amount = (totalArea * item.rate).toFixed(2);
+                // Backend High Precision
+                const totalArea = item.qty * item.ft2PerBox;
+                item.amount = totalArea * item.rate;
 
                 let rowHTML = `
                     <td><span onclick="deleteRow(${index})" class="del-row-btn hover:text-red-500 text-xs font-bold">✕</span></td>
@@ -462,15 +445,15 @@
                     <td contenteditable="true" data-field="size" class="text-xs outline-none">${item.size}</td>
                     <td contenteditable="true" data-field="cat" class="text-xs text-zinc-400 outline-none">${item.cat}</td>
                     <td contenteditable="true" data-field="body" class="text-xs text-zinc-400 outline-none">${item.body}</td>
-                    <td contenteditable="true" data-field="design" class="text-xs text-white font-medium outline-none"><span class="truncate-cell">${item.design}</span></td>
+                    <td contenteditable="true" data-field="design" class="text-xs text-white font-medium outline-none design-cell"><span class="truncate-cell">${item.design}</span></td>
                     <td contenteditable="true" data-field="qty" class="font-mono text-zinc-300 font-bold outline-none">${item.qty}</td>
                 `;
 
                 if (isCommercial) {
                     rowHTML += `
-                    <td class="font-mono text-zinc-400 text-xs area-cell">${totalArea}</td>
+                    <td class="font-mono text-zinc-400 text-xs area-cell">${Math.round(totalArea)}</td>
                     <td><input type="number" value="${item.rate || ''}" oninput="updateRate(${index}, this.value)" class="tbl-input" placeholder="0"></td>
-                    <td class="font-mono text-indigo-300 font-bold amt-cell">${item.amount}</td>
+                    <td class="font-mono text-indigo-300 font-bold amt-cell">${Math.round(item.amount)}</td>
                     `;
                 }
                 tr.innerHTML = rowHTML;
@@ -483,10 +466,12 @@
         function updateRate(index, newRate) {
             const item = globalData[index];
             item.rate = parseFloat(newRate) || 0;
-            const totalArea = (item.qty * item.ft2PerBox).toFixed(2);
-            const newAmount = (totalArea * item.rate).toFixed(2);
+            const totalArea = item.qty * item.ft2PerBox;
+            // Recalculate Amount
+            item.amount = totalArea * item.rate; 
+            
             const tr = els.tableBody.children[index];
-            tr.querySelector('.amt-cell').innerText = newAmount;
+            tr.querySelector('.amt-cell').innerText = Math.round(item.amount); // Show integer
             calculateMoneyCard();
         }
 
@@ -513,6 +498,7 @@
             if (!isCommercial) return;
             let subtotal = 0;
             globalData.forEach(item => {
+                // Backend High Precision sum
                 subtotal += (item.qty * item.ft2PerBox * (item.rate || 0));
             });
             let insPercent = showInsurance ? parseFloat(els.insRate.innerText) || 0 : 0;
@@ -534,8 +520,7 @@
             
             if (type === 'excel') {
                 const output = [];
-                // UPDATED EXCEL HEADERS
-                let headers = ["Sr.No", "Size & Thickness", "Surface", "Body", "Design Name", "Qty"];
+                let headers = ["Sr.No", "Size", "Surface", "Body", "Design Name", "Qty"];
                 if (isCommercial) headers.push("Sq. Feet", "Rate", "Amount");
                 const sHead = { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1E293B" } }, alignment: { horizontal: "center" } };
                 output.push(headers.map(h => ({v:h, s:sHead})));
@@ -543,29 +528,29 @@
                 globalData.forEach((item, i) => {
                     let row = [i+1, item.size, item.cat, item.body, item.design, item.qty];
                     if (isCommercial) {
-                        const area = parseFloat((item.qty * item.ft2PerBox).toFixed(2));
-                        const amt = parseFloat((area * item.rate).toFixed(2));
-                        row.push(area, item.rate, amt);
+                        const area = item.qty * item.ft2PerBox;
+                        const amt = area * item.rate;
                         subtotal += amt;
+                        // Excel Output: Integer (Math.round)
+                        row.push(Math.round(area), item.rate, Math.round(amt));
                     }
                     output.push(row);
                 });
                  if (isCommercial) {
                     output.push([""]); 
-                    output.push(["", "", "", "", "", "", "", "Subtotal", subtotal]);
+                    output.push(["", "", "", "", "", "", "", "Subtotal", Math.round(subtotal)]);
                     let insP = showInsurance ? parseFloat(els.insRate.innerText)||0 : 0;
                     let insV = subtotal * (insP/100);
-                    if(showInsurance) output.push(["", "", "", "", "", "", "", `Ins (${insP}%)`, insV]);
+                    if(showInsurance) output.push(["", "", "", "", "", "", "", `Ins (${insP}%)`, Math.round(insV)]);
                     let taxable = subtotal + insV;
                     let gstP = parseFloat(els.gstRate.innerText)||0;
                     let gstV = taxable * (gstP/100);
-                    output.push(["", "", "", "", "", "", "", `GST (${gstP}%)`, gstV]);
-                    output.push(["", "", "", "", "", "", "", "GRAND TOTAL", taxable + gstV]);
+                    output.push(["", "", "", "", "", "", "", `GST (${gstP}%)`, Math.round(gstV)]);
+                    output.push(["", "", "", "", "", "", "", "GRAND TOTAL", Math.round(taxable + gstV)]);
                 }
                 const wb = XLSX.utils.book_new();
                 const ws = XLSX.utils.aoa_to_sheet(output);
-                // Wider column for Size & Thickness
-                ws['!cols'] = [{wch:6}, {wch:20}, {wch:10}, {wch:10}, {wch:30}, {wch:8}, {wch:10}, {wch:10}, {wch:12}];
+                ws['!cols'] = [{wch:6}, {wch:22}, {wch:12}, {wch:12}, {wch:35}, {wch:8}, {wch:10}, {wch:8}, {wch:12}];
                 XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
                 XLSX.writeFile(wb, `${client}.xlsx`);
             }
@@ -577,22 +562,23 @@
                 let subtotal = 0;
                 globalData.forEach((item, i) => {
                     let dName = item.design;
-                    if(isCommercial && dName.length > 22) {
-                        dName = dName.substring(0, 22) + "..."; 
+                    // SMART TRUNCATE: Let auto-width handle it, but fallback if extremely long
+                    if(isCommercial && dName.length > 25) {
+                        dName = dName.substring(0, 25) + "..."; 
                     }
 
                     let row = [i+1, item.size, item.cat, item.body, dName, item.qty];
                     if (isCommercial) {
-                        const area = (item.qty * item.ft2PerBox).toFixed(2);
-                        const amt = (area * item.rate).toFixed(2);
-                        row.push(area, item.rate, amt);
-                        subtotal += parseFloat(amt);
+                        const area = item.qty * item.ft2PerBox;
+                        const amt = area * item.rate;
+                        subtotal += amt;
+                        // PDF Output: Clean Integer
+                        row.push(Math.round(area), item.rate, Math.round(amt));
                     }
                     tableBody.push(row);
                 });
 
-                // UPDATED PDF HEADERS
-                let headRow = [['Sr.No', 'Size & Thickness', 'Surface', 'Body', 'Design Name', 'Qty']];
+                let headRow = [['Sr.No', 'Size', 'Surface', 'Body', 'Design Name', 'Qty']];
                 if (isCommercial) headRow[0].push('Sq. Feet', 'Rate', 'Amount');
 
                 doc.autoTable({
@@ -600,13 +586,15 @@
                     body: tableBody,
                     startY: 30,
                     theme: 'grid',
-                    margin: isCommercial ? { left: 5, right: 5 } : { left: 10, right: 10 },
+                    // SMART MARGINS: 3mm left/right for Max Space
+                    margin: isCommercial ? { left: 3, right: 3 } : { left: 10, right: 10 },
                     styles: { 
-                        fontSize: 8, 
+                        fontSize: 7.5, // Slightly smaller font for better fit
                         halign: 'center', 
                         valign: 'middle',
                         lineColor: [200, 200, 200], 
-                        lineWidth: 0.1 
+                        lineWidth: 0.1,
+                        cellPadding: 1.5
                     },
                     headStyles: { 
                         fillColor: [30, 41, 59], 
@@ -614,11 +602,17 @@
                         fontStyle: 'bold',
                         halign: 'center' 
                     },
-                    // SMART COLUMN SIZING TO PREVENT WRAP
                     columnStyles: {
-                        0: { cellWidth: 10 }, // Sr.No
-                        1: { cellWidth: 25 }, // Size & Thickness (Wide enough to not wrap)
-                        5: { cellWidth: 12 }  // Qty
+                        0: { cellWidth: 8 },  // Sr
+                        1: { cellWidth: 26 }, // Size (Wide enough for 1200x2400x9MM)
+                        2: { cellWidth: 16 }, // Surf
+                        3: { cellWidth: 14 }, // Body
+                        4: { cellWidth: 'auto', halign: 'center' }, // Design (Smart Fit)
+                        5: { cellWidth: 10 }, // Qty
+                        // Commercial Cols
+                        6: { cellWidth: 14 }, // Area
+                        7: { cellWidth: 10 }, // Rate
+                        8: { cellWidth: 18 }  // Amt
                     },
                     didDrawPage: function(data) {
                         if(data.pageNumber===1) {
