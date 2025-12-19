@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - Final Pro</title>
+    <title>StockPro X - Elegant</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -106,7 +106,7 @@
                 </div>
                 <h1 class="text-base font-bold text-white tracking-tight">StockPro<span class="text-indigo-500"> X</span></h1>
             </div>
-            <p class="text-[9px] text-zinc-500 font-mono ml-9">PRO EDITION v6.0</p>
+            <p class="text-[9px] text-zinc-500 font-mono ml-9">ELEGANT v7.0</p>
         </div>
 
         <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-5">
@@ -508,7 +508,6 @@
             els.mcGrandTotal.innerText = Math.round(grandTotal).toLocaleString('en-IN');
         }
 
-        // --- SMART COLUMN WIDTH CALCULATOR (COMMERCIAL ONLY) ---
         function calculateColumnWidths(data) {
             let maxLen = { size: 12, surf: 8, body: 8, design: 15 }; 
             data.forEach(item => {
@@ -572,15 +571,13 @@
                 const tableBody = [];
                 let subtotal = 0;
                 
-                // --- LOGIC SPLIT: COMMERCIAL vs STANDARD ---
-                
-                // 1. Calculate Widths
+                // --- STYLES CONFIG (ELEGANT DARK GREY) ---
                 let colStyles = {};
                 let margins = {};
-                let bodyFontSize = 9; // Default Larger Font
+                let bodyFontSize = 9; 
                 
                 if (isCommercial) {
-                    bodyFontSize = 8.5; // Slightly smaller for dense data
+                    bodyFontSize = 8.5; 
                     const smartWidths = calculateColumnWidths(globalData);
                     colStyles = {
                         0: { cellWidth: 8 },  
@@ -595,14 +592,13 @@
                     };
                     margins = { left: 3, right: 3 };
                 } else {
-                    // RESTORED OLD LOGIC FOR STANDARD MODE
-                    bodyFontSize = 9; // Comfortable size
+                    bodyFontSize = 9; 
                     colStyles = {
                         0: { cellWidth: 10 },
                         1: { cellWidth: 35 }, 
                         2: { cellWidth: 22 },
                         3: { cellWidth: 22 },
-                        4: { cellWidth: 'auto' }, // Let Design fill remaining space
+                        4: { cellWidth: 'auto' }, 
                         5: { cellWidth: 20 }
                     };
                     margins = { left: 10, right: 10 };
@@ -610,7 +606,6 @@
 
                 globalData.forEach((item, i) => {
                     let dName = item.design;
-                    // Truncate only in Commercial mode
                     if(isCommercial && isCommercial && dName.length > 30) {
                         dName = dName.substring(0, 30) + "..."; 
                     }
@@ -638,10 +633,10 @@
                         fontSize: bodyFontSize, 
                         halign: 'center', 
                         valign: 'middle',
-                        lineColor: [200, 200, 200], 
+                        lineColor: [229, 231, 235], // Light Grey Borders
                         lineWidth: 0.1,
-                        cellPadding: 1.2, // Optimized padding
-                        textColor: [0, 0, 0] // PURE BLACK TEXT
+                        cellPadding: { top: 2, bottom: 2, left: 1, right: 1 }, // More breathing room
+                        textColor: [51, 51, 51] // DARK GREY TEXT (#333)
                     },
                     headStyles: { 
                         fillColor: [30, 41, 59], 
@@ -649,11 +644,10 @@
                         fontStyle: 'bold',
                         halign: 'center' 
                     },
-                    // ZEBRA STRIPING
                     alternateRowStyles: {
-                        fillColor: [248, 249, 250] // Light Grey
+                        fillColor: [249, 250, 251] // Very subtle zebra
                     },
-                    columnStyles: colStyles, // Applied based on mode
+                    columnStyles: colStyles, 
                     didDrawPage: function(data) {
                         if(data.pageNumber===1) {
                             doc.setFontSize(14); doc.text(client, 105, 15, {align:'center'});
@@ -673,7 +667,7 @@
                     let grand = taxable + gstV;
 
                     const moneyX = 140; 
-                    doc.setFontSize(9);
+                    doc.setFontSize(9); doc.setTextColor(50, 50, 50); // Dark grey text for totals
                     doc.text(`Subtotal:`, moneyX, finalY); doc.text(Math.round(subtotal).toLocaleString(), 200, finalY, {align:'right'});
                     if (showInsurance) { finalY += 5; doc.text(`Insurance (${insP}%):`, moneyX, finalY); doc.text(Math.round(insV).toLocaleString(), 200, finalY, {align:'right'}); }
                     finalY += 5; doc.text(`Taxable Amt:`, moneyX, finalY); doc.text(Math.round(taxable).toLocaleString(), 200, finalY, {align:'right'});
