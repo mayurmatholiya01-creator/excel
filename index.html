@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - Platinum Edition</title>
+    <title>StockPro X - Sorted Edition</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -125,7 +125,7 @@
                 </div>
                 <h1 class="text-base font-bold text-white tracking-tight">StockPro<span class="text-indigo-500"> X</span></h1>
             </div>
-            <p class="text-[9px] text-zinc-500 font-mono ml-9">PLATINUM v12.0</p>
+            <p class="text-[9px] text-zinc-500 font-mono ml-9">SORTED v13.0</p>
         </div>
 
         <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-5">
@@ -410,10 +410,23 @@
                     }
 
                     globalData = Array.from(map.values());
+                    
+                    // --- MULTI-LEVEL SORTING (Size > Surface > Body > Design) ---
                     function getDims(s) { const m = s.match(/(\d+)/g); return m ? { w: parseInt(m[0]||0), h: parseInt(m[1]||0) } : {w:0,h:0}; }
+                    
                     globalData.sort((a, b) => {
                         const dA = getDims(a.size), dB = getDims(b.size);
-                        if (dA.w !== dB.w) return dA.w - dB.w; if (dA.h !== dB.h) return dA.h - dB.h;
+                        // 1. Sort by Width
+                        if (dA.w !== dB.w) return dA.w - dB.w;
+                        // 2. Sort by Height
+                        if (dA.h !== dB.h) return dA.h - dB.h;
+                        // 3. Sort by Surface (Category)
+                        if (a.cat.toLowerCase() < b.cat.toLowerCase()) return -1;
+                        if (a.cat.toLowerCase() > b.cat.toLowerCase()) return 1;
+                        // 4. Sort by Body
+                        if (a.body.toLowerCase() < b.body.toLowerCase()) return -1;
+                        if (a.body.toLowerCase() > b.body.toLowerCase()) return 1;
+                        // 5. Sort by Design Name
                         return a.design.localeCompare(b.design);
                     });
 
@@ -564,7 +577,6 @@
                 if (isCommercial) headers.push("Sq. Feet", "Rate", "Amount");
                 
                 const sHead = { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1E293B" } }, alignment: { horizontal: "center" } };
-                // Updated Border Style for Separator
                 const sBorderTop = { top: { style: "thin", color: { rgb: "D1D5DB" } } };
                 const sFoot = { font: { bold: true }, alignment: { horizontal: "right" } };
                 const sFootBorder = { font: { bold: true }, alignment: { horizontal: "right" }, border: sBorderTop };
@@ -572,7 +584,6 @@
 
                 output.push(headers.map(h => ({v:h, s:sHead})));
                 let subtotal = 0;
-                
                 globalData.forEach((item, i) => {
                     let row = [i+1, item.size, item.cat, item.body, item.design, item.qty];
                     if (isCommercial) {
@@ -583,27 +594,20 @@
                     }
                     output.push(row);
                 });
-
-                if (isCommercial) {
+                 if (isCommercial) {
                     output.push([""]); 
                     let insP = showInsurance ? parseFloat(els.insRate.innerText)||0 : 0;
                     let insV = subtotal * (insP/100);
+                    if(showInsurance) output.push(["", "", "", "", "", "", "", `Transit Insurance (${insP}%)`, {v:fmt(insV), s:sFoot}]);
                     let taxable = subtotal + insV;
                     let gstP = parseFloat(els.gstRate.innerText)||0;
                     let gstV = taxable * (gstP/100);
-                    let grand = taxable + gstV;
-
-                    const pad = ["", "", "", "", "", "", ""];
-                    output.push([...pad, {v:"Item Total", s:sFoot}, {v:fmt(subtotal), s:sFoot}]);
-                    if(showInsurance) output.push([...pad, {v:`Transit Insurance (${insP}%)`, s:sFoot}, {v:fmt(insV), s:sFoot}]);
                     
-                    // Added Border above Assessable Value
-                    output.push([...pad, {v:"Assessable Value", s:sFootBorder}, {v:fmt(taxable), s:sFootBorder}]);
-                    
-                    output.push([...pad, {v:`GST (${gstP}%)`, s:sFoot}, {v:fmt(gstV), s:sFoot}]);
-                    output.push([...pad, {v:"Total Payable", s:sGrand}, {v:fmt(grand), s:sGrand}]);
+                    output.push(["", "", "", "", "", "", "", "Item Total", {v:fmt(subtotal), s:sFoot}]);
+                    output.push(["", "", "", "", "", "", "", "Assessable Value", {v:fmt(taxable), s:sFootBorder}]);
+                    output.push(["", "", "", "", "", "", "", `GST (${gstP}%)`, {v:fmt(gstV), s:sFoot}]);
+                    output.push(["", "", "", "", "", "", "", {v:"Total Payable", s:sGrand}, {v:fmt(taxable + gstV), s:sGrand}]);
                 }
-
                 const wb = XLSX.utils.book_new();
                 const ws = XLSX.utils.aoa_to_sheet(output);
                 ws['!cols'] = [{wch:6}, {wch:22}, {wch:12}, {wch:12}, {wch:35}, {wch:8}, {wch:10}, {wch:8}, {wch:15}];
@@ -641,7 +645,7 @@
 
                 globalData.forEach((item, i) => {
                     let dName = item.design;
-                    if(isCommercial && dName.length > 30) dName = dName.substring(0, 30) + "..."; 
+                    if(isCommercial && isCommercial && dName.length > 30) dName = dName.substring(0, 30) + "..."; 
                     let row = [i+1, item.size, item.cat, item.body, dName, item.qty];
                     if (isCommercial) {
                         const area = item.qty * item.ft2PerBox;
@@ -688,7 +692,6 @@
 
                     const moneyX = 140; 
                     
-                    // Separator Line 1 (After Table)
                     doc.setDrawColor(220, 220, 220);
                     doc.line(moneyX, finalY - 5, 205, finalY - 5);
 
@@ -698,14 +701,12 @@
                     doc.text(fmt(subtotal), 200, finalY, {align:'right'});
                     
                     if (showInsurance) { 
-                        finalY += 5; 
-                        doc.setFont(undefined, 'normal'); doc.setTextColor(100, 100, 100);
+                        finalY += 5; doc.setFont(undefined, 'normal'); doc.setTextColor(100, 100, 100);
                         doc.text(`Transit Insurance (${insP}%)`, moneyX, finalY); 
                         doc.setFont(undefined, 'bold'); doc.setTextColor(0, 0, 0);
                         doc.text(fmt(insV), 200, finalY, {align:'right'}); 
                     }
                     
-                    // Separator Line 2 (Before Taxable)
                     finalY += 3;
                     doc.line(moneyX, finalY, 205, finalY);
                     finalY += 4;
@@ -715,8 +716,7 @@
                     doc.setFont(undefined, 'bold'); doc.setTextColor(0, 0, 0);
                     doc.text(fmt(taxable), 200, finalY, {align:'right'});
 
-                    finalY += 5; 
-                    doc.setFont(undefined, 'normal'); doc.setTextColor(100, 100, 100);
+                    finalY += 5; doc.setFont(undefined, 'normal'); doc.setTextColor(100, 100, 100);
                     doc.text(`GST (${gstP}%)`, moneyX, finalY); 
                     doc.setFont(undefined, 'bold'); doc.setTextColor(0, 0, 0);
                     doc.text(fmt(gstV), 200, finalY, {align:'right'});
