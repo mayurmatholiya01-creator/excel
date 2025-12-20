@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - v32.0 Simple & Clean</title>
+    <title>StockPro X - v32.0 Stable</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -48,6 +48,10 @@
         .btn-copy { color: #818cf8; } .btn-copy:hover { background: rgba(99,102,241,0.2); }
         .btn-del { color: #ef4444; } .btn-del:hover { background: rgba(239,68,68,0.2); }
         
+        /* ERROR STATE FOR UNKNOWN SIZES */
+        .row-error { background: rgba(239, 68, 68, 0.15) !important; border-left: 2px solid #ef4444 !important; }
+        .text-error { color: #fca5a5 !important; font-weight: bold; }
+
         .money-card-container { margin-top: 30px; display: flex; justify-content: flex-end; }
         .money-card { width: 320px; background: linear-gradient(145deg, rgba(20, 20, 23, 0.95), rgba(30, 30, 35, 0.95)); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 0; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
         .mc-header { background: rgba(255,255,255,0.03); padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
@@ -68,7 +72,7 @@
         input:checked + .slider:before { transform: translateX(14px); }
         #pdfPreviewFrame { width: 100%; height: 100%; border: none; border-radius: 8px; }
 
-        /* --- FIXED MAPPING UI (CLEAN LOGIC) --- */
+        /* --- FIXED MAPPING UI --- */
         .map-wrapper { 
             width: 100%; 
             height: 100%; 
@@ -80,18 +84,18 @@
         
         .map-table-container { 
             flex: 1; 
-            overflow: auto; /* Handles Scroll */
+            overflow: auto; 
             background: #0a0a0c; 
             border-radius: 8px; 
             border: 1px solid rgba(255,255,255,0.1); 
             position: relative; 
-            width: 100%; /* Just take available width */
+            width: 100%;
         }
         
         .map-table { 
             border-collapse: separate; 
             border-spacing: 0; 
-            width: max-content; /* Forces table to be as wide as needed */
+            width: max-content; 
         }
         
         .map-table th { 
@@ -320,8 +324,9 @@
               {size:"1200x2600",thk:"6MM",pcs:1,kg:"42.5",ft2:33.58,m2:3.1}, {size:"1200x3000",thk:"9MM",pcs:1,kg:"77.5",ft2:38.75,m2:3.6}, {size:"1200x3200",thk:"15MM",pcs:1,kg:"136",ft2:41.33,m2:3.8},
               {size:"800x3200",thk:"15MM",pcs:1,kg:"74",ft2:27.56,m2:2.6}
         ];
+        // FIX 1: Normalize Master Data to UpperCase (X vs x bug fix)
         const SKU_MAP = new Map();
-        RAW_SKU_MASTER.forEach(item => SKU_MAP.set(item.size.trim(), item.ft2));
+        RAW_SKU_MASTER.forEach(item => SKU_MAP.set(item.size.trim().toUpperCase(), item.ft2));
 
         const SMART_MAPPING = {
             scanRows: 15,
@@ -341,6 +346,10 @@
         let showInsurance = true;
         let showGST = true;
         let rateType = 'sqft'; 
+        
+        // FIX 3: Memory for Custom Rates
+        let savedInsRate = 0.99;
+        let savedGstRate = 18;
 
         const els = {
             fileInput: document.getElementById('fileInput'), dropZone: document.getElementById('dropZone'), uploadContent: document.getElementById('uploadContent'), fileSuccess: document.getElementById('fileSuccess'), fileName: document.getElementById('fileName'),
@@ -376,8 +385,11 @@
         els.mergeToggle.addEventListener('change', () => { if(els.fileInput.files.length) processExcel(els.fileInput.files[0]); });
         els.invoiceToggle.addEventListener('change', (e) => { isCommercial = e.target.checked; if(isCommercial) { els.rateBasisContainer.classList.remove('hidden'); els.addRowBtn.classList.remove('hidden'); } else { els.rateBasisContainer.classList.add('hidden'); els.addRowBtn.classList.add('hidden'); } renderTable(); });
         els.rateType.addEventListener('change', (e) => { rateType = e.target.value; recalculateAll(); });
-        els.insRate.addEventListener('input', calculateMoneyCard);
-        els.gstRate.addEventListener('input', calculateMoneyCard);
+        
+        // Save rates when user types
+        els.insRate.addEventListener('input', (e) => { savedInsRate = parseFloat(e.target.innerText) || 0; calculateMoneyCard(); });
+        els.gstRate.addEventListener('input', (e) => { savedGstRate = parseFloat(e.target.innerText) || 0; calculateMoneyCard(); });
+        
         els.pdfPreviewToggle.addEventListener('change', togglePdfPreview);
         els.mappingToggle.addEventListener('change', toggleMappingView);
 
@@ -390,7 +402,14 @@
                     let val = target.tagName === 'INPUT' ? target.value : target.innerText;
                     if(field === 'size' || field === 'cat' || field === 'body' || field === 'design') {
                         globalData[rowIdx][field] = val; 
-                        if(field === 'size') { let matchSize = val; if (!SKU_MAP.has(matchSize)) { const dims = val.match(/(\d+)[xX](\d+)/); if (dims) matchSize = `${dims[1]}x${dims[2]}`; } globalData[rowIdx].ft2PerBox = SKU_MAP.get(matchSize) || 0; }
+                        if(field === 'size') { 
+                            let matchSize = val.toUpperCase().replace(/\s/g, ""); // Normalize input
+                            if (!SKU_MAP.has(matchSize)) { 
+                                const dims = val.match(/(\d+)[xX](\d+)/); 
+                                if (dims) matchSize = `${dims[1]}x${dims[2]}`; 
+                            } 
+                            globalData[rowIdx].ft2PerBox = SKU_MAP.get(matchSize) || 0; 
+                        }
                     } else { val = parseFloat(val) || 0; globalData[rowIdx][field] = val; }
                     if(isCommercial) {
                         const item = globalData[rowIdx]; const totalArea = item.qty * (item.ft2PerBox || 0); item.amount = (rateType === 'box') ? (item.qty * item.rate) : (totalArea * item.rate);
@@ -488,7 +507,11 @@
                 
                 size = size.toUpperCase().replace(/\s/g, ""); 
                 let matchSize = size; 
+                // Fix Logic: Ensure 'x' is consistent for lookup
                 if (!SKU_MAP.has(matchSize)) { const dims = size.match(/(\d+)[xX](\d+)/); if (dims) matchSize = `${dims[1]}x${dims[2]}`; }
+                // Fallback attempt: if map has uppercase keys, try uppercase
+                if (!SKU_MAP.has(matchSize) && SKU_MAP.has(matchSize.toUpperCase())) matchSize = matchSize.toUpperCase();
+                
                 const ft2PerBox = SKU_MAP.get(matchSize) || 0;
 
                 const key = `${size}_${cat}_${body}_${design}`;
@@ -637,7 +660,12 @@
             globalData.forEach((item, index) => {
                 const tr = document.createElement('tr'); tr.dataset.index = index;
                 const totalArea = item.qty * (item.ft2PerBox || 0); item.amount = (rateType === 'box') ? (item.qty * item.rate) : (totalArea * item.rate);
-                let rowHTML = `<td class="action-cell"><span onclick="deleteRow(${index})" class="icon-btn btn-del" title="Delete">✕</span><span onclick="duplicateRow(${index})" class="icon-btn btn-copy" title="Duplicate">❐</span></td><td class="text-zinc-500 font-mono">${sr++}</td><td contenteditable="true" data-field="size" class="text-xs outline-none">${item.size}</td><td contenteditable="true" data-field="cat" class="text-xs text-zinc-400 outline-none">${item.cat}</td><td contenteditable="true" data-field="body" class="text-xs text-zinc-400 outline-none">${item.body}</td><td contenteditable="true" data-field="design" class="text-xs text-white font-medium outline-none design-cell"><span class="truncate-cell">${item.design}</span></td><td contenteditable="true" data-field="qty" class="font-mono text-zinc-300 font-bold outline-none">${item.qty}</td>`;
+                
+                // FIX 2: Highlight Rows with Unknown Size (0 Area)
+                const isError = (item.ft2PerBox === 0 && isCommercial);
+                if(isError) tr.classList.add('row-error');
+
+                let rowHTML = `<td class="action-cell"><span onclick="deleteRow(${index})" class="icon-btn btn-del" title="Delete">✕</span><span onclick="duplicateRow(${index})" class="icon-btn btn-copy" title="Duplicate">❐</span></td><td class="text-zinc-500 font-mono">${sr++}</td><td contenteditable="true" data-field="size" class="text-xs outline-none ${isError ? 'text-error' : ''}">${item.size}</td><td contenteditable="true" data-field="cat" class="text-xs text-zinc-400 outline-none">${item.cat}</td><td contenteditable="true" data-field="body" class="text-xs text-zinc-400 outline-none">${item.body}</td><td contenteditable="true" data-field="design" class="text-xs text-white font-medium outline-none design-cell"><span class="truncate-cell">${item.design}</span></td><td contenteditable="true" data-field="qty" class="font-mono text-zinc-300 font-bold outline-none">${item.qty}</td>`;
                 if (isCommercial) { rowHTML += `<td><input type="number" value="${item.rate || ''}" class="tbl-input" placeholder="0"></td><td class="font-mono text-zinc-400 text-xs area-cell">${Math.round(totalArea)}</td><td class="font-mono text-indigo-300 font-bold amt-cell">${Math.round(item.amount).toLocaleString('en-IN')}</td>`; }
                 tr.innerHTML = rowHTML; els.tableBody.appendChild(tr);
             });
@@ -647,8 +675,20 @@
         function addNewRow() { globalData.push({ size: "1200x1200", cat: "SURFACE", body: "BODY", design: "NEW ITEM", qty: 0, rate: 0, ft2PerBox: 2.88, amount: 0 }); renderTable(); setTimeout(() => { document.querySelector('.glass-card').scrollTop = document.querySelector('.glass-card').scrollHeight; }, 50); }
         function deleteRow(index) { globalData.splice(index, 1); renderTable(); }
         function duplicateRow(index) { const itemToCopy = { ...globalData[index] }; globalData.splice(index + 1, 0, itemToCopy); renderTable(); }
-        function toggleInsurance(enable) { showInsurance = enable; if (showInsurance) { els.insRow.classList.remove('hidden'); els.addInsBtn.classList.add('hidden'); els.insRate.innerText = "0.99"; } else { els.insRow.classList.add('hidden'); els.addInsBtn.classList.remove('hidden'); els.insRate.innerText = "0"; } calculateMoneyCard(); }
-        function toggleGST(enable) { showGST = enable; if (showGST) { els.gstRow.classList.remove('hidden'); els.addGstBtn.classList.add('hidden'); els.gstRate.innerText = "18"; } else { els.gstRow.classList.add('hidden'); els.addGstBtn.classList.remove('hidden'); els.gstRate.innerText = "0"; } calculateMoneyCard(); }
+        
+        // FIX 3 (Applied): Toggle logic now uses saved rates
+        function toggleInsurance(enable) { 
+            showInsurance = enable; 
+            if (showInsurance) { els.insRow.classList.remove('hidden'); els.addInsBtn.classList.add('hidden'); els.insRate.innerText = savedInsRate; } 
+            else { els.insRow.classList.add('hidden'); els.addInsBtn.classList.remove('hidden'); els.insRate.innerText = "0"; } 
+            calculateMoneyCard(); 
+        }
+        function toggleGST(enable) { 
+            showGST = enable; 
+            if (showGST) { els.gstRow.classList.remove('hidden'); els.addGstBtn.classList.add('hidden'); els.gstRate.innerText = savedGstRate; } 
+            else { els.gstRow.classList.add('hidden'); els.addGstBtn.classList.remove('hidden'); els.gstRate.innerText = "0"; } 
+            calculateMoneyCard(); 
+        }
         function calculateMoneyCard() { if (!isCommercial) return; let subtotal = 0; globalData.forEach(item => { subtotal += item.amount || 0; }); let insPercent = showInsurance ? parseFloat(els.insRate.innerText) || 0 : 0; let insAmount = subtotal * (insPercent / 100); let preTax = subtotal + insAmount; let gstPercent = showGST ? parseFloat(els.gstRate.innerText) || 0 : 0; let gstAmount = preTax * (gstPercent / 100); let grandTotal = preTax + gstAmount; const fmt = (n) => Math.round(n).toLocaleString('en-IN'); els.mcSubtotal.innerText = fmt(subtotal); els.mcIns.innerText = fmt(insAmount); els.mcPreTax.innerText = fmt(preTax); els.mcGst.innerText = fmt(gstAmount); els.mcGrandTotal.innerText = fmt(grandTotal); }
         function togglePdfPreview() { if (els.pdfPreviewToggle.checked) { els.workspaceView.classList.add('hidden'); els.pdfViewContainer.classList.remove('hidden'); const pdfData = exportData('preview'); els.pdfPreviewFrame.src = pdfData; } else { els.pdfViewContainer.classList.add('hidden'); els.workspaceView.classList.remove('hidden'); } }
 
