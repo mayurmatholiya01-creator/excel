@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - v30.0 Final Logic</title>
+    <title>StockPro X - v32.0 Simple & Clean</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -25,9 +25,11 @@
 
     <style>
         body { background: #050505; color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; }
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        
+        /* CUSTOM SCROLLBAR */
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
         ::-webkit-scrollbar-track { background: #0a0a0c; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 5px; border: 2px solid #0a0a0c; }
         ::-webkit-scrollbar-thumb:hover { background: #4f46e5; }
         
         .sidebar { background: rgba(10, 10, 12, 0.95); backdrop-filter: blur(20px); border-right: 1px solid rgba(255,255,255,0.08); width: 260px; }
@@ -40,7 +42,6 @@
         .data-table tr:focus-within { background: linear-gradient(90deg, rgba(99, 102, 241, 0.1), rgba(0,0,0,0)); border-left: 2px solid #6366f1; }
         .data-table tr:hover { background: rgba(255, 255, 255, 0.02); }
         .tbl-input { background: transparent; border: none; color: #fff; width: 100%; text-align: center; font-family: monospace; padding: 0; margin: 0; height: 100%; display: block; outline: none; }
-        
         .action-cell { display: flex; justify-content: center; gap: 6px; opacity: 0; transition: opacity 0.2s; }
         .data-table tr:hover .action-cell, .data-table tr:focus-within .action-cell { opacity: 1; }
         .icon-btn { cursor: pointer; padding: 2px; border-radius: 4px; }
@@ -54,11 +55,9 @@
         .mc-footer { background: rgba(99, 102, 241, 0.1); padding: 15px 20px; border-top: 1px solid rgba(99, 102, 241, 0.2); display: flex; justify-content: space-between; align-items: center; }
         .add-row-btn { margin-top: 10px; width: 100%; padding: 8px; border: 1px dashed rgba(255,255,255,0.2); border-radius: 6px; color: #6366f1; font-size: 11px; font-weight: 600; text-align: center; cursor: pointer; transition: all 0.2s; }
         .add-row-btn:hover { background: rgba(99, 102, 241, 0.1); border-color: #6366f1; }
-        
         .orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.2; pointer-events: none; z-index: -1; }
         .orb-1 { top: -20%; left: -10%; width: 500px; height: 500px; background: #4f46e5; }
         .orb-2 { bottom: -20%; right: -10%; width: 400px; height: 400px; background: #ec4899; }
-        
         .upload-zone { border: 1px dashed rgba(255,255,255,0.15); transition: all 0.2s; }
         .upload-zone:hover, .upload-zone.dragover { border-color: #6366f1; background: rgba(79, 70, 229, 0.05); }
         .switch { position: relative; display: inline-block; width: 32px; height: 18px; }
@@ -69,48 +68,43 @@
         input:checked + .slider:before { transform: translateX(14px); }
         #pdfPreviewFrame { width: 100%; height: 100%; border: none; border-radius: 8px; }
 
-        /* --- FIXED SCROLLING & MAPPING UI --- */
-        .map-wrapper {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden; /* Hide outer scroll */
-        }
+        /* --- FIXED MAPPING UI --- */
+        .map-wrapper { width: 100%; height: 100%; display: flex; flex-direction: column; overflow: hidden; }
         
         .map-table-container { 
-            flex: 1;
-            overflow: auto; /* Allow BOTH X and Y scroll */
-            background: #0a0a0c;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.1);
-            position: relative;
+            flex: 1; 
+            overflow: auto; /* This enables proper scrolling */
+            background: #0a0a0c; 
+            border-radius: 8px; 
+            border: 1px solid rgba(255,255,255,0.1); 
+            position: relative; 
         }
         
         .map-table { 
             border-collapse: separate; 
             border-spacing: 0; 
-            white-space: nowrap; /* Prevent Wrapping */
+            /* Do not force width: 100% here, let it grow */
         }
         
-        .map-table th {
+        .map-table th { 
             position: sticky; 
             top: 0; 
             background: #18181b; 
             z-index: 20; 
-            padding: 10px;
+            padding: 10px; 
             border-bottom: 2px solid #3f3f46; 
-            border-right: 1px solid #27272a;
-            min-width: 150px; /* Ensure column width */
+            border-right: 1px solid #27272a; 
+            min-width: 160px; /* Fixed width prevents shrinking */
         }
         
-        .map-table td {
+        .map-table td { 
             padding: 8px 12px; 
             color: #d4d4d8; 
             border-bottom: 1px solid #27272a; 
-            border-right: 1px solid #27272a;
-            font-family: monospace;
-            font-size: 11px;
+            border-right: 1px solid #27272a; 
+            font-family: monospace; 
+            font-size: 11px; 
+            white-space: nowrap;
         }
         
         .map-select { 
@@ -122,23 +116,13 @@
             padding: 4px; 
             border-radius: 4px; 
             outline: none; 
-            font-weight: 500;
+            font-weight: 500; 
         }
         
-        /* HIGHLIGHTS */
-        .assigned-header {
-            background: #1e1b4b !important;
-            border-bottom: 2px solid #818cf8 !important;
-        }
-        .assigned-header .map-select {
-            border-color: #818cf8;
-            color: #fff;
-            background: #312e81;
-        }
-        .assigned-cell {
-            background: rgba(99, 102, 241, 0.08) !important;
-            color: #fff !important;
-        }
+        /* HIGHLIGHT STYLES */
+        .assigned-header { background: #1e1b4b !important; border-bottom: 2px solid #818cf8 !important; }
+        .assigned-header .map-select { border-color: #818cf8; color: #fff; background: #312e81; }
+        .assigned-cell { background: rgba(99, 102, 241, 0.08) !important; color: #fff !important; }
     </style>
 </head>
 <body class="flex h-screen w-screen overflow-hidden text-sm">
@@ -156,7 +140,7 @@
                 </div>
                 <h1 class="text-base font-bold text-white tracking-tight">StockPro<span class="text-indigo-500"> X</span></h1>
             </div>
-            <p class="text-[9px] text-zinc-500 font-mono ml-9">v30.0</p>
+            <p class="text-[9px] text-zinc-500 font-mono ml-9">v32.0</p>
         </div>
 
         <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-5">
@@ -315,8 +299,8 @@
                 </div>
             </div>
 
-            <div id="mappingView" class="hidden w-full h-full flex flex-col map-wrapper">
-                <div class="flex justify-between items-center mb-4 px-1">
+            <div id="mappingView" class="hidden w-full h-full flex flex-col map-wrapper px-6 pb-6">
+                <div class="flex justify-between items-center mb-4">
                     <h2 class="text-sm font-bold text-white">Advanced Column Mapping</h2>
                     <button onclick="applyMapping()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold rounded shadow-lg shadow-indigo-500/20 tracking-wide transition-all">APPLY & IMPORT</button>
                 </div>
@@ -352,9 +336,7 @@
                 surface: { keywords: ["surface", "category", "finish", "look", "texture", "series", "catg"], required: false },
                 body: { keywords: ["body", "material", "base", "color", "typ"], required: false },
                 design: { keywords: ["design", "desing", "name", "product", "item", "particular", "description", "article"], required: true },
-                qty: { keywords: ["pre", "total", "qty", "quantity", "box", "pcs", "stock", "net"], required: true },
-                // MANSUKH LOGIC GRADES
-                grades: { keywords: ["pre", "std", "gold", "eco"], required: false }
+                qty: { keywords: ["total", "pre", "qty", "quantity", "box", "pcs", "stock", "net"], required: true },
             }
         };
 
@@ -436,10 +418,9 @@
                     const data = new Uint8Array(e.target.result); const workbook = XLSX.read(data, {type: 'array'});
                     rawExcelData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: 1, defval: ""});
                     
-                    // Auto-Detect Headers & Map
                     const smartResult = findSmartHeaders(rawExcelData);
                     rawDataHeaderRowIndex = smartResult.headerRow;
-                    mapDataToGlobal(smartResult.columns, true); // True means "Auto Mode"
+                    mapDataToGlobal(smartResult.columns);
 
                     renderTable();
                     els.emptyState.classList.add('hidden'); els.workspaceView.classList.remove('hidden'); els.actionButtons.classList.remove('opacity-50', 'pointer-events-none'); els.liveIndicator.classList.remove('bg-zinc-700'); els.liveIndicator.classList.add('bg-green-500', 'animate-pulse');
@@ -447,30 +428,48 @@
             }; reader.readAsArrayBuffer(file);
         }
 
-        // SMART HEADER FINDER
+        // --- SINGLE COLUMN FINDER (No Duplicates) ---
         function findSmartHeaders(rawData) {
             let bestRow = -1; let maxScore = 0; let bestMap = {};
             for (let r = 0; r < Math.min(rawData.length, SMART_MAPPING.scanRows); r++) {
                 let row = rawData[r]; let score = 0; let currentMap = {};
-                row.forEach((cell, idx) => {
-                    if(!cell) return;
-                    let txt = String(cell).toLowerCase().trim().replace(/[^a-z0-9]/g, "");
+                let usedCols = new Set(); 
+
+                // Process Priority: Qty -> Design -> Size -> Surface -> Body
+                const keys = ['qty', 'design', 'size', 'surface', 'body'];
+                
+                keys.forEach(key => {
+                    const cfg = SMART_MAPPING.columns[key];
+                    let bestColIdx = -1;
                     
-                    // Check standard columns
-                    for (let [key, cfg] of Object.entries(SMART_MAPPING.columns)) {
+                    for (let idx = 0; idx < row.length; idx++) {
+                        if (usedCols.has(idx)) continue;
+                        let cell = row[idx]; if (!cell) continue;
+                        let txt = String(cell).toLowerCase().trim().replace(/[^a-z0-9]/g, "");
+                        
+                        if (key === 'design' && txt.includes('base')) continue; // Skip Base DesignName
+                        
                         if (cfg.keywords.some(k => txt.includes(k))) {
-                            if (!currentMap[key]) currentMap[key] = []; 
-                            currentMap[key].push(idx); score++; 
+                            // First match wins for this key
+                            bestColIdx = idx;
+                            break; 
                         }
                     }
+
+                    if (bestColIdx !== -1) {
+                        currentMap[key] = [bestColIdx]; // Store as array for compatibility
+                        usedCols.add(bestColIdx);
+                        score++;
+                    }
                 });
+
                 if (score > maxScore && score >= 2) { maxScore = score; bestRow = r; bestMap = currentMap; }
             }
             if (bestRow === -1) { bestRow = 0; bestMap = {}; }
             return { headerRow: bestRow, columns: bestMap };
         }
 
-        function mapDataToGlobal(mapping, isAutoMode = false) {
+        function mapDataToGlobal(mapping) {
             const shouldMerge = els.mergeToggle.checked; const map = new Map();
             const startRow = rawDataHeaderRowIndex + 1;
             
@@ -484,20 +483,10 @@
                 if (mapping.surface && mapping.surface.length) cat = (r[mapping.surface[0]] || "").toString().trim();
                 if (mapping.body && mapping.body.length) body = (r[mapping.body[0]] || "").toString().trim();
                 
-                // QTY LOGIC:
-                // 1. If Auto Mode AND Grades detected (Mansukh style), SUM GRADES
-                if (isAutoMode && mapping.grades && mapping.grades.length > 0) {
-                    mapping.grades.forEach(colIdx => {
-                        let val = parseFloat(r[colIdx]);
-                        if (!isNaN(val)) qty += val;
-                    });
-                }
-                // 2. Else use explicit Qty columns
-                else if (mapping.qty && mapping.qty.length) {
-                    mapping.qty.forEach(colIdx => {
-                        let val = parseFloat(r[colIdx]);
-                        if (!isNaN(val)) qty += val;
-                    });
+                // SINGLE QTY COLUMN (Simple Logic)
+                if (mapping.qty && mapping.qty.length) {
+                    let val = parseFloat(r[mapping.qty[0]]);
+                    if (!isNaN(val)) qty = val;
                 }
 
                 if (!design && !size) continue;
@@ -515,7 +504,7 @@
             sortData();
         }
 
-        // --- VISUAL MAPPING LOGIC ---
+        // --- MAPPING UI (WITH STRICT SINGLE SELECTION) ---
         function toggleMappingView() {
             if (els.mappingToggle.checked) {
                 els.workspaceView.classList.add('hidden');
@@ -532,7 +521,6 @@
             if (!rawExcelData.length) return;
             const table = els.mappingTable; table.innerHTML = '';
             
-            // 1. Dropdown Row (Sticky)
             const dropRow = document.createElement('tr');
             
             const smart = findSmartHeaders(rawExcelData);
@@ -551,22 +539,21 @@
                     {val:'size', txt:'Size'},
                     {val:'surface', txt:'Surface'},
                     {val:'body', txt:'Body'},
-                    {val:'qty', txt:'Qty'} // Simple Qty as requested
+                    {val:'qty', txt:'Qty'}
                 ];
 
                 opts.forEach(o => {
                     const opt = document.createElement('option');
                     opt.value = o.val; opt.innerText = o.txt;
-                    // Map logic for UI
+                    // Check if this column index exists in the array for this key
                     if (currentMap[o.val] && currentMap[o.val].includes(c)) opt.selected = true;
-                    // If it was auto-detected as a 'grade', show it as Qty in dropdown for clarity
-                    if (currentMap['grades'] && currentMap['grades'].includes(c)) {
-                        if(o.val === 'qty') opt.selected = true;
-                    }
                     select.appendChild(opt);
                 });
 
-                select.onchange = (e) => highlightColumn(e.target, c);
+                select.onchange = (e) => { 
+                    enforceSingleColumn(e.target);
+                    highlightColumn(e.target, c); 
+                };
                 th.appendChild(select);
                 dropRow.appendChild(th);
                 
@@ -574,7 +561,6 @@
             }
             table.appendChild(dropRow);
 
-            // 2. Raw Data Rows
             const previewRows = rawExcelData.slice(rawDataHeaderRowIndex, rawDataHeaderRowIndex + 50); 
             previewRows.forEach((rowData, i) => {
                 const tr = document.createElement('tr');
@@ -586,6 +572,20 @@
                     tr.appendChild(td);
                 }
                 table.appendChild(tr);
+            });
+        }
+
+        function enforceSingleColumn(changedSelect) {
+            const val = changedSelect.value;
+            if (!val) return; 
+
+            // Find any other dropdown that has the SAME value and reset it
+            const allSelects = document.querySelectorAll('.map-select');
+            allSelects.forEach(sel => {
+                if (sel !== changedSelect && sel.value === val) {
+                    sel.value = ""; // Deselect
+                    highlightColumn(sel, parseInt(sel.dataset.colIdx)); // Remove highlight
+                }
             });
         }
 
@@ -613,12 +613,12 @@
             selects.forEach(sel => {
                 const role = sel.value;
                 if (role) {
-                    if (!newMap[role]) newMap[role] = [];
-                    newMap[role].push(parseInt(sel.dataset.colIdx));
+                    // Always set as an array with ONE element (Strict Single)
+                    newMap[role] = [parseInt(sel.dataset.colIdx)];
                 }
             });
 
-            mapDataToGlobal(newMap, false); // False means "Manual Mode"
+            mapDataToGlobal(newMap);
             renderTable();
             els.mappingToggle.checked = false;
             toggleMappingView();
