@@ -73,17 +73,18 @@
         
         .map-table-container { 
             flex: 1; 
-            overflow: auto; /* This enables proper scrolling */
+            overflow: auto; /* Enable Scroll */
             background: #0a0a0c; 
             border-radius: 8px; 
             border: 1px solid rgba(255,255,255,0.1); 
             position: relative; 
+            max-width: 100%; /* Fixes Zoom Issue */
         }
         
         .map-table { 
             border-collapse: separate; 
             border-spacing: 0; 
-            /* Do not force width: 100% here, let it grow */
+            width: max-content; /* Allow table to grow for scrolling */
         }
         
         .map-table th { 
@@ -94,7 +95,7 @@
             padding: 10px; 
             border-bottom: 2px solid #3f3f46; 
             border-right: 1px solid #27272a; 
-            min-width: 160px; /* Fixed width prevents shrinking */
+            min-width: 160px;
         }
         
         .map-table td { 
@@ -332,11 +333,11 @@
         const SMART_MAPPING = {
             scanRows: 15,
             columns: {
-                size: { keywords: ["size", "mm", "dim", "format", "map", "scale"], required: true },
-                surface: { keywords: ["surface", "category", "finish", "look", "texture", "series", "catg"], required: false },
-                body: { keywords: ["body", "material", "base", "color", "typ"], required: false },
-                design: { keywords: ["design", "desing", "name", "product", "item", "particular", "description", "article"], required: true },
-                qty: { keywords: ["total", "pre", "qty", "quantity", "box", "pcs", "stock", "net"], required: true },
+                size: { keywords: ["sizemm"], required: true },
+                surface: { keywords: ["category", "surface"], required: false },
+                body: { keywords: ["bodytype", "body"], required: false },
+                design: { keywords: ["designname", "design"], required: true },
+                qty: { keywords: ["pre", "prm"], required: true },
             }
         };
 
