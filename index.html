@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - v28.0 Mapping Edition</title>
+    <title>StockPro X - v29.0 Pro Mapping</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -32,19 +32,21 @@
         .sidebar { background: rgba(10, 10, 12, 0.95); backdrop-filter: blur(20px); border-right: 1px solid rgba(255,255,255,0.08); width: 260px; }
         .canvas-bg { background-color: #050505; background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px); background-size: 24px 24px; }
         .workspace-container { max-width: 1200px; margin: 0 auto; transition: all 0.3s ease; }
+        
+        /* STANDARD TABLE STYLES */
         .data-table { width: 100%; border-collapse: collapse; font-size: 11px; table-layout: fixed; }
         .data-table th { background: rgba(24, 24, 27, 0.95); backdrop-filter: blur(4px); color: #a1a1aa; font-weight: 600; text-align: center; padding: 10px 4px; border-bottom: 1px solid #27272a; position: sticky; top: 0; z-index: 10; white-space: nowrap; }
         .data-table td { padding: 8px 4px; border-bottom: 1px solid #27272a; color: #e4e4e7; vertical-align: middle; text-align: center; white-space: nowrap; cursor: cell; position: relative; }
         .data-table tr:focus-within { background: linear-gradient(90deg, rgba(99, 102, 241, 0.1), rgba(0,0,0,0)); border-left: 2px solid #6366f1; }
         .data-table tr:hover { background: rgba(255, 255, 255, 0.02); }
-        .data-table td:focus-within { box-shadow: inset 0 0 0 1.5px #6366f1; background-color: rgba(99, 102, 241, 0.08) !important; outline: none; }
         .tbl-input { background: transparent; border: none; color: #fff; width: 100%; text-align: center; font-family: monospace; padding: 0; margin: 0; height: 100%; display: block; outline: none; }
-        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         .action-cell { display: flex; justify-content: center; gap: 6px; opacity: 0; transition: opacity 0.2s; }
         .data-table tr:hover .action-cell, .data-table tr:focus-within .action-cell { opacity: 1; }
         .icon-btn { cursor: pointer; padding: 2px; border-radius: 4px; }
         .btn-copy { color: #818cf8; } .btn-copy:hover { background: rgba(99,102,241,0.2); }
         .btn-del { color: #ef4444; } .btn-del:hover { background: rgba(239,68,68,0.2); }
+        
+        /* MONEY CARD */
         .money-card-container { margin-top: 30px; display: flex; justify-content: flex-end; }
         .money-card { width: 320px; background: linear-gradient(145deg, rgba(20, 20, 23, 0.95), rgba(30, 30, 35, 0.95)); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 0; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
         .mc-header { background: rgba(255,255,255,0.03); padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
@@ -55,6 +57,7 @@
         .orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.2; pointer-events: none; z-index: -1; }
         .orb-1 { top: -20%; left: -10%; width: 500px; height: 500px; background: #4f46e5; }
         .orb-2 { bottom: -20%; right: -10%; width: 400px; height: 400px; background: #ec4899; }
+        
         .upload-zone { border: 1px dashed rgba(255,255,255,0.15); transition: all 0.2s; }
         .upload-zone:hover, .upload-zone.dragover { border-color: #6366f1; background: rgba(79, 70, 229, 0.05); }
         .switch { position: relative; display: inline-block; width: 32px; height: 18px; }
@@ -64,12 +67,65 @@
         input:checked + .slider { background-color: #6366f1; }
         input:checked + .slider:before { transform: translateX(14px); }
         #pdfPreviewFrame { width: 100%; height: 100%; border: none; border-radius: 8px; }
+
+        /* --- PRO MAPPING STYLES --- */
+        .map-table-container { 
+            overflow-x: auto; 
+            max-width: 100%; 
+            height: 100%; 
+            background: #0a0a0c;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .map-table { 
+            border-collapse: separate; 
+            border-spacing: 0; 
+            min-width: 100%; /* Ensures table stretches */
+        }
+        .map-table th {
+            position: sticky; 
+            top: 0; 
+            background: #18181b; 
+            z-index: 20; 
+            padding: 10px;
+            border-bottom: 2px solid #3f3f46; 
+            border-right: 1px solid #27272a;
+        }
+        .map-table td {
+            padding: 8px 12px; 
+            color: #d4d4d8; 
+            white-space: nowrap; /* Prevents wrapping */
+            border-bottom: 1px solid #27272a; 
+            border-right: 1px solid #27272a;
+            font-family: monospace;
+            font-size: 11px;
+        }
+        .map-select { 
+            width: 130px; 
+            background: #000; 
+            color: #a1a1aa; 
+            border: 1px solid #3f3f46; 
+            font-size: 11px; 
+            padding: 4px; 
+            border-radius: 4px; 
+            outline: none; 
+            font-weight: 500;
+        }
         
-        /* MAPPING SPECIFIC STYLES */
-        .map-select { width: 100%; background: #18181b; color: white; border: 1px solid #3f3f46; font-size: 10px; padding: 4px; border-radius: 4px; outline: none; }
-        .map-select:focus { border-color: #6366f1; }
-        .map-select option { background: #18181b; }
-        .map-header { background: #27272a; position: sticky; top: 0; z-index: 20; }
+        /* ASSIGNED COLUMN STYLES (The Visual Pop) */
+        .assigned-header {
+            background: #1e1b4b !important; /* Deep Indigo */
+            border-bottom: 2px solid #818cf8 !important; /* Bright Purple Border */
+        }
+        .assigned-header .map-select {
+            border-color: #818cf8;
+            color: #fff;
+            background: #312e81;
+        }
+        .assigned-cell {
+            background: rgba(99, 102, 241, 0.08) !important; /* Subtle Tint */
+            color: #fff !important;
+        }
     </style>
 </head>
 <body class="flex h-screen w-screen overflow-hidden text-sm">
@@ -87,7 +143,7 @@
                 </div>
                 <h1 class="text-base font-bold text-white tracking-tight">StockPro<span class="text-indigo-500"> X</span></h1>
             </div>
-            <p class="text-[9px] text-zinc-500 font-mono ml-9">v28.0</p>
+            <p class="text-[9px] text-zinc-500 font-mono ml-9">v29.0</p>
         </div>
 
         <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-5">
@@ -248,11 +304,11 @@
 
             <div id="mappingView" class="hidden w-full h-full flex flex-col">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-sm font-bold text-white">Raw Data Mapping</h2>
-                    <button onclick="applyMapping()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold rounded shadow-lg shadow-indigo-500/20">APPLY MAPPING</button>
+                    <h2 class="text-sm font-bold text-white">Advanced Column Mapping</h2>
+                    <button onclick="applyMapping()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold rounded shadow-lg shadow-indigo-500/20 tracking-wide transition-all">APPLY & IMPORT</button>
                 </div>
-                <div class="workspace-container w-full flex-1 overflow-auto rounded-lg border border-white/10 bg-[#0a0a0c]">
-                    <table class="data-table" id="mappingTable">
+                <div class="map-table-container">
+                    <table class="map-table" id="mappingTable">
                         </table>
                 </div>
             </div>
@@ -407,13 +463,11 @@
                 
                 let design = "", size = "", cat = "", body = "", qty = 0;
 
-                // Extract Data based on Mapping
                 if (mapping.design && mapping.design.length) design = (r[mapping.design[0]] || "").toString().trim();
                 if (mapping.size && mapping.size.length) size = (r[mapping.size[0]] || "").toString().trim();
                 if (mapping.surface && mapping.surface.length) cat = (r[mapping.surface[0]] || "").toString().trim();
                 if (mapping.body && mapping.body.length) body = (r[mapping.body[0]] || "").toString().trim();
                 
-                // Sum Qty Columns
                 if (mapping.qty && mapping.qty.length) {
                     mapping.qty.forEach(colIdx => {
                         let val = parseFloat(r[colIdx]);
@@ -424,8 +478,7 @@
                 if (!design && !size) continue;
                 if (shouldMerge) design = design.replace(/-[a-zA-Z]$/, "").trim();
                 
-                // Size Cleaning
-                size = size.toUpperCase().replace(/\s/g, ""); // Remove spaces
+                size = size.toUpperCase().replace(/\s/g, ""); 
                 let matchSize = size; 
                 if (!SKU_MAP.has(matchSize)) { const dims = size.match(/(\d+)[xX](\d+)/); if (dims) matchSize = `${dims[1]}x${dims[2]}`; }
                 const ft2PerBox = SKU_MAP.get(matchSize) || 0;
@@ -437,7 +490,7 @@
             sortData();
         }
 
-        // --- MAPPING VIEW LOGIC ---
+        // --- VISUAL MAPPING LOGIC (ENHANCED) ---
         function toggleMappingView() {
             if (els.mappingToggle.checked) {
                 els.workspaceView.classList.add('hidden');
@@ -454,15 +507,12 @@
             if (!rawExcelData.length) return;
             const table = els.mappingTable; table.innerHTML = '';
             
-            // 1. Dropdown Row
+            // 1. Dropdown Row (Sticky)
             const dropRow = document.createElement('tr');
-            dropRow.classList.add('map-header');
             
             // Get current auto-detected map to pre-fill
             const smart = findSmartHeaders(rawExcelData);
             const currentMap = smart.columns;
-            
-            // We scan the raw header row to determine column count
             const maxCols = rawExcelData[rawDataHeaderRowIndex].length;
 
             for (let c = 0; c < maxCols; c++) {
@@ -471,45 +521,72 @@
                 select.className = 'map-select';
                 select.dataset.colIdx = c;
                 
-                // Options
                 const opts = [
                     {val:'', txt:'Ignore'},
                     {val:'design', txt:'Design Name'},
                     {val:'size', txt:'Size'},
                     {val:'surface', txt:'Surface'},
                     {val:'body', txt:'Body'},
-                    {val:'qty', txt:'Qty'}
+                    {val:'qty', txt:'Qty (Sum)'}
                 ];
 
                 opts.forEach(o => {
                     const opt = document.createElement('option');
                     opt.value = o.val; opt.innerText = o.txt;
-                    // Pre-select logic
                     if (currentMap[o.val] && currentMap[o.val].includes(c)) opt.selected = true;
                     select.appendChild(opt);
                 });
+
+                select.onchange = (e) => highlightColumn(e.target, c);
+
                 th.appendChild(select);
                 dropRow.appendChild(th);
+                
+                // Initial highlight check
+                setTimeout(() => highlightColumn(select, c), 0);
             }
             table.appendChild(dropRow);
 
-            // 2. Raw Data Rows (Show only first 25)
-            const previewRows = rawExcelData.slice(rawDataHeaderRowIndex, rawDataHeaderRowIndex + 25);
+            // 2. Raw Data Rows
+            const previewRows = rawExcelData.slice(rawDataHeaderRowIndex, rawDataHeaderRowIndex + 50); // Increased rows
             previewRows.forEach((rowData, i) => {
                 const tr = document.createElement('tr');
-                // Ensure row has cells for all cols
                 for (let c = 0; c < maxCols; c++) {
                     const td = document.createElement('td');
+                    td.dataset.colIdx = c;
                     td.innerText = rowData[c] !== undefined ? rowData[c] : "";
-                    if (i === 0) td.style.fontWeight = "bold"; // Header row styling
+                    if (i === 0) td.style.fontWeight = "bold"; 
                     tr.appendChild(td);
                 }
                 table.appendChild(tr);
             });
         }
 
+        function highlightColumn(selectElement, colIdx) {
+            const th = selectElement.parentElement;
+            const table = document.getElementById('mappingTable');
+            const isAssigned = selectElement.value !== "";
+
+            // Toggle Header Styles
+            if(isAssigned) {
+                th.classList.add('assigned-header');
+            } else {
+                th.classList.remove('assigned-header');
+            }
+
+            // Toggle Cell Styles
+            const rows = table.querySelectorAll('tr');
+            rows.forEach((row, rIdx) => {
+                if(rIdx === 0) return; // Skip dropdown row
+                const cell = row.children[colIdx];
+                if(cell) {
+                    if(isAssigned) cell.classList.add('assigned-cell');
+                    else cell.classList.remove('assigned-cell');
+                }
+            });
+        }
+
         function applyMapping() {
-            // Read dropdowns
             const selects = document.querySelectorAll('.map-select');
             const newMap = {};
             selects.forEach(sel => {
@@ -520,11 +597,8 @@
                 }
             });
 
-            // Regenerate Global Data
             mapDataToGlobal(newMap);
             renderTable();
-            
-            // Switch back
             els.mappingToggle.checked = false;
             toggleMappingView();
         }
