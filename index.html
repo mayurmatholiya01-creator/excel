@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - Dynamic Header</title>
+    <title>StockPro X - v26.0 Smart Tools</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -81,7 +81,7 @@
                 </div>
                 <h1 class="text-base font-bold text-white tracking-tight">StockPro<span class="text-indigo-500"> X</span></h1>
             </div>
-            <p class="text-[9px] text-zinc-500 font-mono ml-9">DYNAMIC v25.0</p>
+            <p class="text-[9px] text-zinc-500 font-mono ml-9">SMART v26.0</p>
         </div>
 
         <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-5">
@@ -90,6 +90,7 @@
                 <input type="text" id="clientName" placeholder="ENTER NAME" 
                     class="w-full bg-[#18181b] border border-zinc-700 text-white text-xs font-semibold rounded focus:border-indigo-500 block p-2.5 outline-none uppercase">
             </div>
+
             <div class="space-y-1.5">
                 <label class="text-[9px] font-bold text-zinc-500 uppercase tracking-wider">Upload</label>
                 <div class="upload-zone w-full h-20 rounded-lg bg-white/5 flex flex-col items-center justify-center cursor-pointer relative group" id="dropZone">
@@ -103,6 +104,21 @@
                     </div>
                 </div>
             </div>
+
+            <div class="space-y-1.5">
+                <label class="text-[9px] font-bold text-zinc-500 uppercase tracking-wider">Smart Tools</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <a href="https://www.ilovepdf.com/pdf_to_excel" target="_blank" class="group p-2.5 rounded-lg bg-white/5 border border-white/5 hover:border-red-500/30 hover:bg-red-500/10 transition-all flex flex-col items-center gap-1.5 cursor-pointer text-decoration-none">
+                        <svg class="w-4 h-4 text-zinc-400 group-hover:text-red-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                        <span class="text-[9px] font-medium text-zinc-400 group-hover:text-red-300">PDF to Excel</span>
+                    </a>
+                    <a href="https://www.ilovepdf.com/jpg_to_excel" target="_blank" class="group p-2.5 rounded-lg bg-white/5 border border-white/5 hover:border-blue-500/30 hover:bg-blue-500/10 transition-all flex flex-col items-center gap-1.5 cursor-pointer text-decoration-none">
+                        <svg class="w-4 h-4 text-zinc-400 group-hover:text-blue-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        <span class="text-[9px] font-medium text-zinc-400 group-hover:text-blue-300">IMG to Excel</span>
+                    </a>
+                </div>
+            </div>
+
             <div class="space-y-2">
                 <label class="text-[9px] font-bold text-zinc-500 uppercase tracking-wider">Configuration</label>
                 <div class="p-3 rounded-lg bg-[#18181b] border border-zinc-800 flex items-center justify-between">
