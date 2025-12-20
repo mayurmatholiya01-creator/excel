@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - v27.0 Perfect Layout</title>
+    <title>StockPro X - v28.0 Mapping Edition</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -64,6 +64,12 @@
         input:checked + .slider { background-color: #6366f1; }
         input:checked + .slider:before { transform: translateX(14px); }
         #pdfPreviewFrame { width: 100%; height: 100%; border: none; border-radius: 8px; }
+        
+        /* MAPPING SPECIFIC STYLES */
+        .map-select { width: 100%; background: #18181b; color: white; border: 1px solid #3f3f46; font-size: 10px; padding: 4px; border-radius: 4px; outline: none; }
+        .map-select:focus { border-color: #6366f1; }
+        .map-select option { background: #18181b; }
+        .map-header { background: #27272a; position: sticky; top: 0; z-index: 20; }
     </style>
 </head>
 <body class="flex h-screen w-screen overflow-hidden text-sm">
@@ -81,7 +87,7 @@
                 </div>
                 <h1 class="text-base font-bold text-white tracking-tight">StockPro<span class="text-indigo-500"> X</span></h1>
             </div>
-            <p class="text-[9px] text-zinc-500 font-mono ml-9">v27.0</p>
+            <p class="text-[9px] text-zinc-500 font-mono ml-9">v28.0</p>
         </div>
 
         <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-5">
@@ -102,6 +108,20 @@
                         <p id="fileName" class="text-[10px] font-semibold text-white truncate max-w-[120px]">data.xlsx</p>
                         <button id="removeFileBtn" class="text-[9px] text-red-400 mt-1 hover:underline">Remove</button>
                     </div>
+                </div>
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="text-[9px] font-bold text-zinc-500 uppercase tracking-wider">Smart Tools</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <a href="https://www.ilovepdf.com/pdf_to_excel" target="_blank" class="group p-2.5 rounded-lg bg-white/5 border border-white/5 hover:border-red-500/30 hover:bg-red-500/10 transition-all flex flex-col items-center gap-1.5 cursor-pointer text-decoration-none">
+                        <svg class="w-4 h-4 text-zinc-400 group-hover:text-red-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                        <span class="text-[9px] font-medium text-zinc-400 group-hover:text-red-300">PDF to Excel</span>
+                    </a>
+                    <a href="https://jpgtoexcel.com/" target="_blank" class="group p-2.5 rounded-lg bg-white/5 border border-white/5 hover:border-blue-500/30 hover:bg-blue-500/10 transition-all flex flex-col items-center gap-1.5 cursor-pointer text-decoration-none">
+                        <svg class="w-4 h-4 text-zinc-400 group-hover:text-blue-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        <span class="text-[9px] font-medium text-zinc-400 group-hover:text-blue-300">IMG to Excel</span>
+                    </a>
                 </div>
             </div>
 
@@ -143,21 +163,27 @@
 
             <div class="flex items-center justify-center gap-4 bg-white/5 px-4 py-1.5 rounded-full border border-white/5 shadow-inner">
                 <span class="text-[9px] font-bold text-zinc-600 uppercase tracking-widest mr-1">Tools</span>
-                
                 <a href="https://www.ilovepdf.com/pdf_to_excel" target="_blank" class="flex items-center gap-1.5 text-decoration-none group cursor-pointer" title="Convert PDF to Excel">
                     <svg class="w-3.5 h-3.5 text-zinc-500 group-hover:text-red-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                     <span class="text-[10px] font-medium text-zinc-400 group-hover:text-white transition-colors">PDF to Excel</span>
                 </a>
-
-                <div class="w-px h-3 bg-white/10"></div> <a href="https://jpgtoexcel.com/" target="_blank" class="flex items-center gap-1.5 text-decoration-none group cursor-pointer" title="Convert Image to Excel">
+                <div class="w-px h-3 bg-white/10"></div>
+                <a href="https://jpgtoexcel.com/" target="_blank" class="flex items-center gap-1.5 text-decoration-none group cursor-pointer" title="Convert Image to Excel">
                     <svg class="w-3.5 h-3.5 text-zinc-500 group-hover:text-blue-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                     <span class="text-[10px] font-medium text-zinc-400 group-hover:text-white transition-colors">IMG to Excel</span>
                 </a>
             </div>
 
-            <div class="flex items-center justify-end gap-3 w-1/3">
-                <span class="text-[10px] font-bold text-zinc-500">PDF PREVIEW</span>
-                <label class="switch"><input type="checkbox" id="pdfPreviewToggle"><span class="slider"></span></label>
+            <div class="flex items-center justify-end gap-4 w-1/3">
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-bold text-zinc-500">🛠️ MAP COLUMNS</span>
+                    <label class="switch"><input type="checkbox" id="mappingToggle"><span class="slider"></span></label>
+                </div>
+                <div class="w-px h-4 bg-white/10"></div>
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-bold text-zinc-500">PREVIEW</span>
+                    <label class="switch"><input type="checkbox" id="pdfPreviewToggle"><span class="slider"></span></label>
+                </div>
             </div>
         </div>
 
@@ -220,6 +246,17 @@
                 </div>
             </div>
 
+            <div id="mappingView" class="hidden w-full h-full flex flex-col">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-sm font-bold text-white">Raw Data Mapping</h2>
+                    <button onclick="applyMapping()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold rounded shadow-lg shadow-indigo-500/20">APPLY MAPPING</button>
+                </div>
+                <div class="workspace-container w-full flex-1 overflow-auto rounded-lg border border-white/10 bg-[#0a0a0c]">
+                    <table class="data-table" id="mappingTable">
+                        </table>
+                </div>
+            </div>
+
             <div id="pdfViewContainer" class="hidden w-full h-full flex justify-center">
                 <iframe id="pdfPreviewFrame"></iframe>
             </div>
@@ -239,7 +276,20 @@
         const SKU_MAP = new Map();
         RAW_SKU_MASTER.forEach(item => SKU_MAP.set(item.size.trim(), item.ft2));
 
+        const SMART_MAPPING = {
+            scanRows: 15,
+            columns: {
+                size: { keywords: ["size", "mm", "dim", "format", "map", "scale"], required: true },
+                surface: { keywords: ["surface", "category", "finish", "look", "texture", "series", "catg"], required: false },
+                body: { keywords: ["body", "material", "base", "color", "typ"], required: false },
+                design: { keywords: ["design", "desing", "name", "product", "item", "particular", "description", "article"], required: true },
+                qty: { keywords: ["pre", "total", "qty", "quantity", "box", "pcs", "stock", "net", "std", "gold"], required: true }
+            }
+        };
+
         let globalData = [];
+        let rawExcelData = [];
+        let rawDataHeaderRowIndex = 0;
         let isCommercial = false;
         let showInsurance = true;
         let showGST = true;
@@ -253,7 +303,8 @@
             mcGrandTotal: document.getElementById('mcGrandTotal'), insRate: document.getElementById('insRate'), gstRate: document.getElementById('gstRate'), insRow: document.getElementById('insRow'), addInsBtn: document.getElementById('addInsBtn'),
             rateBasisContainer: document.getElementById('rateBasisContainer'), rateType: document.getElementById('rateType'), addRowBtn: document.getElementById('addRowBtn'),
             pdfPreviewToggle: document.getElementById('pdfPreviewToggle'), workspaceView: document.getElementById('workspaceView'), pdfViewContainer: document.getElementById('pdfViewContainer'), pdfPreviewFrame: document.getElementById('pdfPreviewFrame'),
-            gstRow: document.getElementById('gstRow'), addGstBtn: document.getElementById('addGstBtn')
+            gstRow: document.getElementById('gstRow'), addGstBtn: document.getElementById('addGstBtn'),
+            mappingToggle: document.getElementById('mappingToggle'), mappingView: document.getElementById('mappingView'), mappingTable: document.getElementById('mappingTable')
         };
 
         els.tableBody.addEventListener('keydown', (e) => {
@@ -281,6 +332,7 @@
         els.insRate.addEventListener('input', calculateMoneyCard);
         els.gstRate.addEventListener('input', calculateMoneyCard);
         els.pdfPreviewToggle.addEventListener('change', togglePdfPreview);
+        els.mappingToggle.addEventListener('change', toggleMappingView);
 
         els.tableBody.addEventListener('input', (e) => {
             const target = e.target;
@@ -303,37 +355,180 @@
             }
         });
 
-        function resetAll(e) { if(e) e.stopPropagation(); els.fileInput.value = ""; els.uploadContent.classList.remove('hidden'); els.fileSuccess.classList.add('hidden'); els.fileSuccess.classList.remove('flex'); els.emptyState.classList.remove('hidden'); els.workspaceView.classList.add('hidden'); els.actionButtons.classList.add('opacity-50', 'pointer-events-none'); els.liveIndicator.classList.remove('bg-green-500', 'animate-pulse'); els.liveIndicator.classList.add('bg-zinc-700'); globalData = []; els.pdfPreviewToggle.checked = false; els.pdfViewContainer.classList.add('hidden'); }
+        function resetAll(e) { if(e) e.stopPropagation(); els.fileInput.value = ""; els.uploadContent.classList.remove('hidden'); els.fileSuccess.classList.add('hidden'); els.fileSuccess.classList.remove('flex'); els.emptyState.classList.remove('hidden'); els.workspaceView.classList.add('hidden'); els.actionButtons.classList.add('opacity-50', 'pointer-events-none'); els.liveIndicator.classList.remove('bg-green-500', 'animate-pulse'); els.liveIndicator.classList.add('bg-zinc-700'); globalData = []; els.pdfPreviewToggle.checked = false; els.pdfViewContainer.classList.add('hidden'); els.mappingToggle.checked = false; els.mappingView.classList.add('hidden'); }
         function handleFile() { if (els.fileInput.files.length > 0) { const file = els.fileInput.files[0]; els.uploadContent.classList.add('hidden'); els.fileSuccess.classList.remove('hidden'); els.fileSuccess.classList.add('flex'); els.fileName.innerText = file.name; processExcel(file); } }
+        
         function processExcel(file) {
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
                     const data = new Uint8Array(e.target.result); const workbook = XLSX.read(data, {type: 'array'});
-                    const rawData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: 1, defval: ""});
-                    let headerIdx = -1, col = { design: -1, cat: -1, size: -1, body: -1, qty: -1 };
-                    for (let i = 0; i < Math.min(rawData.length, 25); i++) {
-                        const r = rawData[i].map(x => String(x).toLowerCase().trim());
-                        if (r.includes('designname') || r.includes('size mm')) { headerIdx = i; col.design = r.indexOf('designname'); col.cat = r.indexOf('category'); col.size = r.indexOf('size mm'); col.body = r.indexOf('bodytype'); col.qty = r.findIndex(c => c === 'pre' || c === 'total' || c === 'qty'); break; }
-                    }
-                    if (headerIdx === -1) throw new Error("Headers missing");
-                    const shouldMerge = els.mergeToggle.checked; const map = new Map();
-                    for (let i = headerIdx + 1; i < rawData.length; i++) {
-                        const r = rawData[i]; if (!r || r.length === 0) continue;
-                        let design = (r[col.design] || "").toString().trim(); let size = (r[col.size] || "").toString().trim(); let cat = col.cat > -1 ? (r[col.cat] || "").toString().trim() : ""; let body = col.body > -1 ? (r[col.body] || "").toString().trim() : ""; let qty = col.qty > -1 ? parseFloat(r[col.qty]) : 0;
-                        if (!design && !size) continue;
-                        if (shouldMerge) design = design.replace(/-[a-zA-Z]$/, "").trim();
-                        let matchSize = size; if (!SKU_MAP.has(matchSize)) { const dims = size.match(/(\d+)[xX](\d+)/); if (dims) matchSize = `${dims[1]}x${dims[2]}`; }
-                        const ft2PerBox = SKU_MAP.get(matchSize) || 0;
-                        const key = `${size}_${cat}_${body}_${design}`;
-                        if (map.has(key)) map.get(key).qty += qty; else map.set(key, { size, cat, body, design, qty, ft2PerBox, rate: 0 });
-                    }
-                    globalData = Array.from(map.values());
-                    sortData(); renderTable();
+                    rawExcelData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: 1, defval: ""});
+                    
+                    // Auto-Detect Headers & Map
+                    const smartResult = findSmartHeaders(rawExcelData);
+                    rawDataHeaderRowIndex = smartResult.headerRow;
+                    mapDataToGlobal(smartResult.columns);
+
+                    renderTable();
                     els.emptyState.classList.add('hidden'); els.workspaceView.classList.remove('hidden'); els.actionButtons.classList.remove('opacity-50', 'pointer-events-none'); els.liveIndicator.classList.remove('bg-zinc-700'); els.liveIndicator.classList.add('bg-green-500', 'animate-pulse');
                 } catch (err) { alert("Error: " + err.message); }
             }; reader.readAsArrayBuffer(file);
         }
+
+        // SMART HEADER FINDER
+        function findSmartHeaders(rawData) {
+            let bestRow = -1; let maxScore = 0; let bestMap = {};
+            for (let r = 0; r < Math.min(rawData.length, SMART_MAPPING.scanRows); r++) {
+                let row = rawData[r]; let score = 0; let currentMap = {};
+                row.forEach((cell, idx) => {
+                    if(!cell) return;
+                    let txt = String(cell).toLowerCase().trim().replace(/[^a-z0-9]/g, "");
+                    for (let [key, cfg] of Object.entries(SMART_MAPPING.columns)) {
+                        if (cfg.keywords.some(k => txt.includes(k))) {
+                            if (!currentMap[key]) currentMap[key] = []; // Support multiple cols
+                            currentMap[key].push(idx); score++; 
+                        }
+                    }
+                });
+                if (score > maxScore && score >= 2) { maxScore = score; bestRow = r; bestMap = currentMap; }
+            }
+            // Fallback: If no good header found, try row 0
+            if (bestRow === -1) { bestRow = 0; bestMap = {}; }
+            return { headerRow: bestRow, columns: bestMap };
+        }
+
+        function mapDataToGlobal(mapping) {
+            const shouldMerge = els.mergeToggle.checked; const map = new Map();
+            const startRow = rawDataHeaderRowIndex + 1;
+            
+            for (let i = startRow; i < rawExcelData.length; i++) {
+                const r = rawExcelData[i]; if (!r || r.length === 0) continue;
+                
+                let design = "", size = "", cat = "", body = "", qty = 0;
+
+                // Extract Data based on Mapping
+                if (mapping.design && mapping.design.length) design = (r[mapping.design[0]] || "").toString().trim();
+                if (mapping.size && mapping.size.length) size = (r[mapping.size[0]] || "").toString().trim();
+                if (mapping.surface && mapping.surface.length) cat = (r[mapping.surface[0]] || "").toString().trim();
+                if (mapping.body && mapping.body.length) body = (r[mapping.body[0]] || "").toString().trim();
+                
+                // Sum Qty Columns
+                if (mapping.qty && mapping.qty.length) {
+                    mapping.qty.forEach(colIdx => {
+                        let val = parseFloat(r[colIdx]);
+                        if (!isNaN(val)) qty += val;
+                    });
+                }
+
+                if (!design && !size) continue;
+                if (shouldMerge) design = design.replace(/-[a-zA-Z]$/, "").trim();
+                
+                // Size Cleaning
+                size = size.toUpperCase().replace(/\s/g, ""); // Remove spaces
+                let matchSize = size; 
+                if (!SKU_MAP.has(matchSize)) { const dims = size.match(/(\d+)[xX](\d+)/); if (dims) matchSize = `${dims[1]}x${dims[2]}`; }
+                const ft2PerBox = SKU_MAP.get(matchSize) || 0;
+
+                const key = `${size}_${cat}_${body}_${design}`;
+                if (map.has(key)) map.get(key).qty += qty; else map.set(key, { size, cat, body, design, qty, ft2PerBox, rate: 0 });
+            }
+            globalData = Array.from(map.values());
+            sortData();
+        }
+
+        // --- MAPPING VIEW LOGIC ---
+        function toggleMappingView() {
+            if (els.mappingToggle.checked) {
+                els.workspaceView.classList.add('hidden');
+                els.pdfViewContainer.classList.add('hidden');
+                els.mappingView.classList.remove('hidden');
+                renderMappingTable();
+            } else {
+                els.mappingView.classList.add('hidden');
+                els.workspaceView.classList.remove('hidden');
+            }
+        }
+
+        function renderMappingTable() {
+            if (!rawExcelData.length) return;
+            const table = els.mappingTable; table.innerHTML = '';
+            
+            // 1. Dropdown Row
+            const dropRow = document.createElement('tr');
+            dropRow.classList.add('map-header');
+            
+            // Get current auto-detected map to pre-fill
+            const smart = findSmartHeaders(rawExcelData);
+            const currentMap = smart.columns;
+            
+            // We scan the raw header row to determine column count
+            const maxCols = rawExcelData[rawDataHeaderRowIndex].length;
+
+            for (let c = 0; c < maxCols; c++) {
+                const th = document.createElement('th');
+                const select = document.createElement('select');
+                select.className = 'map-select';
+                select.dataset.colIdx = c;
+                
+                // Options
+                const opts = [
+                    {val:'', txt:'Ignore'},
+                    {val:'design', txt:'Design Name'},
+                    {val:'size', txt:'Size'},
+                    {val:'surface', txt:'Surface'},
+                    {val:'body', txt:'Body'},
+                    {val:'qty', txt:'Qty'}
+                ];
+
+                opts.forEach(o => {
+                    const opt = document.createElement('option');
+                    opt.value = o.val; opt.innerText = o.txt;
+                    // Pre-select logic
+                    if (currentMap[o.val] && currentMap[o.val].includes(c)) opt.selected = true;
+                    select.appendChild(opt);
+                });
+                th.appendChild(select);
+                dropRow.appendChild(th);
+            }
+            table.appendChild(dropRow);
+
+            // 2. Raw Data Rows (Show only first 25)
+            const previewRows = rawExcelData.slice(rawDataHeaderRowIndex, rawDataHeaderRowIndex + 25);
+            previewRows.forEach((rowData, i) => {
+                const tr = document.createElement('tr');
+                // Ensure row has cells for all cols
+                for (let c = 0; c < maxCols; c++) {
+                    const td = document.createElement('td');
+                    td.innerText = rowData[c] !== undefined ? rowData[c] : "";
+                    if (i === 0) td.style.fontWeight = "bold"; // Header row styling
+                    tr.appendChild(td);
+                }
+                table.appendChild(tr);
+            });
+        }
+
+        function applyMapping() {
+            // Read dropdowns
+            const selects = document.querySelectorAll('.map-select');
+            const newMap = {};
+            selects.forEach(sel => {
+                const role = sel.value;
+                if (role) {
+                    if (!newMap[role]) newMap[role] = [];
+                    newMap[role].push(parseInt(sel.dataset.colIdx));
+                }
+            });
+
+            // Regenerate Global Data
+            mapDataToGlobal(newMap);
+            renderTable();
+            
+            // Switch back
+            els.mappingToggle.checked = false;
+            toggleMappingView();
+        }
+
         function sortData() {
             function getDims(s) { const m = s.match(/(\d+)/g); return m ? { w: parseInt(m[0]||0), h: parseInt(m[1]||0) } : {w:0,h:0}; }
             globalData.sort((a, b) => {
