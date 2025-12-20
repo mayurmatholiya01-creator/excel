@@ -68,7 +68,7 @@
         input:checked + .slider:before { transform: translateX(14px); }
         #pdfPreviewFrame { width: 100%; height: 100%; border: none; border-radius: 8px; }
 
-        /* --- FIXED MAPPING UI (FINAL SCROLL FIX) --- */
+        /* --- FIXED MAPPING UI (CLEAN LOGIC) --- */
         .map-wrapper { 
             width: 100%; 
             height: 100%; 
@@ -80,21 +80,18 @@
         
         .map-table-container { 
             flex: 1; 
-            overflow: auto; 
+            overflow: auto; /* Handles Scroll */
             background: #0a0a0c; 
             border-radius: 8px; 
             border: 1px solid rgba(255,255,255,0.1); 
             position: relative; 
-            
-            /* THIS IS THE FIX: Lock max width based on viewport minus sidebar */
-            width: 100%;
-            max-width: calc(100vw - 320px); 
+            width: 100%; /* Just take available width */
         }
         
         .map-table { 
             border-collapse: separate; 
             border-spacing: 0; 
-            width: max-content; 
+            width: max-content; /* Forces table to be as wide as needed */
         }
         
         .map-table th { 
@@ -217,7 +214,7 @@
         </div>
     </aside>
 
-    <main class="flex-1 relative flex flex-col h-full bg-[#050505]">
+    <main class="flex-1 min-w-0 relative flex flex-col h-full bg-[#050505]">
         <div class="h-12 border-b border-white/5 flex items-center justify-between px-6 bg-[#0a0a0c]/80 backdrop-blur-md z-10">
             
             <div class="flex items-center gap-3 w-1/3">
