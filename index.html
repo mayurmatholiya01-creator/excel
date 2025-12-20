@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - v33.0 Scroll Fixed</title>
+    <title>StockPro X - v32.0 Simple & Clean</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -26,11 +26,11 @@
     <style>
         body { background: #050505; color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; }
         
-        /* SCROLLBAR STYLING - Visible & Usable */
+        /* CUSTOM SCROLLBAR */
         ::-webkit-scrollbar { width: 10px; height: 10px; }
-        ::-webkit-scrollbar-track { background: #18181b; }
-        ::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 5px; border: 2px solid #18181b; }
-        ::-webkit-scrollbar-thumb:hover { background: #6366f1; }
+        ::-webkit-scrollbar-track { background: #0a0a0c; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 5px; border: 2px solid #0a0a0c; }
+        ::-webkit-scrollbar-thumb:hover { background: #4f46e5; }
         
         .sidebar { background: rgba(10, 10, 12, 0.95); backdrop-filter: blur(20px); border-right: 1px solid rgba(255,255,255,0.08); width: 260px; }
         .canvas-bg { background-color: #050505; background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px); background-size: 24px 24px; }
@@ -44,14 +44,20 @@
         .tbl-input { background: transparent; border: none; color: #fff; width: 100%; text-align: center; font-family: monospace; padding: 0; margin: 0; height: 100%; display: block; outline: none; }
         .action-cell { display: flex; justify-content: center; gap: 6px; opacity: 0; transition: opacity 0.2s; }
         .data-table tr:hover .action-cell, .data-table tr:focus-within .action-cell { opacity: 1; }
+        .icon-btn { cursor: pointer; padding: 2px; border-radius: 4px; }
+        .btn-copy { color: #818cf8; } .btn-copy:hover { background: rgba(99,102,241,0.2); }
+        .btn-del { color: #ef4444; } .btn-del:hover { background: rgba(239,68,68,0.2); }
         
+        .money-card-container { margin-top: 30px; display: flex; justify-content: flex-end; }
         .money-card { width: 320px; background: linear-gradient(145deg, rgba(20, 20, 23, 0.95), rgba(30, 30, 35, 0.95)); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 0; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
         .mc-header { background: rgba(255,255,255,0.03); padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .mc-body { padding: 20px; }
         .mc-footer { background: rgba(99, 102, 241, 0.1); padding: 15px 20px; border-top: 1px solid rgba(99, 102, 241, 0.2); display: flex; justify-content: space-between; align-items: center; }
         .add-row-btn { margin-top: 10px; width: 100%; padding: 8px; border: 1px dashed rgba(255,255,255,0.2); border-radius: 6px; color: #6366f1; font-size: 11px; font-weight: 600; text-align: center; cursor: pointer; transition: all 0.2s; }
         .add-row-btn:hover { background: rgba(99, 102, 241, 0.1); border-color: #6366f1; }
-        
+        .orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.2; pointer-events: none; z-index: -1; }
+        .orb-1 { top: -20%; left: -10%; width: 500px; height: 500px; background: #4f46e5; }
+        .orb-2 { bottom: -20%; right: -10%; width: 400px; height: 400px; background: #ec4899; }
         .upload-zone { border: 1px dashed rgba(255,255,255,0.15); transition: all 0.2s; }
         .upload-zone:hover, .upload-zone.dragover { border-color: #6366f1; background: rgba(79, 70, 229, 0.05); }
         .switch { position: relative; display: inline-block; width: 32px; height: 18px; }
@@ -62,39 +68,22 @@
         input:checked + .slider:before { transform: translateX(14px); }
         #pdfPreviewFrame { width: 100%; height: 100%; border: none; border-radius: 8px; }
 
-        /* --- FIXED BOX LAYOUT FOR MAPPING --- */
-        #mappingView {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            box-sizing: border-box;
-            overflow: hidden; /* Prevent body scroll */
-        }
-
-        .map-box-frame {
-            flex: 1;
-            width: 100%;
-            max-width: 100%;
-            background: #0a0a0c;
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden; /* Constrain content inside box */
-        }
-
+        /* --- FIXED MAPPING UI --- */
+        .map-wrapper { width: 100%; height: 100%; display: flex; flex-direction: column; overflow: hidden; }
+        
         .map-table-container { 
-            flex: 1;
-            width: 100%;
-            overflow: auto; /* THIS enables the scrollbars */
+            flex: 1; 
+            overflow: auto; /* This enables proper scrolling */
+            background: #0a0a0c; 
+            border-radius: 8px; 
+            border: 1px solid rgba(255,255,255,0.1); 
+            position: relative; 
         }
         
         .map-table { 
             border-collapse: separate; 
             border-spacing: 0; 
-            min-width: max-content; /* Table grows as needed */
+            /* Do not force width: 100% here, let it grow */
         }
         
         .map-table th { 
@@ -102,14 +91,14 @@
             top: 0; 
             background: #18181b; 
             z-index: 20; 
-            padding: 8px; 
+            padding: 10px; 
             border-bottom: 2px solid #3f3f46; 
             border-right: 1px solid #27272a; 
-            min-width: 140px;
+            min-width: 160px; /* Fixed width prevents shrinking */
         }
         
         .map-table td { 
-            padding: 6px 10px; 
+            padding: 8px 12px; 
             color: #d4d4d8; 
             border-bottom: 1px solid #27272a; 
             border-right: 1px solid #27272a; 
@@ -127,9 +116,10 @@
             padding: 4px; 
             border-radius: 4px; 
             outline: none; 
-            font-weight: 600; 
+            font-weight: 500; 
         }
         
+        /* HIGHLIGHT STYLES */
         .assigned-header { background: #1e1b4b !important; border-bottom: 2px solid #818cf8 !important; }
         .assigned-header .map-select { border-color: #818cf8; color: #fff; background: #312e81; }
         .assigned-cell { background: rgba(99, 102, 241, 0.08) !important; color: #fff !important; }
@@ -150,7 +140,7 @@
                 </div>
                 <h1 class="text-base font-bold text-white tracking-tight">StockPro<span class="text-indigo-500"> X</span></h1>
             </div>
-            <p class="text-[9px] text-zinc-500 font-mono ml-9">v33.0 FIXED</p>
+            <p class="text-[9px] text-zinc-500 font-mono ml-9">v32.0</p>
         </div>
 
         <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-5">
@@ -218,6 +208,7 @@
 
     <main class="flex-1 relative flex flex-col h-full bg-[#050505]">
         <div class="h-12 border-b border-white/5 flex items-center justify-between px-6 bg-[#0a0a0c]/80 backdrop-blur-md z-10">
+            
             <div class="flex items-center gap-3 w-1/3">
                 <span class="w-2 h-2 rounded-full bg-zinc-700" id="liveIndicator"></span>
                 <span class="font-medium tracking-wide text-[11px] text-zinc-400">LIVE WORKSPACE</span>
@@ -308,16 +299,14 @@
                 </div>
             </div>
 
-            <div id="mappingView" class="hidden w-full h-full flex-col">
-                <div class="flex justify-between items-center mb-4 px-1">
+            <div id="mappingView" class="hidden w-full h-full flex flex-col map-wrapper px-6 pb-6">
+                <div class="flex justify-between items-center mb-4">
                     <h2 class="text-sm font-bold text-white">Advanced Column Mapping</h2>
                     <button onclick="applyMapping()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold rounded shadow-lg shadow-indigo-500/20 tracking-wide transition-all">APPLY & IMPORT</button>
                 </div>
-                <div class="map-box-frame">
-                    <div class="map-table-container">
-                        <table class="map-table" id="mappingTable">
-                            </table>
-                    </div>
+                <div class="map-table-container">
+                    <table class="map-table" id="mappingTable">
+                        </table>
                 </div>
             </div>
 
@@ -343,12 +332,11 @@
         const SMART_MAPPING = {
             scanRows: 15,
             columns: {
-                // Priority: PRE/PRM first, then generics. Total is backup.
-                qty: { keywords: ["pre", "prm", "qty", "quantity", "box", "pcs", "stock", "net", "total"], required: true },
                 size: { keywords: ["size", "mm", "dim", "format", "map", "scale"], required: true },
                 surface: { keywords: ["surface", "category", "finish", "look", "texture", "series", "catg"], required: false },
                 body: { keywords: ["body", "material", "base", "color", "typ"], required: false },
-                design: { keywords: ["design", "desing", "name", "product", "item", "particular", "description", "article"], required: true }
+                design: { keywords: ["design", "desing", "name", "product", "item", "particular", "description", "article"], required: true },
+                qty: { keywords: ["total", "pre", "qty", "quantity", "box", "pcs", "stock", "net"], required: true },
             }
         };
 
@@ -372,7 +360,6 @@
             mappingToggle: document.getElementById('mappingToggle'), mappingView: document.getElementById('mappingView'), mappingTable: document.getElementById('mappingTable')
         };
 
-        // Event Listeners (Standard)
         els.tableBody.addEventListener('keydown', (e) => {
             const target = e.target; const cell = target.closest('td'); if (!cell) return;
             if (e.key === 'Delete') { if(target.tagName === 'INPUT') target.value = ''; else target.innerText = ''; const event = new Event('input', { bubbles: true }); target.dispatchEvent(event); return; }
@@ -441,13 +428,14 @@
             }; reader.readAsArrayBuffer(file);
         }
 
-        // --- SINGLE COLUMN FINDER (Strict) ---
+        // --- SINGLE COLUMN FINDER (No Duplicates) ---
         function findSmartHeaders(rawData) {
             let bestRow = -1; let maxScore = 0; let bestMap = {};
             for (let r = 0; r < Math.min(rawData.length, SMART_MAPPING.scanRows); r++) {
                 let row = rawData[r]; let score = 0; let currentMap = {};
                 let usedCols = new Set(); 
 
+                // Process Priority: Qty -> Design -> Size -> Surface -> Body
                 const keys = ['qty', 'design', 'size', 'surface', 'body'];
                 
                 keys.forEach(key => {
@@ -459,17 +447,17 @@
                         let cell = row[idx]; if (!cell) continue;
                         let txt = String(cell).toLowerCase().trim().replace(/[^a-z0-9]/g, "");
                         
-                        if (key === 'design' && txt.includes('base')) continue; 
+                        if (key === 'design' && txt.includes('base')) continue; // Skip Base DesignName
                         
-                        // Strict Qty Logic: Prefer 'pre' over 'total'
                         if (cfg.keywords.some(k => txt.includes(k))) {
+                            // First match wins for this key
                             bestColIdx = idx;
-                            break; // Stop at first match
+                            break; 
                         }
                     }
 
                     if (bestColIdx !== -1) {
-                        currentMap[key] = [bestColIdx]; 
+                        currentMap[key] = [bestColIdx]; // Store as array for compatibility
                         usedCols.add(bestColIdx);
                         score++;
                     }
@@ -516,7 +504,7 @@
             sortData();
         }
 
-        // --- VISUAL MAPPING LOGIC (STRICT) ---
+        // --- MAPPING UI (WITH STRICT SINGLE SELECTION) ---
         function toggleMappingView() {
             if (els.mappingToggle.checked) {
                 els.workspaceView.classList.add('hidden');
@@ -557,6 +545,7 @@
                 opts.forEach(o => {
                     const opt = document.createElement('option');
                     opt.value = o.val; opt.innerText = o.txt;
+                    // Check if this column index exists in the array for this key
                     if (currentMap[o.val] && currentMap[o.val].includes(c)) opt.selected = true;
                     select.appendChild(opt);
                 });
@@ -590,11 +579,12 @@
             const val = changedSelect.value;
             if (!val) return; 
 
+            // Find any other dropdown that has the SAME value and reset it
             const allSelects = document.querySelectorAll('.map-select');
             allSelects.forEach(sel => {
                 if (sel !== changedSelect && sel.value === val) {
-                    sel.value = ""; 
-                    highlightColumn(sel, parseInt(sel.dataset.colIdx)); 
+                    sel.value = ""; // Deselect
+                    highlightColumn(sel, parseInt(sel.dataset.colIdx)); // Remove highlight
                 }
             });
         }
@@ -623,6 +613,7 @@
             selects.forEach(sel => {
                 const role = sel.value;
                 if (role) {
+                    // Always set as an array with ONE element (Strict Single)
                     newMap[role] = [parseInt(sel.dataset.colIdx)];
                 }
             });
