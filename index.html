@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - v32.0 Final Production</title>
+    <title>StockPro X - v33.0 Flawless</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -26,18 +26,15 @@
     <style>
         body { background: #050505; color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; }
         
-        /* SCROLLBAR */
         ::-webkit-scrollbar { width: 10px; height: 10px; }
         ::-webkit-scrollbar-track { background: #0a0a0c; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 5px; border: 2px solid #0a0a0c; }
         ::-webkit-scrollbar-thumb:hover { background: #4f46e5; }
         
-        /* LAYOUT */
         .sidebar { background: rgba(10, 10, 12, 0.95); backdrop-filter: blur(20px); border-right: 1px solid rgba(255,255,255,0.08); width: 260px; }
         .canvas-bg { background-color: #050505; background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px); background-size: 24px 24px; }
         .workspace-container { max-width: 1200px; margin: 0 auto; transition: all 0.3s ease; }
         
-        /* TABLE STYLES */
         .data-table { width: 100%; border-collapse: collapse; font-size: 11px; table-layout: fixed; }
         .data-table th { background: rgba(24, 24, 27, 0.95); backdrop-filter: blur(4px); color: #a1a1aa; font-weight: 600; text-align: center; padding: 10px 4px; border-bottom: 1px solid #27272a; position: sticky; top: 0; z-index: 10; white-space: nowrap; }
         .data-table td { padding: 8px 4px; border-bottom: 1px solid #27272a; color: #e4e4e7; vertical-align: middle; text-align: center; white-space: nowrap; cursor: cell; position: relative; }
@@ -45,7 +42,6 @@
         .data-table tr:hover { background: rgba(255, 255, 255, 0.02); }
         .tbl-input { background: transparent; border: none; color: #fff; width: 100%; text-align: center; font-family: monospace; padding: 0; margin: 0; height: 100%; display: block; outline: none; }
         
-        /* ACTIONS & ERRORS */
         .action-cell { display: flex; justify-content: center; gap: 6px; opacity: 0; transition: opacity 0.2s; }
         .data-table tr:hover .action-cell, .data-table tr:focus-within .action-cell { opacity: 1; }
         .icon-btn { cursor: pointer; padding: 2px; border-radius: 4px; }
@@ -54,7 +50,6 @@
         .row-error { background: rgba(239, 68, 68, 0.15) !important; border-left: 2px solid #ef4444 !important; }
         .text-error { color: #fca5a5 !important; font-weight: bold; }
 
-        /* MONEY CARD */
         .money-card-container { margin-top: 30px; display: flex; justify-content: flex-end; }
         .money-card { width: 320px; background: linear-gradient(145deg, rgba(20, 20, 23, 0.95), rgba(30, 30, 35, 0.95)); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 0; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
         .mc-header { background: rgba(255,255,255,0.03); padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
@@ -63,7 +58,6 @@
         .add-row-btn { margin-top: 10px; width: 100%; padding: 8px; border: 1px dashed rgba(255,255,255,0.2); border-radius: 6px; color: #6366f1; font-size: 11px; font-weight: 600; text-align: center; cursor: pointer; transition: all 0.2s; }
         .add-row-btn:hover { background: rgba(99, 102, 241, 0.1); border-color: #6366f1; }
 
-        /* UPLOAD & UI */
         .upload-zone { border: 1px dashed rgba(255,255,255,0.15); transition: all 0.2s; }
         .upload-zone:hover, .upload-zone.dragover { border-color: #6366f1; background: rgba(79, 70, 229, 0.05); }
         .switch { position: relative; display: inline-block; width: 32px; height: 18px; }
@@ -78,7 +72,6 @@
         .orb-1 { top: -20%; left: -10%; width: 500px; height: 500px; background: #4f46e5; }
         .orb-2 { bottom: -20%; right: -10%; width: 400px; height: 400px; background: #ec4899; }
 
-        /* --- FIXED MAPPING UI (Box Scroll Fix) --- */
         .map-wrapper { width: 100%; height: 100%; display: flex; flex-direction: column; overflow: hidden; padding: 24px; }
         .map-table-container { flex: 1; overflow: auto; background: #0a0a0c; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); position: relative; width: 100%; }
         .map-table { border-collapse: separate; border-spacing: 0; width: max-content; }
@@ -102,7 +95,7 @@
                 </div>
                 <h1 class="text-base font-bold text-white tracking-tight">StockPro<span class="text-indigo-500"> X</span></h1>
             </div>
-            <p class="text-[9px] text-zinc-500 font-mono ml-9">v32.0</p>
+            <p class="text-[9px] text-zinc-500 font-mono ml-9">v33.0 (Stable)</p>
         </div>
 
         <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-5">
@@ -184,7 +177,6 @@
                 <h3 class="text-sm font-medium text-zinc-400">No Data</h3>
                 <p class="text-[10px] mt-1 text-zinc-600">Upload Excel to begin</p>
             </div>
-
             <div id="workspaceView" class="hidden w-full h-full flex flex-col">
                 <div class="workspace-container w-full">
                     <div class="glass-card rounded-lg overflow-hidden border border-white/10 shadow-2xl bg-[#0a0a0c]">
@@ -194,7 +186,6 @@
                         </table>
                     </div>
                     <div id="addRowBtn" class="add-row-btn hidden" onclick="addNewRow()">+ Add New Item</div>
-                    
                     <div id="moneyCard" class="hidden money-card-container animate-slide-up">
                         <div class="money-card">
                             <div class="mc-header"><span class="text-xs font-bold text-zinc-300 tracking-wide">PAYMENT SUMMARY</span></div>
@@ -211,7 +202,6 @@
                     </div>
                 </div>
             </div>
-
             <div id="mappingView" class="hidden w-full h-full flex flex-col map-wrapper">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-sm font-bold text-white">Advanced Column Mapping</h2>
@@ -219,13 +209,11 @@
                 </div>
                 <div class="map-table-container"><table class="map-table" id="mappingTable"></table></div>
             </div>
-
             <div id="pdfViewContainer" class="hidden w-full h-full flex justify-center"><iframe id="pdfPreviewFrame"></iframe></div>
         </div>
     </main>
 
     <script>
-        // --- MASTER DATA & CONFIG ---
         const RAW_SKU_MASTER = [
               {size:"1200x1200",thk:"9MM",pcs:2,kg:"61",ft2:31.0,m2:2.88}, {size:"1200x1790",thk:"9MM",pcs:2,kg:"91",ft2:46.242,m2:4.296}, {size:"1200x1800",thk:"9MM",pcs:2,kg:"91 TO 96.5",ft2:46.5,m2:4.32},
               {size:"1200x2400",thk:"9MM",pcs:1,kg:"62",ft2:31.0,m2:2.88}, {size:"1200x2800",thk:"6MM",pcs:1,kg:"50.5",ft2:36.167,m2:3.36}, {size:"1200x3180",thk:"15MM",pcs:1,kg:"136",ft2:41.075,m2:3.816},
@@ -235,9 +223,7 @@
               {size:"1200x2600",thk:"6MM",pcs:1,kg:"42.5",ft2:33.58,m2:3.1}, {size:"1200x3000",thk:"9MM",pcs:1,kg:"77.5",ft2:38.75,m2:3.6}, {size:"1200x3200",thk:"15MM",pcs:1,kg:"136",ft2:41.33,m2:3.8},
               {size:"800x3200",thk:"15MM",pcs:1,kg:"74",ft2:27.56,m2:2.6}
         ];
-        
         const SKU_MAP = new Map();
-        // Normalize DB keys to UPPERCASE for safe matching
         RAW_SKU_MASTER.forEach(item => SKU_MAP.set(item.size.trim().toUpperCase(), item.ft2));
 
         const SMART_MAPPING = {
@@ -251,11 +237,10 @@
             }
         };
 
-        // --- GLOBAL STATE ---
         let globalData = [];
         let rawExcelData = [];
         let rawDataHeaderRowIndex = 0;
-        let activeMapping = null; // Stores current column mapping
+        let activeMapping = null; 
         let isCommercial = false;
         let showInsurance = true;
         let showGST = true;
@@ -275,7 +260,6 @@
             mappingToggle: document.getElementById('mappingToggle'), mappingView: document.getElementById('mappingView'), mappingTable: document.getElementById('mappingTable')
         };
 
-        // --- EVENT LISTENERS ---
         els.tableBody.addEventListener('keydown', (e) => {
             const target = e.target; const cell = target.closest('td'); if (!cell) return;
             if (e.key === 'Delete') { if(target.tagName === 'INPUT') target.value = ''; else target.innerText = ''; const event = new Event('input', { bubbles: true }); target.dispatchEvent(event); return; }
@@ -296,7 +280,7 @@
         els.dropZone.addEventListener('drop', (e) => { e.preventDefault(); els.dropZone.classList.remove('dragover'); if(e.dataTransfer.files.length) { els.fileInput.files = e.dataTransfer.files; handleFile(); }});
         els.removeFileBtn.addEventListener('click', resetAll);
         
-        // Smart Merge with persisted data
+        // Smart Merge Logic
         els.mergeToggle.addEventListener('change', () => { 
             if(rawExcelData.length > 0 && activeMapping) { mapDataToGlobal(activeMapping); renderTable(); }
         });
@@ -343,7 +327,13 @@
                             if (!SKU_MAP.has(matchSize) && SKU_MAP.has(matchSize.toUpperCase())) matchSize = matchSize.toUpperCase();
                             globalData[rowIdx].ft2PerBox = SKU_MAP.get(matchSize) || 0; 
                         }
-                    } else { val = parseFloat(val) || 0; globalData[rowIdx][field] = val; }
+                    } else { 
+                        // FIX: Clean numeric input (remove commas, handle empty)
+                        val = val.replace(/,/g, ''); 
+                        val = (val === "") ? 0 : parseFloat(val);
+                        if(isNaN(val)) val = 0;
+                        globalData[rowIdx][field] = val; 
+                    }
                     
                     if(isCommercial) {
                         const item = globalData[rowIdx]; const totalArea = item.qty * (item.ft2PerBox || 0); item.amount = (rateType === 'box') ? (item.qty * item.rate) : (totalArea * item.rate);
@@ -355,7 +345,6 @@
             }
         });
 
-        // AUTO SORT ON FOCUS OUT
         els.tableBody.addEventListener('focusout', (e) => {
             const row = e.target.closest('tr'); if (!row) return;
             const field = e.target.dataset.field;
@@ -364,7 +353,6 @@
             }
         });
 
-        // --- FUNCTIONS ---
         function resetAll(e) { if(e) e.stopPropagation(); els.fileInput.value = ""; els.uploadContent.classList.remove('hidden'); els.fileSuccess.classList.add('hidden'); els.fileSuccess.classList.remove('flex'); els.emptyState.classList.remove('hidden'); els.workspaceView.classList.add('hidden'); els.actionButtons.classList.add('opacity-50', 'pointer-events-none'); els.liveIndicator.classList.remove('bg-green-500', 'animate-pulse'); els.liveIndicator.classList.add('bg-zinc-700'); globalData = []; rawExcelData = []; activeMapping = null; els.pdfPreviewToggle.checked = false; els.pdfViewContainer.classList.add('hidden'); els.mappingToggle.checked = false; els.mappingView.classList.add('hidden'); }
         function handleFile() { if (els.fileInput.files.length > 0) { const file = els.fileInput.files[0]; els.uploadContent.classList.add('hidden'); els.fileSuccess.classList.remove('hidden'); els.fileSuccess.classList.add('flex'); els.fileName.innerText = file.name; processExcel(file); } }
         
@@ -499,7 +487,30 @@
             if (isCommercial) calculateMoneyCard();
         }
         function recalculateAll() { renderTable(); }
-        function addNewRow() { globalData.push({ size: "1200x1200", cat: "SURFACE", body: "BODY", design: "NEW ITEM", qty: 0, rate: 0, ft2PerBox: 2.88, amount: 0 }); renderTable(); setTimeout(() => { document.querySelector('.glass-card').scrollTop = document.querySelector('.glass-card').scrollHeight; }, 50); }
+        
+        // FIX 4: ADDING NEW ROW TO RAW DATA (So it persists)
+        function addNewRow() { 
+            const newRow = { size: "1200x1200", cat: "SURFACE", body: "BODY", design: "NEW ITEM", qty: 0, rate: 0, ft2PerBox: 2.88, amount: 0 };
+            globalData.push(newRow);
+            
+            // Push fake entry to raw data to survive toggle
+            if(rawExcelData.length > 0) {
+                const fakeRow = new Array(rawExcelData[0].length).fill("");
+                if(activeMapping) {
+                    if(activeMapping.size) fakeRow[activeMapping.size[0]] = newRow.size;
+                    if(activeMapping.surface) fakeRow[activeMapping.surface[0]] = newRow.cat;
+                    if(activeMapping.body) fakeRow[activeMapping.body[0]] = newRow.body;
+                    if(activeMapping.design) fakeRow[activeMapping.design[0]] = newRow.design;
+                    if(activeMapping.qty) fakeRow[activeMapping.qty[0]] = newRow.qty;
+                }
+                rawExcelData.push(fakeRow);
+                newRow.sourceRows = [rawExcelData.length - 1]; // Link it
+            }
+            
+            renderTable(); 
+            setTimeout(() => { document.querySelector('.glass-card').scrollTop = document.querySelector('.glass-card').scrollHeight; }, 50); 
+        }
+
         function deleteRow(index) { globalData.splice(index, 1); renderTable(); }
         function duplicateRow(index) { const itemToCopy = { ...globalData[index] }; globalData.splice(index + 1, 0, itemToCopy); renderTable(); }
         function toggleInsurance(enable) { showInsurance = enable; if (showInsurance) { els.insRow.classList.remove('hidden'); els.addInsBtn.classList.add('hidden'); els.insRate.innerText = savedInsRate; } else { els.insRow.classList.add('hidden'); els.addInsBtn.classList.remove('hidden'); els.insRate.innerText = "0"; } calculateMoneyCard(); }
