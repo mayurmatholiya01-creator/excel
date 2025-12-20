@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - v32.0 Stable</title>
+    <title>StockPro X - v32.0 Dynamic Sort</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -418,6 +418,22 @@
                     }
                     calculateMoneyCard();
                 }
+            }
+        });
+
+        // NEW: Sort and Re-render on cell blur (edit finish)
+        els.tableBody.addEventListener('focusout', (e) => {
+            const row = e.target.closest('tr');
+            if (!row) return;
+            
+            // Allow sorting only if meaningful data changed
+            const field = e.target.dataset.field;
+            if (field === 'size' || field === 'cat' || field === 'body' || field === 'design') {
+                // Short delay to ensure value is committed
+                setTimeout(() => {
+                    sortData();
+                    renderTable();
+                }, 10);
             }
         });
 
