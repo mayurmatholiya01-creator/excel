@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - v24.0 Premium</title>
+    <title>StockPro X - Dynamic Header</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -81,7 +81,7 @@
                 </div>
                 <h1 class="text-base font-bold text-white tracking-tight">StockPro<span class="text-indigo-500"> X</span></h1>
             </div>
-            <p class="text-[9px] text-zinc-500 font-mono ml-9">v24.0</p>
+            <p class="text-[9px] text-zinc-500 font-mono ml-9">DYNAMIC v25.0</p>
         </div>
 
         <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-5">
@@ -412,9 +412,13 @@
                     didDrawPage: function(data) {
                         if(data.pageNumber===1) {
                             doc.setFontSize(18); doc.setFont("helvetica", "bold"); doc.setTextColor(25, 25, 25);
-                            let text = client.toUpperCase().split('').join(' '); // Minimalist spacing
-                            doc.text(text, 105, 12, {align:'center'});
-                            doc.setDrawColor(99, 102, 241); doc.setLineWidth(0.5); doc.line(75, 14, 135, 14); // Accent Line
+                            let text = client.toUpperCase().split('').join(' ');
+                            let textWidth = doc.getTextWidth(text);
+                            let pageWidth = doc.internal.pageSize.getWidth();
+                            let centerX = pageWidth / 2;
+                            doc.text(text, centerX, 12, {align:'center'});
+                            doc.setDrawColor(99, 102, 241); doc.setLineWidth(0.5); 
+                            doc.line(centerX - (textWidth/2) - 2, 14, centerX + (textWidth/2) + 2, 14);
                         }
                     }
                 });
