@@ -68,23 +68,32 @@
         input:checked + .slider:before { transform: translateX(14px); }
         #pdfPreviewFrame { width: 100%; height: 100%; border: none; border-radius: 8px; }
 
-        /* --- FIXED MAPPING UI --- */
-        .map-wrapper { width: 100%; height: 100%; display: flex; flex-direction: column; overflow: hidden; }
+        /* --- FIXED MAPPING UI (SCROLL FIX) --- */
+        .map-wrapper { 
+            width: 100%; 
+            height: 100%; 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; /* Stops wrapper from expanding */
+            padding: 24px;
+        }
         
         .map-table-container { 
             flex: 1; 
-            overflow: auto; /* Enable Scroll */
+            overflow: auto; /* Forces Scroll */
             background: #0a0a0c; 
             border-radius: 8px; 
             border: 1px solid rgba(255,255,255,0.1); 
             position: relative; 
-            max-width: 100%; /* Fixes Zoom Issue */
+            width: 100%;
+            max-width: 100%; /* Ensures it fits in the box */
         }
         
         .map-table { 
             border-collapse: separate; 
             border-spacing: 0; 
-            width: max-content; /* Allow table to grow for scrolling */
+            width: max-content; /* Table takes necessary space, triggering scroll */
+            min-width: 100%;
         }
         
         .map-table th { 
@@ -95,7 +104,7 @@
             padding: 10px; 
             border-bottom: 2px solid #3f3f46; 
             border-right: 1px solid #27272a; 
-            min-width: 160px;
+            min-width: 140px;
         }
         
         .map-table td { 
@@ -300,7 +309,7 @@
                 </div>
             </div>
 
-            <div id="mappingView" class="hidden w-full h-full flex flex-col map-wrapper px-6 pb-6">
+            <div id="mappingView" class="hidden w-full h-full flex flex-col map-wrapper">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-sm font-bold text-white">Advanced Column Mapping</h2>
                     <button onclick="applyMapping()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold rounded shadow-lg shadow-indigo-500/20 tracking-wide transition-all">APPLY & IMPORT</button>
