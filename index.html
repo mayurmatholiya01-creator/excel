@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro X - v23.0 Final</title>
+    <title>StockPro X - v24.0 Premium</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -81,7 +81,7 @@
                 </div>
                 <h1 class="text-base font-bold text-white tracking-tight">StockPro<span class="text-indigo-500"> X</span></h1>
             </div>
-            <p class="text-[9px] text-zinc-500 font-mono ml-9">v23.0</p>
+            <p class="text-[9px] text-zinc-500 font-mono ml-9">v24.0</p>
         </div>
 
         <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-5">
@@ -350,7 +350,6 @@
         function calculateMoneyCard() { if (!isCommercial) return; let subtotal = 0; globalData.forEach(item => { subtotal += item.amount || 0; }); let insPercent = showInsurance ? parseFloat(els.insRate.innerText) || 0 : 0; let insAmount = subtotal * (insPercent / 100); let preTax = subtotal + insAmount; let gstPercent = showGST ? parseFloat(els.gstRate.innerText) || 0 : 0; let gstAmount = preTax * (gstPercent / 100); let grandTotal = preTax + gstAmount; const fmt = (n) => Math.round(n).toLocaleString('en-IN'); els.mcSubtotal.innerText = fmt(subtotal); els.mcIns.innerText = fmt(insAmount); els.mcPreTax.innerText = fmt(preTax); els.mcGst.innerText = fmt(gstAmount); els.mcGrandTotal.innerText = fmt(grandTotal); }
         function togglePdfPreview() { if (els.pdfPreviewToggle.checked) { els.workspaceView.classList.add('hidden'); els.pdfViewContainer.classList.remove('hidden'); const pdfData = exportData('preview'); els.pdfPreviewFrame.src = pdfData; } else { els.pdfViewContainer.classList.add('hidden'); els.workspaceView.classList.remove('hidden'); } }
 
-        // --- INCREASED WIDTH FACTORS FOR WINDOWS FONT RENDERING ---
         function calculateSmartColumnWidths(data, mode) {
             let maxLen = { size: 10, surf: 8, body: 8, design: 15, qty: 5, sr: 3 }; 
             data.forEach(item => {
@@ -360,22 +359,12 @@
                 if(item.design.length > maxLen.design) maxLen.design = item.design.length;
                 if(item.qty.toString().length > maxLen.qty) maxLen.qty = item.qty.toString().length;
             });
-            
-            // F = 2.2 (Much safer for Windows Bold Fonts)
             const f = 2.2; 
-            
-            // Allow Design to be wide but capped, ensure Surface/Body don't break
             let rawDesign = Math.max(40, maxLen.design * f + 4);
             if(rawDesign > 65) rawDesign = 65; 
-
             let raw = {
-                sr: 8, 
-                size: Math.max(25, maxLen.size * f + 4), 
-                surf: Math.max(22, maxLen.surf * f + 4), // Increased safety
-                body: Math.max(28, maxLen.body * f + 4), // Increased safety
-                design: rawDesign, 
-                qty: Math.max(12, maxLen.qty * f + 4), 
-                sq: 15, rate: 12, amt: 22
+                sr: 8, size: Math.max(25, maxLen.size * f + 4), surf: Math.max(22, maxLen.surf * f + 4), body: Math.max(28, maxLen.body * f + 4),
+                design: rawDesign, qty: Math.max(12, maxLen.qty * f + 4), sq: 15, rate: 12, amt: 22
             };
             const availableWidth = 190;
             let totalRaw = raw.sr + raw.size + raw.surf + raw.body + raw.design + raw.qty;
@@ -415,12 +404,19 @@
                 });
                 let headRow = [['Sr.', 'Size', 'Surface', 'Body', 'Design Name', 'Qty']]; if (isCommercial) headRow[0].push('Rate', 'Sq. Feet', 'Amount');
                 doc.autoTable({
-                    head: headRow, body: tableBody, startY: 30, theme: 'grid', margin: { left: 10, right: 10 },
+                    head: headRow, body: tableBody, startY: 22, theme: 'grid', margin: { left: 10, right: 10 },
                     styles: { fontSize: 9, halign: 'center', valign: 'middle', lineColor: [229, 231, 235], lineWidth: 0.1, cellPadding: { top: 2, bottom: 2, left: 1, right: 1 }, textColor: [51, 51, 51] },
                     headStyles: { fillColor: [30, 41, 59], textColor: 255, fontStyle: 'bold', halign: 'center' },
                     alternateRowStyles: { fillColor: [249, 250, 251] },
                     columnStyles: colStyles, 
-                    didDrawPage: function(data) { if(data.pageNumber===1) { doc.setFontSize(16); doc.setFont("helvetica", "bold"); doc.setTextColor(20, 20, 20); doc.text(client.toUpperCase(), 105, 15, {align:'center'}); doc.setLineWidth(0.5); doc.setDrawColor(200, 200, 200); } }
+                    didDrawPage: function(data) {
+                        if(data.pageNumber===1) {
+                            doc.setFontSize(18); doc.setFont("helvetica", "bold"); doc.setTextColor(25, 25, 25);
+                            let text = client.toUpperCase().split('').join(' '); // Minimalist spacing
+                            doc.text(text, 105, 12, {align:'center'});
+                            doc.setDrawColor(99, 102, 241); doc.setLineWidth(0.5); doc.line(75, 14, 135, 14); // Accent Line
+                        }
+                    }
                 });
                 if (isCommercial) {
                     let finalY = doc.lastAutoTable.finalY + 10; if (finalY > 250) { doc.addPage(); finalY = 20; }
